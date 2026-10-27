@@ -89,7 +89,7 @@ test("reconstructed Spark chair → mock status → overlay → intent → Engli
     expect(url.pathname).toBe(`/api/v1/jobs/${jobId}`);
     return route.fulfill({ json: { data: {
       id: jobId, operation: segment ? "segment" : "scene", status: "succeeded", cancelRequested: false, errorCode: null,
-      reservedMicroUsd: 25000, chargedMicroUsd: 4402, billingState: "settled",
+      reservedMicroUsd: segment ? 2500 : 25000, chargedMicroUsd: segment ? 2500 : 4402, billingState: "settled",
       createdAt: "2026-10-27T00:00:00Z", expiresAt: "2026-10-28T00:00:00Z",
       result: { detections: [{ ...(segment ? { objectId: "7" } : {}), label: "chair", catalogId: null, confidence: 0.99, mask: null,
         box: segment ? { x1: .25, y1: .25, x2: .75, y2: .75 } : { x1: 0.247, y1: 0.139, x2: 0.746, y2: 0.868 } }], tracks: [],
@@ -97,7 +97,7 @@ test("reconstructed Spark chair → mock status → overlay → intent → Engli
           bounds: { x1: .25, y1: .25, x2: .75, y2: .75 }, rasterBase64: "AAABAQEBAAA=" }] : [],
         provenance: { source: "model", model: segment ? "sam-3.1" : "muse-spark-1.3", adapterVersion: "meta-v1",
           responseId: "synthetic-browser-reconstruction-not-real-receipt", inputSha256: "a".repeat(64),
-          inputTokens: 424, outputTokens: 911, costMicroUsd: 4402 } }
+          inputTokens: segment ? null : 424, outputTokens: segment ? null : 911, costMicroUsd: segment ? 2500 : 4402 } }
     } } });
   });
   await page.addInitScript({ path: "apps/web/e2e/stub-speech.js" });
