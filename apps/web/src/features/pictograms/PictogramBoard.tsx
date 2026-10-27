@@ -14,6 +14,7 @@ export default function PictogramBoard() {
   const [items, setItems] = useState<Pictogram[]>([]);
   const itemsRef = useRef<Pictogram[]>([]);
   const pending = useRef(0);
+  const activeRead = useRef<AbortController | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [meaning, setMeaning] = useState("");
   const [description, setDescription] = useState("");
@@ -28,6 +29,7 @@ export default function PictogramBoard() {
   useEffect(() => { headingRef.current?.focus({ preventScroll: true }); }, [selected?.id]);
   useEffect(() => () => {
     pending.current++;
+    activeRead.current?.abort();
     for (const item of itemsRef.current) URL.revokeObjectURL(item.url);
   }, []);
 
@@ -39,9 +41,12 @@ export default function PictogramBoard() {
       setError("This board holds at most 8 images and 8 MiB. Delete an image first."); return;
     }
     const request = ++pending.current;
+    activeRead.current?.abort();
+    const controller = new AbortController();
+    activeRead.current = controller;
     setBusy(true);
     try {
-      const url = await loadLocalImage(file);
+      const url = await loadLocalImage(file, controller.signal);
       if (pending.current !== request) { URL.revokeObjectURL(url); return; }
       const item: Pictogram = { id: crypto.randomUUID(), url, bytes: file.size, meaning, description, catalogId: catalogId || null };
       itemsRef.current = [...itemsRef.current, item];
@@ -51,7 +56,7 @@ export default function PictogramBoard() {
     } catch (cause) {
       if (pending.current === request) setError(cause instanceof Error ? cause.message : "Unable to read image.");
     } finally {
-      if (pending.current === request) setBusy(false);
+      if (pending.current === request) { setBusy(false); activeRead.current = null; }
     }
   }
 
@@ -95,8 +100,8 @@ export default function PictogramBoard() {
           <p>A catalog mapping enables reviewed sentence templates. Your own wording remains available. Tamil catalog wording is review-pending.</p>
           <button type="submit" className="btn" disabled={!file || !meaning.trim() || !description.trim()}>Create pictogram</button>
         </fieldset>
-        {busy && <><p role="status">Reading local image…</p><button type="button" className="btn btn-secondary" onClick={() => { pending.current++; setBusy(false); }}>Cancel reading</button></>}
-        {error && <p role="alert">{error}</p>}
+        {busy && <><p role="status">Reading local image…</p><button type="button" className="btn btn-secondary" onClick={() => { pending.current++; activeRead.current?.abort(); activeRead.current = null; setBusy(false); }}>Cancel reading</button></>}
+        {error && <p role="alert" data-testid="pictogram-error">{error}</p>}
       </form>
       <section aria-label="My pictograms">
         <h2>My pictograms ({items.length})</h2>

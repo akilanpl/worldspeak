@@ -46,7 +46,7 @@ test("corrupt images reject and a real image can be retried", async ({ page }) =
   await page.getByLabel("My exact meaning or words").fill("Words");
   await page.getByLabel("Image description for accessibility").fill("Description");
   await page.getByRole("button", { name: "Create pictogram", exact: true }).click();
-  await expect(page.getByRole("alert")).toContainText(/valid|decoded/);
+  await expect(page.getByTestId("pictogram-error")).toContainText(/valid|decoded/);
   await page.getByLabel("Local image").setInputFiles({ name: "good.png", mimeType: "image/png", buffer: png });
   await page.getByRole("button", { name: "Create pictogram", exact: true }).click();
   await expect(page.getByRole("img", { name: "Description" })).toBeVisible();

@@ -21,11 +21,13 @@ image is not carried into the composer. Creation/use/deletion operate without a
 network connection while the page is already loaded; installation or cold offline
 navigation to this route is not promised.
 
-Accepted formats: PNG/JPEG/WebP with matching signatures and successful browser
+Accepted formats: PNG/JPEG/WebP with matching signatures, bounded container-header scans and successful browser
 image loading. At most 2 MiB and 4 million decoded pixels per image, 8 images and
-8 MiB compressed bytes total. GIF/SVG are rejected. Pixel checks occur when the
-browser reports image dimensions; compressed-byte limits apply before loading.
-A 10-second decode deadline and generation token discard canceled/late results.
+8 MiB compressed bytes total. GIF/SVG and animated PNG/WebP are rejected. PNG/JPEG/WebP header dimensions are
+checked before browser loading and checked again when the browser reports dimensions.
+Compressed-byte limits apply before FileReader reads the image. A 10-second decode
+deadline bounds loading; AbortSignal immediately cancels FileReader/Image on cancel
+or navigation, and a generation token discards any late results.
 Successful URLs are revoked on deletion/navigation; failed/late results are revoked.
 
 ## Verification

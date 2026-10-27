@@ -65,7 +65,9 @@ describe("personal pictograms (mocked image decoding)", () => {
     fireEvent.change(screen.getByLabelText("My exact meaning or words"), { target: { value: "words" } });
     fireEvent.change(screen.getByLabelText("Image description for accessibility"), { target: { value: "description" } });
     fireEvent.submit(screen.getByRole("button", { name: "Create pictogram" }).closest("form")!);
-    view.unmount(); resolve("blob:late");
+    view.unmount();
+    expect(vi.mocked(loadLocalImage).mock.calls[0]?.[1]?.aborted).toBe(true);
+    resolve("blob:late");
     await waitFor(() => expect(revoke).toHaveBeenCalledWith("blob:late"));
   });
   it("bounds board capacity and allows creation after deletion", async () => {
