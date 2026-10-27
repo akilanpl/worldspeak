@@ -1,0 +1,28 @@
+{
+  "name": "@worldspeak/worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "once": "tsx src/main.ts",
+    "cleanup": "tsx src/cleanup.ts",
+    "test:db": "tsx tests/smoke-authorization.ts && tsx tests/database.ts && tsx tests/result-persistence.ts"
+  },
+  "dependencies": {
+    "@worldspeak/contracts": "workspace:*",
+    "@worldspeak/inference": "workspace:*",
+    "@supabase/supabase-js": "2.118.0",
+    "postgres": "3.4.9",
+    "sharp": "0.34.5",
+    "tsx": "4.20.6",
+    "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.5",
+    "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": "^20.17.0 || >=22.9.0"
+  }
+}

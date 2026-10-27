@@ -29,9 +29,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <p>Point, preview, then speak — your words, your control.</p>
             </div>
             <nav aria-label="Primary">
-              <Link href="/" prefetch={false}>Board</Link> · <a href="/offline">Offline</a> · <a href="/history">History</a>{" "}
-              · <a href="/favorites">Favorites</a> · <a href="/settings">Settings</a> ·{" "}
-              <a href="/sign-in">Sign in</a>
+              <Link href="/" prefetch={false} className="nav-link">Board</Link> · <Link href="/perception" prefetch={false} className="nav-link">Camera</Link> · <Link href="/video" prefetch={false} className="nav-link">Video</Link>{" "}
+              · <a href="/offline" className="nav-link">Offline</a> · <a href="/history" className="nav-link">History</a>{" "}
+              · <a href="/favorites" className="nav-link">Favorites</a> · <a href="/settings" className="nav-link">Settings</a> ·{" "}
+              <a href="/sign-in" className="nav-link">Sign in</a>
             </nav>
           </header>
           <main id="main">{children}</main>

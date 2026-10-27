@@ -1,3 +1,5 @@
+> Current release status: non-paid Phase 3 consolidation and exact hosted migration 007 were subsequently authorized. See `../hosted-readiness.md` and `../evidence/hosted-inference.json`. Phase 2 manual gaps below remain open; this older phase record is not a prohibition on the later authorized work. No paid inference is authorized.
+
 # STATE — Phase 2 hosted foundation
 
 Date: 27 October 2026 (IST). Phase 2 is not fully accepted; Phase 3 has not started.
@@ -15,3 +17,7 @@ Email provider and confirmation requirement inspected in Brave and hosted settin
 No Meta model calls, capture, worker/jobs, GPU, paid service or production application deployment. Protected local `.env.hosted.local` is ignored and mode 600; never log/copy its values. Runtime test server processes may need local-terminal cleanup if the sandbox cannot signal them; do not kill another developer's processes.
 
 Google sign-out was verified separately: guest board returned, hosted session count zero, protected History redirected to sign-in; identity retained.
+
+## 27 October 2026 — bounded Phase 3 authorization
+
+The human explicitly authorized non-paid inference-core engineering on isolated `feat/meta-inference-core` despite the Phase 2 manual gaps above. This supersedes the earlier no-Phase-3 instruction only for this bounded task. Phase 2 is still not accepted. No paid call or hosted migration is authorized by this note. See `docs/meta-inference-handoff.md` and the prepared, unapproved two-call smoke protocol.

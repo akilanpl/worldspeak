@@ -58,3 +58,6 @@ done
 
 echo "db-test: running isolation suite"
 psql -v ON_ERROR_STOP=1 -f "$ROOT/supabase/tests/isolation.test.sql"
+
+echo "db-test: running concurrent inference scenarios"
+pnpm --filter @worldspeak/worker test:db
