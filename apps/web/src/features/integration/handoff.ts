@@ -16,8 +16,8 @@ import {
  * part of the handoff — the composer requires a fresh Speak gesture.
  */
 
-export type HandoffSource = "perception" | "video";
-export type HandoffProvenance = "fixture" | "model";
+export type HandoffSource = "perception" | "video" | "pictogram";
+export type HandoffProvenance = "fixture" | "model" | "manual";
 
 export interface HandoffPayload {
   version: 1;
@@ -46,13 +46,13 @@ function isLocale(value: unknown): value is Locale {
 function isHandoffMeta(value: object): value is HandoffMeta {
   const r = value as Record<string, unknown>;
   return (
-    (r["source"] === "perception" || r["source"] === "video") &&
+    (r["source"] === "perception" || r["source"] === "video" || r["source"] === "pictogram") &&
     typeof r["objectLabel"] === "string" &&
     (r["objectLabel"] as string).length > 0 &&
     (r["objectLabel"] as string).length <= 120 &&
     (typeof r["objectCatalogId"] === "string" ||
       r["objectCatalogId"] === null) &&
-    (r["provenance"] === "fixture" || r["provenance"] === "model")
+    (r["provenance"] === "fixture" || r["provenance"] === "model" || r["provenance"] === "manual")
   );
 }
 
