@@ -148,6 +148,125 @@ export type Database = {
           },
         ]
       }
+      inference_jobs: {
+        Row: {
+          actual_micro: number | null
+          asset_id: string
+          attempt_count: number
+          cancel_requested: boolean
+          concept: string | null
+          created_at: string
+          dispatched_at: string | null
+          error_code: string | null
+          expires_at: string
+          id: string
+          idempotency_key: string
+          input_hash: string
+          lease_token: string | null
+          lease_until: string | null
+          operation: string
+          owner_id: string
+          reserved_micro: number
+          result: Json | null
+          settled: boolean
+          status: string
+        }
+        Insert: {
+          actual_micro?: number | null
+          asset_id: string
+          attempt_count?: number
+          cancel_requested?: boolean
+          concept?: string | null
+          created_at?: string
+          dispatched_at?: string | null
+          error_code?: string | null
+          expires_at?: string
+          id?: string
+          idempotency_key: string
+          input_hash: string
+          lease_token?: string | null
+          lease_until?: string | null
+          operation: string
+          owner_id: string
+          reserved_micro: number
+          result?: Json | null
+          settled?: boolean
+          status?: string
+        }
+        Update: {
+          actual_micro?: number | null
+          asset_id?: string
+          attempt_count?: number
+          cancel_requested?: boolean
+          concept?: string | null
+          created_at?: string
+          dispatched_at?: string | null
+          error_code?: string | null
+          expires_at?: string
+          id?: string
+          idempotency_key?: string
+          input_hash?: string
+          lease_token?: string | null
+          lease_until?: string | null
+          operation?: string
+          owner_id?: string
+          reserved_micro?: number
+          result?: Json | null
+          settled?: boolean
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inference_jobs_owner_id_asset_id_fkey"
+            columns: ["owner_id", "asset_id"]
+            isOneToOne: false
+            referencedRelation: "inference_media"
+            referencedColumns: ["owner_id", "id"]
+          },
+        ]
+      }
+      inference_media: {
+        Row: {
+          bytes: number
+          created_at: string
+          expires_at: string
+          height: number
+          id: string
+          notice_version: string
+          owner_id: string
+          path: string
+          sha256: string
+          state: string
+          width: number
+        }
+        Insert: {
+          bytes: number
+          created_at?: string
+          expires_at?: string
+          height: number
+          id?: string
+          notice_version: string
+          owner_id: string
+          path: string
+          sha256: string
+          state?: string
+          width: number
+        }
+        Update: {
+          bytes?: number
+          created_at?: string
+          expires_at?: string
+          height?: number
+          id?: string
+          notice_version?: string
+          owner_id?: string
+          path?: string
+          sha256?: string
+          state?: string
+          width?: number
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           client_event_id: string
@@ -230,10 +349,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cancel_inference_job: { Args: { p_id: string }; Returns: boolean }
+      create_inference_media: {
+        Args: {
+          p_bytes: number
+          p_height: number
+          p_notice: string
+          p_sha256: string
+          p_width: number
+        }
+        Returns: Json
+      }
       erase_my_saved_data: {
         Args: { reset_settings?: boolean }
         Returns: undefined
       }
+      inference_job_status: { Args: { p_id: string }; Returns: Json }
+      revoke_inference_media: { Args: { p_id: string }; Returns: boolean }
       save_favorite_snapshot: {
         Args: { conversation_title?: string; snapshot: Json }
         Returns: {
@@ -248,6 +380,15 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      submit_inference_job: {
+        Args: {
+          p_asset: string
+          p_concept?: string
+          p_key: string
+          p_operation: string
+        }
+        Returns: string
       }
     }
     Enums: {

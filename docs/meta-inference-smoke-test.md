@@ -12,8 +12,8 @@ Spark uses one authoritative non-generation `POST /v1/responses/input_tokens` pr
 
 ## Before approval
 
-1. Merge/test combined UI in an isolated environment. Apply reviewed migration 007 to dedicated WorldSpeak project only; run live RLS/Storage/advisor/type checks. Preserve Phase 2 manual gaps.
-2. Supply worker-only Standard `META_MODEL_API_KEY`, restricted DB login and server-only Storage key through protected local/deployment configuration, never chat/Git. Recheck current pricing, account entitlement and remaining credits; user-reported $149.82 is stale/unverified.
+1. Merge/test combined UI in an isolated environment. The exact reviewed migration 007 is applied to dedicated WorldSpeak and hosted RLS/Storage/advisor/type checks are recorded. Do not reapply it. Verify remaining cleanup supervision before proceeding. Preserve Phase 2 manual gaps.
+2. Supply worker-only Standard `META_MODEL_API_KEY`, restricted DB login and server-only Storage key through protected local/deployment configuration, never chat/Git. Recheck current pricing, account entitlement and remaining credits; the earlier user-reported $149.82 is superseded by a private signed-in balance check; reconfirm again immediately before a separately approved smoke.
 3. Establish cleanup supervision and verify a disposable asset can be physically deleted. Obtain explicit consent for the exact sanitized still; app normalization strips metadata. `store:false` disables response persistence; **it is not a claim of provider-wide zero retention**. Review current provider terms before transmission.
 4. Keep live marker unset, budgets zero and permits zero until explicit human approval.
 
@@ -40,3 +40,5 @@ select world_inference.authorize_first_smoke('<DESIGNATED_AUTH_USER_UUID>'::uuid
 ```
 
 This invocation is not part of migrations, deployment, CI or worker startup. It must not be run during hosted readiness preparation, which keeps budgets/permits zero and Meta generation disabled. The authorization tombstone survives account deletion. Any subsequent test window requires separately reviewed authorization design and explicit human approval; do not delete the tombstone or reset counters to manufacture headroom.
+
+The signed-in free-credit Billing page was checked privately on 27 October 2026. It displays an additional notice that free-credit content may be used for product improvement. Review promotional terms before any token-count or generation media transmission; a Standard model name and store:false do not override that notice. Use only the specifically approved sanitized non-sensitive still. No billing settings were changed.

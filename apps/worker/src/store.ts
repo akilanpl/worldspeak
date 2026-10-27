@@ -131,7 +131,11 @@ export function makeStore(config: {
       const c = Cleanup.parse(raw);
       // Storage API remove is idempotent. Never delete storage.objects rows.
       const { error } = await storage.remove([c.path]);
-      await sql`select world_inference.finish_cleanup(${c.asset_id},${c.lease_token},${!error})`;
+      const acknowledged = await scalar(
+        sql`select world_inference.finish_cleanup(${c.asset_id},${c.lease_token},${!error}) as value`,
+      );
+      if (error || acknowledged !== true)
+        throw Error("Cleanup did not complete; retain durable retry state");
       return true;
     },
   };

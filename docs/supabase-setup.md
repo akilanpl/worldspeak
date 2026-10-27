@@ -4,7 +4,7 @@ Dedicated project: `cafkyowssdemzivhzxbb`, Mumbai (`ap-south-1`), Free plan. Cre
 
 ## Schema
 
-Six reviewed migrations have been applied, in order. `docs/evidence/supabase-project.json` records canonical hosted versions, filenames and source hashes. Filenames were aligned with actual hosted migration versions so future CLI pushes do not replay earlier migrations. Do not relink or repair another project. Storage policies use platform-owned tables without ALTER/FORCE RLS on managed Storage objects; the local shim models the platform grants separately.
+Seven reviewed migrations have been applied, in order. Migration 007 has explicit human approval and executed hosted evidence in `docs/evidence/hosted-inference.json`; do not reapply it. `docs/evidence/supabase-project.json` records canonical hosted versions, filenames and source hashes. Filenames were aligned with actual hosted migration versions so future CLI pushes do not replay earlier migrations. Do not relink or repair another project. Storage policies use platform-owned tables without ALTER/FORCE RLS on managed Storage objects; the local shim models the platform grants separately.
 
 Generated types are in `packages/db/src/database.types.ts`; row aliases derive from them. `pnpm check:schema` verifies the approved SQL/type artifact snapshot offline. It is not a live schema query: regenerate with the connected Supabase type-generation capability after any real schema change and compare before updating the snapshot.
 

@@ -26,7 +26,7 @@ export async function POST(request: Request) {
       p_asset: p.assetId,
       p_operation: p.operation,
       p_key: p.idempotencyKey,
-      p_concept: p.operation === "segment" ? p.concept : null,
+      ...(p.operation === "segment" ? { p_concept: p.concept } : {}),
     },
   );
   if (error) return inferenceError(error);

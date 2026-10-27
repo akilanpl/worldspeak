@@ -1,3 +1,5 @@
+> Current release status: non-paid Phase 3 consolidation and exact hosted migration 007 were subsequently authorized. See `../hosted-readiness.md` and `../evidence/hosted-inference.json`. Phase 2 manual gaps below remain open; this older phase record is not a prohibition on the later authorized work. No paid inference is authorized.
+
 # Phase 3 handoff — gated plan, not authorization to start
 
 Prerequisites: Phase 2 acceptance recorded, public email/OAuth and real browser flows proven, current CI green, existing security warning disposition accepted, credit balance checked, explicit Phase 3 instruction from the human. Read Phase 0 architecture and current migrations/types first. Use only dedicated project cafkyowssdemzivhzxbb.
