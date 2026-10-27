@@ -11,3 +11,13 @@
 Phase 3 remains gated, not an unfinished implementation task in this phase.
 
 - **Technical:** OAuth-only identity deletion still requires a verified reauthentication/support path; password-account deletion is tested.
+
+## 27 October 2026 — bounded Phase 3 authorization
+
+The human explicitly authorized non-paid inference-core engineering on isolated `feat/meta-inference-core` despite the Phase 2 manual gaps above. This supersedes the earlier no-Phase-3 instruction only for this bounded task. Phase 2 is still not accepted. No paid call or hosted migration is authorized by this note. See `docs/meta-inference-handoff.md` and the prepared, unapproved two-call smoke protocol.
+
+## Hosted readiness review — 27 October 2026
+
+Dedicated project identity and six applied migration versions reconfirmed read-only. Migration 007 remains unapplied pending explicit human approval. Security advisors still flag the intentional owner-derived saved-data definer RPC and now also report leaked-password protection disabled. Review plan availability before changing that Auth setting; do not upgrade or buy a plan implicitly. Worker credentials, cleanup supervision and actual new-bucket byte deletion remain unverified. No Meta generation was performed.
+
+Leaked-password protection requires Supabase Pro or above per [official password security documentation](https://supabase.com/docs/guides/auth/password-security). No upgrade is approved; this Free-plan limitation is recorded rather than silently purchasing a plan.

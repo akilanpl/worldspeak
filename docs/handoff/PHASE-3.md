@@ -7,3 +7,7 @@ Next vertical slice: durable inference job admission + atomic integer-microUSD b
 Implement/test locally with fake provider responses first. Verify duplicate idempotency keys cannot duplicate model calls, conflicting payloads reject, concurrent reservations cannot overspend, lost leases/uncertain upstream outcomes cannot resubmit, canceled/revoked content is not published, and cleanup survives restarts. Regenerate live types and update approved artifact snapshot after reviewed migrations.
 
 Only after the human opens a bounded paid test window: one Spark 1.3 Standard scene-understanding request and one SAM 3.1 still segmentation request, using current official schemas and sanitized request IDs/usage. No speech from model output: object confirmation → explicit intent → deterministic exact preview → fresh Speak gesture remains mandatory. Finish the slice with test/evidence/build-log updates and another bounded handoff. Never claim video tracking or model integration from fakes.
+
+## 27 October 2026 — bounded Phase 3 authorization
+
+The human explicitly authorized non-paid inference-core engineering on isolated `feat/meta-inference-core` despite the Phase 2 manual gaps above. This supersedes the earlier no-Phase-3 instruction only for this bounded task. Phase 2 is still not accepted. No paid call or hosted migration is authorized by this note. See `docs/meta-inference-handoff.md` and the prepared, unapproved two-call smoke protocol.

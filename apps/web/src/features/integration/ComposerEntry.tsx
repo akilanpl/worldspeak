@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useSyncExternalStore } from "react";
 import type { Composition } from "@worldspeak/contracts";
 import Workspace from "@/features/composer/Workspace";
 import type { SpeechGateway, VoiceInfo } from "@/lib/speech";
-import { readStoredHandoff, handoffToComposition, type HandoffPayload } from "./handoff";
+import {
+  handoffToComposition,
+  readStoredHandoff,
+  type HandoffPayload,
+} from "./handoff";
 
 function newId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
@@ -34,19 +37,28 @@ interface EntryState {
  * failures degrade to an empty board with a notice — never a crash, and
  * never speech: Workspace only speaks on an explicit Speak click.
  */
-export default function ComposerEntry({
+function ComposerDraft({
   serverInitial,
+  handoffKey,
   gatewayFactory,
 }: {
   serverInitial?: Composition | undefined;
+  /**
+   * Session-storage handoff key from `?handoff=`. The parent keys this
+   * component by the key, so navigating between handoffs remounts with
+   * fresh state and no full reload. Legacy inline payload links are rejected.
+   */
+  handoffKey?: string | null | undefined;
   /** Test seam: inject a gateway backed by a fake synthesizer. */
   gatewayFactory?: ((listVoices: () => VoiceInfo[]) => SpeechGateway) | undefined;
 }) {
-  const params = useSearchParams();
+  // Resolved once per mount; the parent remounts per handoff key so each
+  // navigation starts from a fresh validated payload — never merged state.
   const [entry] = useState<EntryState>(() => {
     if (serverInitial) return { initial: serverInitial, notice: null, invalid: false };
-    const payload = readStoredHandoff(params.get("handoff"));
-    if (params.get("handoff") !== null && !payload) {
+    const raw = handoffKey ?? null;
+    const payload = readStoredHandoff(raw);
+    if (raw !== null && !payload) {
       return { initial: undefined, notice: null, invalid: true };
     }
     if (!payload) return { initial: undefined, notice: null, invalid: false };
@@ -60,7 +72,7 @@ export default function ComposerEntry({
     <>
       {entry.invalid && (
         <p className="notice" role="alert" data-testid="handoff-invalid-notice">
-          That camera/video draft is unavailable or expired. It was not put in the URL. Return to the previous screen or enter your words here.
+          That camera/video draft is unavailable or expired. Only tab-local draft keys are accepted. Return to the previous screen or enter your words here.
         </p>
       )}
       {entry.notice && (
@@ -71,4 +83,12 @@ export default function ComposerEntry({
       <Workspace initial={entry.initial} {...(gatewayFactory ? { gatewayFactory } : {})} />
     </>
   );
+}
+
+const subscribeClient = () => () => {};
+/** Resolve private drafts only after hydration; server HTML never reads Storage. */
+export default function ComposerEntry(props: Parameters<typeof ComposerDraft>[0]) {
+  const client = useSyncExternalStore(subscribeClient, () => true, () => false);
+  if (!client) return <p role="status">Loading communication board…</p>;
+  return <ComposerDraft {...props} />;
 }

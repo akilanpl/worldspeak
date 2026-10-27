@@ -78,3 +78,19 @@ All times IST. Author: Muse Code implementation engineer.
 - Human configured Google; saved callback allowlist/Site URL independently checked in Brave. First delayed flow expired; fresh flow completed to History with a real hosted identity/session/profile. Signed-in exact synthetic Save/Favorite and History passed; foreign existing conversation read returned NOT_FOUND. No tokens/account details retained.
 - Removed the disposable cross-user account, exact synthetic marker messages and their empty conversations. Hosted aggregate verified zero synthetic users/storage objects/marker messages/test conversations; real Google identity retained. Remaining manual UX and inbox/native/device/rules gates remain explicit; Phase 3 not started.
 - Google sign-out then returned to the guest board; hosted session count fell to zero with identity retained. Visiting History redirected to /sign-in?next=/history. No speech was triggered.
+
+## 2026-10-27 — isolated non-paid inference core
+
+- Created `feat/meta-inference-core` from verified latest main 80dcee4 in dedicated sibling worktree. Muse branches/worktrees unchanged.
+- Added forward migration 007 for owner-scoped jobs/media, private global/user micro-USD budgets and receipts, one-shot dispatch permits, lease fencing, uncertain holds/reconciliation and independent cleanup surviving Auth deletion. Tested locally only; not applied to hosted Supabase.
+- Added authenticated still upload/job APIs, normalization/metadata stripping, server-only Standard Spark and SAM Responses adapters, official SAM parser and strict geometry/output/usage validation. Video normalization is pure and synthetic-tested; no real video inference claimed. No speech/communication-engine changes.
+- Added non-paid provider, API, image and failure/concurrency tests; final commands/counts recorded in inference-core evidence. Prepared explicit $0.05, two-generation smoke proposal; no paid Meta calls. All Phase 2 manual gates remain visible.
+
+## 2026-10-27 — final consolidation review
+
+- Independently inspected PR #1/#2, commit heads, passing workflows, empty review threads and repository review rules. Corrected the verified project reference to cafkyowssdemzivhzxbb in release documentation and PR metadata.
+- PR #1 privacy correction f340541 passed CI 40455155409 and was normally merged first as 3d5c045313115c7a118e14d9d5d09296d004107e. PR #2 retargeted to main before the final corrective push. No preservation branch deleted or force-pushed.
+- Removed URL payload fallback, added bounded 10-minute tab-memory fallback for blocked sessionStorage, rejected legacy inline links and resolved stored drafts only after hydration. Browser regression proves private own words stay out of URLs/requests and disappear safely on reload without Storage.
+- Fenced upload/admission/poll continuations across cancel/reset/unmount. Cancellation reports request/acknowledgement only; late IDs trigger cleanup rather than submission/publication. Lost acknowledgements are uncertain. Consent distinguishes logical expiry, scheduled physical deletion and 24-hour derived result retention.
+- Hardened unapplied migration 007: permanent first-smoke authorization, designated-owner permits, scoped atomic activation/consumption, no rearming after identity/history deletion, no worker funding permission and no accounting resets. Synthetic local smoke-authorization tests cover reruns, scope and counter failures and concurrent activation. No hosted migration or paid generation is implied by release merge.
+- Read-only hosted check confirms dedicated WorldSpeak project healthy with exactly migrations 001–006. Existing intentional data-erasure RPC warning remains; leaked-password protection is disabled (plan review required). Hosted 007/credentials/cleanup-byte checks await explicit human approval.
