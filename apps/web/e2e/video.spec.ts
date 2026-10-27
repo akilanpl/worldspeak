@@ -1,3 +1,5 @@
+import { fileURLToPath } from "node:url";
+const localClip = fileURLToPath(new URL("./fixtures/manual-region.webm", import.meta.url));
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
@@ -53,4 +55,58 @@ test("video slice has no serious or critical axe findings", async ({ page }) => 
   await page.getByRole("button", { name: /^continue$/i }).click();
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations.filter((v) => v.impact === "serious" || v.impact === "critical")).toEqual([]);
+});
+
+test("actual local WebM frame → manual region → exact words → composer requires fresh Speak", async ({page}) => {
+  const uploads: string[] = [];
+  page.on("request", request => {if (request.method() !== "GET" || /\/api\//.test(request.url())) uploads.push(request.url());});
+  await page.addInitScript(() => {
+    const calls: string[] = [];
+    Object.defineProperty(window,"__speechCalls",{value:calls});
+    Object.defineProperty(window,"speechSynthesis",{configurable:true,value:{
+      getVoices:()=>[{voiceURI:"test-en",name:"Test English",lang:"en-US",localService:true,default:true}],
+      speak:(utterance: SpeechSynthesisUtterance)=>calls.push(utterance.text),cancel:()=>{},
+      addEventListener:()=>{},removeEventListener:()=>{},
+    }});
+  });
+  await page.goto("/video");
+  await page.getByRole("button",{name:/use synthetic fixtures/i}).click();
+  await page.getByLabel("Upload clip",{exact:true}).setInputFiles(localClip);
+  await expect(page.getByRole("heading",{name:"Clip preview"})).toBeVisible();
+  await page.getByRole("button",{name:"Continue",exact:true}).click();
+  const video=page.getByLabel("Local video playback");
+  await expect(page.getByRole("button",{name:"Select current frame"})).toBeEnabled();
+  await page.getByLabel("Seek time (seconds)").fill("0.5");
+  await page.getByRole("button",{name:"Seek to time"}).click();
+  await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.currentTime)).toBeCloseTo(.5,2);
+  await page.getByRole("button",{name:"Select current frame"}).click();
+  await expect(page.getByRole("heading",{name:"Selected frame at 0.500 seconds"})).toBeVisible();
+  await page.getByLabel("Left",{exact:true}).fill("25");
+  await page.getByLabel("Top",{exact:true}).fill("22");
+  await page.getByLabel("Right",{exact:true}).fill("62");
+  await page.getByLabel("Bottom",{exact:true}).fill("72");
+  await page.getByRole("button",{name:"Confirm region",exact:true}).click();
+  await page.getByLabel("My object or exact words").fill("My yellow cup");
+  await page.getByRole("button",{name:"Confirm object and choose intent"}).click();
+  await expect(page.getByText("My yellow cup",{exact:true}).last()).toBeVisible();
+  await page.getByRole("button",{name:"Back",exact:true}).click();
+  await expect(page.getByText("Manual region confirmed.",{exact:true})).toBeVisible();
+  await page.getByRole("button",{name:"Confirm object and choose intent"}).click();
+  await page.getByRole("button",{name:/approve for composer/i}).click();
+  await page.getByRole("link",{name:"Open in composer"}).click();
+  await expect(page.getByTestId("handoff-provenance-notice")).toContainText("manual human selection");
+  expect(await page.evaluate(() => (window as unknown as {__speechCalls:string[]}).__speechCalls)).toEqual([]);
+  await page.getByRole("button",{name:/speak this sentence/i}).click();
+  expect(await page.evaluate(() => (window as unknown as {__speechCalls:string[]}).__speechCalls)).toEqual(["My yellow cup"]);
+  expect(uploads).toEqual([]);
+});
+
+test("invalid local video can be retried with real media", async ({page}) => {
+  await page.goto("/video");await page.getByRole("button",{name:/use synthetic fixtures/i}).click();
+  await page.getByLabel("Upload clip",{exact:true}).setInputFiles({name:"broken.webm",mimeType:"video/webm",buffer:Buffer.from("not a video")});
+  await expect(page.getByRole("alert")).toContainText("Could not read");
+  await page.getByLabel("Upload clip",{exact:true}).setInputFiles(localClip);
+  await expect(page.getByRole("heading",{name:"Clip preview"})).toBeVisible();
+  await page.getByRole("button",{name:"Retake"}).click();
+  await expect(page.getByRole("button",{name:"Upload clip",exact:true})).toBeVisible();
 });

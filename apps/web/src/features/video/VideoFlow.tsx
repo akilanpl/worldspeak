@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import type { Locale } from "@worldspeak/contracts";
 import IntentPanel, { type ApprovedSnapshot } from "../perception/IntentPanel";
 import { activeTracksAt, trackBoxAt } from "./tracks";
+import ManualVideoPanel from "./ManualVideoPanel";
+import type { ManualVideoSelection } from "./manual";
 import TrackList from "./TrackList";
 import VideoCapturePanel from "./VideoCapturePanel";
 import VideoTrackPlayer from "./VideoTrackPlayer";
@@ -14,11 +16,11 @@ import type { PerceivedObject } from "../perception/types";
 import { handoffHref, snapshotToPayload } from "../integration/handoff";
 
 /**
- * Short-clip capture → review → track selection → intent → approved handoff.
- * Synthetic fixtures until the SAM backend lands; nothing uploads, calls a
- * model, or speaks. Speech happens only later, in the Phase 1 composer.
+ * Real local clip → frozen manual region → intent → approved handoff.
+ * Synthetic demo tracks remain separate. No uploads, model calls or speech.
  */
 export default function VideoFlow() {
+  const [manual, setManual] = useState<ManualVideoSelection | null>(null);
   const [locale, setLocale] = useState<Locale>("en");
   const ta = locale === "ta";
   const [step, setStep] = useState<VideoStep>("capture");
@@ -51,20 +53,17 @@ export default function VideoFlow() {
       ? { url: null, width: fixture.aspectW * 100, height: fixture.aspectH * 100, durationMs: fixture.durationMs, synthetic: true as const }
       : null;
 
+  useEffect(() => () => { if (clip) URL.revokeObjectURL(clip.url); }, [clip]);
+
   function startTracks() {
+    setManual(null);
     setNotice(null);
     setSelectedTrackId(null);
     if (fixtureMode) {
       setStep("tracks");
       return;
     }
-    // No tracking backend in this slice: real clips wait for Phase 3.
     setStep("tracks");
-    setNotice(
-      ta
-        ? "வீடியோ கண்காணிப்பு முடக்கப்பட்டுள்ளது: மாதிரி இன்னும் நிலைப்படங்களை மட்டுமே ஆதரிக்கிறது. கேமரா பக்கத்தில் நிலைப்படத்தைப் பகுப்பாயலாம்."
-        : "Video tracking is disabled in this slice: the model backend supports still images only. Analyze a still on the Camera page instead — nothing is uploaded.",
-    );
   }
 
   const selectedTrack = tracks.find((t) => t.trackId === selectedTrackId) ?? null;
@@ -85,7 +84,7 @@ export default function VideoFlow() {
     };
   }
 
-  const intentObject = step === "intent" ? selectedObject(intentTime) : null;
+  const intentObject = step === "intent" ? (fixtureMode ? selectedObject(intentTime) : manual) : null;
 
   return (
     <div ref={rootRef}>
@@ -99,6 +98,7 @@ export default function VideoFlow() {
             locale={locale}
             onClip={(c) => {
               setClip(c);
+              setManual(null);
               if (c) setStep("review");
             }}
             fixtureMode={fixtureMode}
@@ -164,7 +164,14 @@ export default function VideoFlow() {
         </section>
       )}
 
-      {step === "tracks" && source && (
+      {clip && !fixtureMode && (step === "tracks" || step === "intent") && (
+        <div hidden={step !== "tracks"}>
+          <ManualVideoPanel clip={clip} onContinue={selection => {setManual(selection);setStep("intent");}} />
+          <button type="button" className="btn btn-secondary" onClick={() => setStep("review")}>Back to clip preview</button>
+        </div>
+      )}
+
+      {step === "tracks" && source && fixtureMode && (
         <section className="panel" aria-labelledby="vtracks-h">
           <h2 id="vtracks-h" data-step-heading tabIndex={-1} style={{ outline: "none" }}>
             {ta ? `பாதைகள் (${activeTracksAt(tracks, 0).length})` : `Tracks (${tracks.length})`}
@@ -237,15 +244,15 @@ export default function VideoFlow() {
           object={intentObject}
           onBack={() => setStep("tracks")}
           onApprove={(snapshot) => {
-            if (selectedTrack) {
+            if (intentObject) {
               const payload = snapshotToPayload(snapshot, {
                 source: "video",
                 objectLabel:
-                  snapshot.locale === "ta" && selectedTrack.labelTa
-                    ? selectedTrack.labelTa
-                    : selectedTrack.labelEn,
-                objectCatalogId: selectedTrack.catalogId,
-                provenance: selectedTrack.origin,
+                  snapshot.locale === "ta" && intentObject.labelTa
+                    ? intentObject.labelTa
+                    : intentObject.labelEn,
+                objectCatalogId: intentObject.catalogId,
+                provenance: intentObject.origin,
               });
               setApprovedHref(handoffHref(payload));
             } else {
