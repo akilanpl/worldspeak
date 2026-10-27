@@ -1,0 +1,52 @@
+name: local-model-evaluation
+
+on:
+  pull_request:
+    paths:
+      - "tooling/evaluation/**"
+      - "packages/contracts/**"
+      - "packages/inference/**"
+      - "packages/communication/**"
+      - "packages/catalog/**"
+      - "apps/web/src/features/perception/rasterMask.ts"
+      - "apps/web/src/features/perception/types.ts"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/model-evaluation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "tooling/evaluation/**"
+      - "packages/contracts/**"
+      - "packages/inference/**"
+      - "packages/communication/**"
+      - "packages/catalog/**"
+      - "apps/web/src/features/perception/rasterMask.ts"
+      - "apps/web/src/features/perception/types.ts"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/model-evaluation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-conformance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.18.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec tsc --noEmit -p tooling/evaluation/tsconfig.json
+      - run: node tooling/evaluation/run.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: synthetic-evaluation-report
+          path: tooling/evaluation/reports/local/
+          if-no-files-found: error
