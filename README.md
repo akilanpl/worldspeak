@@ -1,50 +1,29 @@
-# WorldSpeak — Phase 1: local offline communication slice
+# WorldSpeak — private bilingual communication with an offline guest board
 
-WorldSpeak is an accessible bilingual (English/Tamil) communication board:
-essential tile → explicit intent/language → exact-text preview → fresh Speak
-action → Stop, with a static offline board that works in airplane mode.
+WorldSpeak turns a user-selected communication intent into an exact English/Tamil preview and speaks only after an explicit action. The essential board works without sign-in and, after preparation, offline. Phase 2 adds Supabase email/Google code paths, private profiles/accessibility preferences, history, favorites, search, replay and deletion.
 
-Phase 1 is intentionally local-only: no accounts, no cloud, no model calls,
-no camera capture. See [docs/handoff/STATE.md](docs/handoff/STATE.md) for
-current status and [AGENTS.md](AGENTS.md) for working rules.
+**Phase 2 is partially verified, not fully accepted.** The real hosted backend passes 16 scenario groups; public email delivery, Google OAuth, signed-in browser UX and physical-device/native Tamil checks remain open. No camera/model/job/training feature is implemented. See [current state](docs/handoff/STATE.md), [evidence](docs/evidence/manifest.json), [security review](docs/security-review.md) and [remaining gates](docs/handoff/BLOCKERS.md).
 
-## Quick start
+## Local guest slice
 
-Requires Node ≥ 20.9 and pnpm 10.18.0.
+Use the pinned package manager pnpm 10.18.0 and a compatible Node runtime (CI uses Node 22; original development machine used Node 25.9.0).
 
-```bash
+```sh
 pnpm install --frozen-lockfile
-pnpm typecheck && pnpm lint
+pnpm lint
+pnpm typecheck
 pnpm test
 pnpm build
 pnpm test:e2e
-```
-
-Run the app:
-
-```bash
+pnpm check:secrets
+pnpm check:schema
 pnpm dev
-# open http://localhost:3000 in a browser
 ```
 
-Offline board: first load the app once (this prepares the cache), then open
-`http://localhost:3000/offline/index.html` with the network disabled.
+The unconfigured app reports account features unavailable and never fakes a session. Prepare offline assets once online, then navigate to `/offline/index.html` with the network disabled. Tamil wording is `review-pending`; absent Tamil voices show text rather than silently substituting English.
 
-## Layout
+## Hosted foundation
 
-- `apps/web` — Next.js App Router UI, speech gateway, service worker.
-- `packages/contracts` — runtime-validated Intent/Composition/Utterance types.
-- `packages/communication` — pure deterministic renderer, reducer, speech-permit rules.
-- `packages/catalog` — reviewed bilingual objects, templates, essential tiles.
-- `packages/test-support` — fake speech synthesis and test factories.
-- `scripts/` — offline-board generator and secret scanner.
-- `docs/` — build log, sources, ADRs, handoff state, evidence manifest.
+Dedicated WorldSpeak project: `cafkyowssdemzivhzxbb`, Mumbai, Free plan. No credentials are published. Follow [safe setup and testing](docs/supabase-setup.md); **never point `pnpm test:db` at a hosted database**. It is a destructive local scratch harness; hosted tests are separate. Actual generated types and migration lineage are in [project evidence](docs/evidence/supabase-project.json).
 
-## Status and limits
-
-- Tamil wording is `review-pending` until native-speaker review (see
-  [docs/handoff/BLOCKERS.md](docs/handoff/BLOCKERS.md)).
-- Speech uses the device's built-in voices; if no Tamil voice exists, the app
-  shows large Tamil text and never substitutes an English voice silently.
-- Later phases (accounts, cloud sync, model assistance, camera, training) have
-  not started. Phase 2 begins only after human approval.
+No production app deployment is claimed. Google client credentials and email delivery require external setup. Browser speech tests use spies; they are not proof of audible output or independent language review. [Build log](docs/build-log.md), [hackathon verification](docs/rules-verification.md), [MIT license](LICENSE).

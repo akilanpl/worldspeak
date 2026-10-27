@@ -1,11 +1,11 @@
 import type { ConversationRow } from "@worldspeak/db";
 import { ConversationCreateSchema } from "@/lib/api/validation";
-import { fail, ok, requireOwner } from "@/lib/api/route";
+import { fail, ok, readJson, requireOwner } from "@/lib/api/route";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
-  const auth = await requireOwner();
+export async function GET(request: Request) {
+  const auth = await requireOwner(request);
   if (!auth.ok) return auth.res;
   const { owner, supabase } = auth.ctx;
   const { data, error } = await supabase
@@ -19,12 +19,12 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const auth = await requireOwner();
+  const auth = await requireOwner(request);
   if (!auth.ok) return auth.res;
   const { owner, supabase } = auth.ctx;
   let body: unknown;
   try {
-    body = await request.json();
+    body = await readJson(request);
   } catch {
     return fail("INVALID_INPUT", "conversations.bad_json", 400);
   }

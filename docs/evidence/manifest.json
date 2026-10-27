@@ -1,40 +1,69 @@
 {
   "phase": 2,
-  "updated": "2026-10-27T08:00:00+05:30",
-  "commit": "aaaa3c4b0a1d01d984ca0a1a34c573497cfae111",
-  "commands": [
-    { "cmd": "pnpm install --frozen-lockfile", "exit": 0, "note": "added @supabase/ssr 0.12.7, @supabase/supabase-js 2.118.0, zod to web; lockfile committed" },
-    { "cmd": "pnpm lint", "exit": 0 },
-    { "cmd": "pnpm typecheck", "exit": 0 },
-    { "cmd": "pnpm test", "exit": 0, "note": "40/40 vitest: 34 Phase 1 suites + 6 API validation" },
-    { "cmd": "pnpm test:db", "exit": 0, "note": "migrations 001-004 from empty state; 10/10 RLS isolation scenarios PASS on local Postgres 15" },
-    { "cmd": "pnpm build", "exit": 0, "note": "all API routes + auth/private pages; proxy registered" },
-    { "cmd": "pnpm test:e2e", "exit": 0, "note": "9/9 Playwright Chromium: Phase 1 suites + guest redirect-free + not-configured honesty" },
-    { "cmd": "pnpm check:secrets", "exit": 0, "note": "no secrets in tracked files" }
-  ],
-  "providerCalls": { "count": 0, "note": "No Meta Model API calls. No Supabase cloud calls; DB tests run against a local scratch Postgres." },
-  "database": {
-    "remoteProject": null,
-    "localMigrations": ["202610270001_core.sql", "202610270002_ownership_rls.sql", "202610270003_storage.sql", "202610270004_search.sql"],
-    "rlsTests": "10/10 PASS (two users + anonymous; rows and storage; spoofed owners; FK isolation; idempotency; cascade)",
-    "typesNote": "packages/db hand-written mirrors of 001; `supabase gen types` replacement is a cloud-gate task"
+  "acceptance": "incomplete \u2014 external gates remain",
+  "implementationBaseline": "aa58466d68c4e8ae14e20703167a110fafc9eb8f",
+  "localBaseline": "phase2-local-baseline.json",
+  "hostedEvidence": "hosted-phase2.json",
+  "projectEvidence": "supabase-project.json",
+  "currentChecks": {
+    "lockfileInstall": {
+      "exit": 0,
+      "pnpm": "10.18.0"
+    },
+    "lint": {
+      "exit": 0
+    },
+    "typecheck": {
+      "exit": 0
+    },
+    "unit": {
+      "passed": 43,
+      "exit": 0
+    },
+    "localDatabase": {
+      "scenariosPassed": 12,
+      "exit": 0
+    },
+    "hostedDatabaseAuthStorageAndNextApi": {
+      "scenariosPassed": 16,
+      "exit": 0
+    },
+    "productionBuild": {
+      "exit": 0,
+      "configuration": "WorldSpeak hosted URL; no service key in public configuration"
+    },
+    "localE2E": {
+      "exit": 1,
+      "executedAssertions": 0,
+      "blocked": "Chromium macOS MachPortRendezvousServer permission denied; nine browser launches failed before test assertions"
+    },
+    "remoteCI": "pending release push",
+    "secretScan": {
+      "exit": 0,
+      "scope": "all 136 unique indexed blobs without content exclusions; 141 historical baseline blobs separately clean"
+    },
+    "schemaSnapshot": {
+      "exit": 0,
+      "scope": "offline approved artifact hashes; hosted codegen was executed separately"
+    },
+    "publicBundleAdministrativeKeyScan": {
+      "exit": 0
+    }
   },
-  "verified": [
-    "Tamil corrections render through the deterministic engine; review-pending preserved (parity test green)",
-    "migrations apply from empty state; anonymous denied; cross-user read/update/delete blocked; spoofed owners rejected",
-    "validation schemas reject unknown keys/out-of-range; cursors round-trip; LIKE escaping; error mapping without oracles",
-    "guest board: no redirect, no /api calls, Save/Favorite disabled with hint",
-    "auth-gated pages render honest not-configured states (no fake sessions)"
-  ],
-  "mocked": ["speechSynthesis (fakes/stubs)", "Supabase platform surface in local DB tests (auth.users/auth.uid()/storage shim — policy logic identical)"],
   "notRun": [
-    "authenticated live flows: sign-up, Google OAuth, save/favorites/search/delete/replay against real GoTrue + hosted DB (cloud gate)",
-    "native Tamil review (all Tamil text review-pending, including Phase 2 corrections)",
-    "audible speech and real-device checks"
+    "Successful public email registration and inbox-delivered confirmation/recovery",
+    "Google OAuth complete interactive flow",
+    "Signed-in real browser save/replay/sign-out (headless launch blocked locally)",
+    "Physical-device speech and independent native Tamil review",
+    "Expired signed JWT after actual lifetime elapse"
   ],
-  "risks": [
-    "Hand-written DB types may drift from the live schema; regeneration at the cloud gate is mandatory.",
-    "E2E/DB locally needed PLAYWRIGHT_BROWSERS_PATH=/tmp/ms-playwright and one escalated shell (sandbox limits).",
-    "Storage policies verified at SQL level only; no app upload path exercises them yet."
-  ]
+  "providerCalls": {
+    "metaModelApi": 0
+  },
+  "cleanup": {
+    "syntheticUsersRemaining": 0,
+    "syntheticStorageObjectsRemaining": 0,
+    "syntheticConversationsRemaining": 0
+  },
+  "productionDeployment": "none; no approved application hosting target supplied"
 }

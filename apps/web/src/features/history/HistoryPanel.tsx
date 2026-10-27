@@ -24,7 +24,7 @@ export default function HistoryPanel() {
     if (cur) params.set("cursor", cur);
     // Empty query lists recent saves; the API requires q, so use a space
     // wildcard path via conversations listing instead.
-    const res = await fetch(query ? `/api/v1/history/search?${params}` : "/api/v1/history/recent", {
+    const res = await fetch(query ? `/api/v1/history/search?${params}` : `/api/v1/history/recent?${new URLSearchParams({ limit: "30", ...(cur ? { cursor: cur } : {}) })}`, {
       cache: "no-store",
     });
     if (!res.ok) {

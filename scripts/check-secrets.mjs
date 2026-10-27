@@ -1,59 +1,40 @@
 #!/usr/bin/env node
-/* eslint-disable no-console -- CLI scan script reports to stdout/stderr */
-/**
- * Fails if tracked files look like they contain secrets or credentials.
- * Placeholders in .env.example and the word "REDACTED" are allowed.
- */
-import { execSync } from "node:child_process";
-
-const ALLOWLIST = new Set([".env.example"]);
-// The scanner's own pattern definitions trivially match themselves.
-const SKIP_CONTENT = new Set(["scripts/check-secrets.mjs"]);
-
-const PATTERNS = [
-  /BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY/,
-  /\bsk-[A-Za-z0-9_-]{20,}/,
-  /\bAKIA[0-9A-Z]{16}/,
-  /service_role/i,
-  /supabase.*(secret|service)/i,
-  /api[_-]?key\s*[:=]\s*['"][^'"]{8,}['"]/i,
-  /eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}/,
+/* eslint-disable no-console -- sanitized file/line diagnostics only */
+import { execFileSync } from 'node:child_process';
+const git=(...args)=>execFileSync('git',['--no-replace-objects',...args],{maxBuffer:32*1024*1024});
+const rules=[
+  ['private-key',/-----BEGIN (?:RSA |EC |OPENSSH |DSA |ENCRYPTED )?PRIVATE KEY-----/],
+  ['github-token',/\b(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{30,})/],
+  ['provider-token',/\b(?:sk-[A-Za-z0-9_-]{20,}|sb_secret_[A-Za-z0-9_-]{15,}|AKIA[0-9A-Z]{16}|AIza[A-Za-z0-9_-]{30,})/],
+  ['jwt',/\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}/],
+  ['credential-url',/(?:https?|postgres(?:ql)?|redis):\/\/[^\s/:]+:[^\s/@]+@/i],
+  ['literal-credential',/(?:api[_-]?key|access[_-]?token|client[_-]?secret|password|auth[_-]?token)\s*[:=]\s*['"][A-Za-z0-9_\-+/=]{16,}['"]/i],
 ];
-
-function trackedFiles() {
-  const out = execSync("git ls-files", { encoding: "utf8" });
-  return out.split("\n").map((s) => s.trim()).filter(Boolean);
-}
-
-let failures = 0;
-for (const file of trackedFiles()) {
-  if (file === "pnpm-lock.yaml") continue;
-  if (/(^|\/)\.env(\.|$)/.test(file) && file !== ".env.example") {
-    console.error(`secret-scan: unexpected env file tracked: ${file}`);
-    failures += 1;
-    continue;
-  }
-  let text;
-  try {
-    text = execSync(`git show :${JSON.stringify(file)}`, { encoding: "utf8", maxBuffer: 32 * 1024 * 1024 });
-  } catch {
-    continue;
-  }
-  if (SKIP_CONTENT.has(file)) continue;
-  for (const pattern of PATTERNS) {
-    const lines = text.split("\n");
-    lines.forEach((line, i) => {
-      if (line.includes(".env.example") || line.includes("REDACTED")) return;
-      if (pattern.test(line) && !ALLOWLIST.has(file)) {
-        console.error(`secret-scan: ${file}:${i + 1}: matches ${pattern}`);
-        failures += 1;
-      }
-    });
+const blobs=new Map();
+function addTree(ref){
+  for(const row of git('ls-tree','-r','-z',ref).toString().split('\0').filter(Boolean)){
+    const [meta,path]=row.split('\t');const [mode,type,oid]=meta.split(' ');
+    if(type!=='blob'||!['100644','100755'].includes(mode))throw Error('Nonregular Git entry requires review: '+path);
+    blobs.set(oid,path);
   }
 }
-
-if (failures > 0) {
-  console.error(`secret-scan: FAILED with ${failures} finding(s)`);
-  process.exit(1);
+const at=process.argv.indexOf('--history');
+if(at>=0){const ref=process.argv[at+1];if(!ref)throw Error('Commit required');for(const commit of git('rev-list',ref).toString().trim().split('\n'))addTree(commit);}
+else for(const row of git('ls-files','--stage','-z').toString().split('\0').filter(Boolean)){
+  const [meta,path]=row.split('\t');const [mode,oid,stage]=meta.split(' ');
+  if(stage!=='0'||!['100644','100755'].includes(mode))throw Error('Unmerged/nonregular index entry: '+path);
+  blobs.set(oid,path);
 }
-console.log("secret-scan: ok — no secrets detected in tracked files");
+let failures=0;
+for(const [oid,path] of blobs){
+  if(/(^|\/)(?:\.env(?:\..*)?|credentials(?:\..*)?|\.npmrc|\.netrc|id_rsa|id_ed25519|.*\.(?:pem|p12|pfx|key|sqlite|har))$/i.test(path)&&path!=='.env.example'){
+    console.error('secret-scan: sensitive path '+path);failures++;continue;
+  }
+  const bytes=git('cat-file','blob',oid);
+  if(bytes.includes(0))continue;
+  bytes.toString('utf8').split('\n').forEach((line,i)=>{
+    for(const [label,pattern] of rules)if(pattern.test(line)){console.error(`secret-scan: ${path}:${i+1}: ${label} (value suppressed)`);failures++;}
+  });
+}
+if(failures){console.error(`secret-scan: FAILED (${failures} findings)`);process.exit(1);}
+console.log(`secret-scan: no secrets detected in ${blobs.size} unique ${at>=0?'historical':'indexed'} blobs; no content exclusions`);

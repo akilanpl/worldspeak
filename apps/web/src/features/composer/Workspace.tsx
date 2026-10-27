@@ -72,6 +72,7 @@ export default function Workspace({ gatewayFactory, initial }: WorkspaceProps) {
   const [notice, setNotice] = useState<string | null>(null);
   const [typed, setTyped] = useState("");
   const [hydrated, setHydrated] = useState(false);
+  const serverPrefsReady = useRef(false);
   const gatewayRef = useRef<SpeechGateway | null>(null);
   const listVoicesRef = useRef<() => VoiceInfo[]>(() => []);
 
@@ -91,7 +92,16 @@ export default function Workspace({ gatewayFactory, initial }: WorkspaceProps) {
     if (isSupabaseConfigured()) {
       createClient()
         .auth.getSession()
-        .then(({ data }) => setAccount(data.session ? "ready" : "guest"))
+         .then(async ({ data }) => {
+          setAccount(data.session ? "ready" : "guest");
+          if (!data.session) return;
+          const res = await fetch("/api/v1/preferences", { cache: "no-store" });
+          if (!res.ok) return;
+          const { data: saved } = await res.json() as { data: { ui_locale: UiLang; communication_locale: Locale; text_scale: number; high_contrast: boolean; reduce_motion: boolean; speech_rate: number; voice_uri: string | null } };
+          serverPrefsReady.current = true;
+          setPrefs({ textScale: saved.text_scale >= 1.5 ? "xlarge" : saved.text_scale > 1 ? "large" : "default", highContrast: saved.high_contrast, reduceMotion: saved.reduce_motion, speechRate: saved.speech_rate, voiceName: saved.voice_uri, uiLang: saved.ui_locale });
+          if (!initial) setComp((previous) => reduce(previous, { type: "set-locale", locale: saved.communication_locale }, newId));
+        })
         .catch(() => setAccount("guest"));
     } else {
       setAccount("guest");
@@ -113,7 +123,7 @@ export default function Workspace({ gatewayFactory, initial }: WorkspaceProps) {
       gatewayRef.current?.stop();
       gatewayRef.current = null;
     };
-  }, [gatewayFactory]);
+  }, [gatewayFactory, initial]);
 
   // Keep the gateway's voice list current without reading refs during render.
   useEffect(() => {
@@ -133,6 +143,20 @@ export default function Workspace({ gatewayFactory, initial }: WorkspaceProps) {
     root.dataset.contrast = prefs.highContrast ? "high" : "default";
     root.dataset.motion = prefs.reduceMotion ? "reduce" : "default";
   }, [prefs, hydrated]);
+
+  useEffect(() => {
+    if (account !== "ready" || !serverPrefsReady.current) return;
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      void fetch("/api/v1/preferences", {
+        method: "PATCH", headers: { "content-type": "application/json" }, signal: controller.signal,
+        body: JSON.stringify({ ui_locale: prefs.uiLang, communication_locale: comp.locale,
+          text_scale: prefs.textScale === "xlarge" ? 1.5 : prefs.textScale === "large" ? 1.25 : 1,
+          high_contrast: prefs.highContrast, reduce_motion: prefs.reduceMotion, speech_rate: prefs.speechRate, voice_uri: prefs.voiceName }),
+      }).catch(() => {});
+    }, 300);
+    return () => { window.clearTimeout(timer); controller.abort(); };
+  }, [account, prefs, comp.locale]);
 
   const preview = useMemo(() => {
     try {
@@ -182,7 +206,7 @@ export default function Workspace({ gatewayFactory, initial }: WorkspaceProps) {
     const voice = prefs.voiceName
       ? voices.find((v) => v.name === prefs.voiceName) ?? pickVoice(voices, comp.locale)
       : pickVoice(voices, comp.locale);
-    if (!voice) {
+    if (!voice || !voice.lang.toLowerCase().startsWith(comp.locale)) {
       setNotice("No voice available for this language on this device. Set up a voice first.");
       return;
     }
@@ -331,7 +355,7 @@ export default function Workspace({ gatewayFactory, initial }: WorkspaceProps) {
               className="btn btn-secondary"
               disabled={typed.trim().length === 0}
               onClick={() =>
-                update((c) => reduce(c, { type: "set-user-text", text: typed.trim(), locale: c.locale }, newId), null)
+                update((c) => reduce(c, { type: "set-user-text", text: typed, locale: c.locale }, newId), null)
               }
             >
               {t("useSentence")}

@@ -33,14 +33,7 @@ async function loadInitial(messageId: string | undefined): Promise<Composition |
       text_hash: string;
     };
     if (row.origin === "partner_transcript") return undefined;
-    let intent: Composition["intent"];
-    try {
-      intent = row.origin === "user_text"
-        ? parseIntent({ kind: "user-text", text: row.text, locale: row.locale })
-        : parseIntent(row.intent);
-    } catch {
-      intent = { kind: "user-text", text: row.text, locale: row.locale };
-    }
+    const intent = parseIntent({ kind: "user-text", text: row.text, locale: row.locale });
     return {
       id: row.id,
       revision: row.revision,

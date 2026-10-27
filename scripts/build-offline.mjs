@@ -190,8 +190,8 @@ function render() {
   root.appendChild(ta);
   const useBtn = el("button", { type: "button", class: "btn btn-secondary" }, "Use this sentence");
   useBtn.addEventListener("click", () => {
-    const v = ta.value.trim();
-    if (!v) return;
+    const v = ta.value;
+    if (!v.trim()) return;
     state.customText = v; state.tileId = null; state.notice = ""; render();
   });
   root.appendChild(useBtn);

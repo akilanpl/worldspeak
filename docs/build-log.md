@@ -59,3 +59,15 @@ All times IST. Author: Muse Code implementation engineer.
   escalated shell (sandbox shm) — recorded, not hidden.
 - Deviations: `@worldspeak/db` types hand-written pending `gen types`;
   storage policies RLS-tested at SQL level with no app uploads yet.
+
+## 2026-10-27T08:41+05:30 — Phase 2 hosted blocker resolution (Sol)
+
+- Audited all four baseline commits and published exact aa58466 by normal fast-forward; no history rewrite or discarded Muse work.
+- Created dedicated Free Supabase worldspeak, cafkyowssdemzivhzxbb, Mumbai, after organization choice and $0 cost quote. Applied reviewed core/ownership/private Storage/search plus hardening and atomic favorite migrations. Canonical local filenames now match hosted migration versions; source hashes/types snapshot recorded. Unrelated projects unchanged.
+- Fixed platform Storage compatibility, exposed trigger execution, extension placement, missing FK index, request/response refresh cookies, callback allowlist, configured-origin CSRF, private caching, bounded JSON/cursors, generated database typing, persistent preferences, exact replay, atomic favorite/data reset and password-verified identity deletion. Removed destructive hosted-test advice and system-cluster copying; added local reset guards.
+- Tamil help now says help *me regarding the object*, without guessed suffix concatenation; labels/status reviewed and review-pending retained. Exact typed whitespace is retained in React/static board. No medical advice or model capability added.
+- Executed pinned lockfile install, lint/typecheck, 43/43 unit tests, 12/12 local DB scenario groups, 16/16 hosted Auth/Data API/Storage/Next API groups, unconfigured/configured production builds and approved artifact check. Actual client static assets/admin-key check and final secret audit are release gates recorded in manifest.
+- Hosted tests used real tokens/JWTs and administrative synthetic token fixtures; public signup to reserved domains failed (email_address_invalid, then email rate limit). Inbox delivery and Google OAuth not claimed. Wrong-password account deletion denial and correct-password full Auth/data cascade were exercised. Synthetic users/objects/conversations checked to zero.
+- Local E2E attempted: Chromium failed its macOS Mach port bootstrap before any of nine assertions. Historical Muse 9/9 is retained as baseline evidence only. Current browser verification is delegated to the repository's existing CI workflow, not a new agent or paid service.
+- Browser: email provider/confirmation inspected in Brave; local Site URL entered; Google credentials empty. Exact callback allowlist prepared, but persistence not yet independently verified. Human Google/controlled-inbox/device/rules steps remain.
+- No Meta application model calls, Phase 3 implementation, GPU, paid service or production hosting. Current handoff deliberately keeps Phase 2 acceptance incomplete.

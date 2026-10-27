@@ -2,8 +2,8 @@ import { fail, ok, requireOwner } from "@/lib/api/route";
 
 export const dynamic = "force-dynamic";
 
-export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await requireOwner();
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const auth = await requireOwner(request);
   if (!auth.ok) return auth.res;
   const { owner, supabase } = auth.ctx;
   const { id } = await params;

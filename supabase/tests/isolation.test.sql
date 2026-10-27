@@ -237,4 +237,26 @@ begin
 end $$;
 commit;
 
+-- Atomic erasure is authenticated, takes no owner, and preserves user B.
+begin;
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '11111111-1111-1111-1111-111111111111', true);
+select public.erase_my_saved_data(true);
+do $$ begin
+  if exists(select 1 from public.conversations) then raise exception 'A data remains'; end if;
+  if exists(select 1 from public.consent_events) then raise exception 'A consent remains'; end if;
+  if exists(select 1 from public.accessibility_preferences where history_enabled) then raise exception 'preferences not reset'; end if;
+  raise notice 'PASS: atomic owner data erasure resets consent and preferences';
+end $$;
+commit;
+begin;
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '22222222-2222-2222-2222-222222222222', true);
+do $$ begin
+  if (select count(*) from public.conversations) <> 1 then raise exception 'B data erased'; end if;
+  if has_function_privilege('anon','public.erase_my_saved_data(boolean)','execute') then raise exception 'anon erasure executable'; end if;
+  if has_function_privilege('authenticated','public.handle_new_user()','execute') then raise exception 'trigger directly executable'; end if;
+  raise notice 'PASS: erasure isolates user B and trigger RPC execution revoked';
+end $$;
+commit;
 select 'ALL RLS ISOLATION TESTS PASSED' as result;

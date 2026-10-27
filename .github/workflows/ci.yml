@@ -41,6 +41,7 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm test:db
+      - run: pnpm check:schema
       - run: pnpm build
       - run: pnpm exec playwright install chromium --with-deps
       - run: pnpm test:e2e

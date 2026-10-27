@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
@@ -17,7 +18,7 @@ export default async function PrivateLayout({ children }: { children: React.Reac
         <h2 id="private-h">Saved stuff</h2>
         <NotConfigured what="History and favorites" />
         <p>
-          <a href="/">Back to the essential board</a>
+          <Link href="/" prefetch={false}>Back to the essential board</Link>
         </p>
       </section>
     );

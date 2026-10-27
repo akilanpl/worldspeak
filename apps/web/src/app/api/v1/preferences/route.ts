@@ -1,11 +1,11 @@
-import type { AccessibilityPreferencesRow } from "@worldspeak/db";
+import type { Database, AccessibilityPreferencesRow } from "@worldspeak/db";
 import { PreferencesPatchSchema } from "@/lib/api/validation";
-import { fail, ok, requireOwner } from "@/lib/api/route";
+import { fail, ok, readJson, requireOwner } from "@/lib/api/route";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
-  const auth = await requireOwner();
+export async function GET(request: Request) {
+  const auth = await requireOwner(request);
   if (!auth.ok) return auth.res;
   const { owner, supabase } = auth.ctx;
   const { data, error } = await supabase
@@ -18,12 +18,12 @@ export async function GET() {
 }
 
 export async function PATCH(request: Request) {
-  const auth = await requireOwner();
+  const auth = await requireOwner(request);
   if (!auth.ok) return auth.res;
   const { owner, supabase } = auth.ctx;
   let body: unknown;
   try {
-    body = await request.json();
+    body = await readJson(request);
   } catch {
     return fail("INVALID_INPUT", "preferences.bad_json", 400);
   }
@@ -35,9 +35,10 @@ export async function PATCH(request: Request) {
     .eq("owner_id", owner)
     .maybeSingle();
   if (current.error || !current.data) return fail("NOT_FOUND", "preferences.not_found", 404);
+  const patch = Object.fromEntries(Object.entries(parsed.data).filter(([, value]) => value !== undefined)) as Database["public"]["Tables"]["accessibility_preferences"]["Update"];
   const { data, error } = await supabase
     .from("accessibility_preferences")
-    .update({ ...parsed.data, revision: (current.data.revision as number) + 1 })
+    .update({ ...patch, revision: current.data.revision + 1 })
     .eq("owner_id", owner)
     .select()
     .single();

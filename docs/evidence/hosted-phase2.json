@@ -1,0 +1,87 @@
+{
+  "projectRef": "cafkyowssdemzivhzxbb",
+  "passCount": 16,
+  "results": [
+    {
+      "name": "hosted email enabled and confirmation required",
+      "pass": true
+    },
+    {
+      "name": "two disposable users reject unconfirmed sign-in, consume real confirmation tokens and sign in",
+      "pass": true
+    },
+    {
+      "name": "real recovery-token consumption, password update and old-password rejection",
+      "pass": true
+    },
+    {
+      "name": "Auth signup trigger provisions owner-only profile",
+      "pass": true
+    },
+    {
+      "name": "preferences persist through hosted Data API",
+      "pass": true
+    },
+    {
+      "name": "conversation and exact Tamil message persist",
+      "pass": true
+    },
+    {
+      "name": "favorite and Tamil substring search work",
+      "pass": true
+    },
+    {
+      "name": "all six private tables isolate user B and deny anonymous reads",
+      "pass": true
+    },
+    {
+      "name": "owner spoofing, owner updates, cross-owner links and foreign modifications rejected",
+      "pass": true
+    },
+    {
+      "name": "favorite snapshot RPC is atomic and idempotent with conflict rejection",
+      "pass": true
+    },
+    {
+      "name": "real Storage upload/read, private access, folder isolation and no-upsert policy verified",
+      "pass": true
+    },
+    {
+      "name": "real session refresh works and invalid JWT is rejected",
+      "pass": true
+    },
+    {
+      "name": "authenticated Next routes, private caching, CSRF, owner validation, Tamil search, cursor rejection and erasure",
+      "pass": true
+    },
+    {
+      "name": "account-data erasure resets A while preserving B",
+      "pass": true
+    },
+    {
+      "name": "account removal requires password reauthentication and cascades real Auth/data deletion",
+      "pass": true
+    },
+    {
+      "name": "sign-out revokes the actual refresh token",
+      "pass": true
+    }
+  ],
+  "failure": null,
+  "publicSignup": {
+    "status": "blocked",
+    "code": "over_email_send_rate_limit"
+  },
+  "cleanupUserCount": 2,
+  "syntheticUserIds": [
+    "ec38b57d-6399-4125-ace2-35f2ba05e93e",
+    "d95cefdf-0d09-4a5c-aea5-8fb0b1cba857"
+  ],
+  "syntheticObjectPaths": [
+    "ec38b57d-6399-4125-ace2-35f2ba05e93e/4921041a-a1dd-4596-bd0d-f25fd1c5eacf/fixture.png"
+  ],
+  "mailDelivery": "not tested; signup confirmation uses official admin-generated token fixtures",
+  "googleOAuth": "not tested; provider credentials and interactive flow required",
+  "physicalDevice": "not tested",
+  "finishedAt": "2026-10-27T03:01:35.569Z"
+}

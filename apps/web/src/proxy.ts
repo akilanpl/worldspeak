@@ -7,17 +7,24 @@ import { isSupabaseConfigured, supabaseAnonKey, supabaseUrl } from "@/lib/supaba
  * cloud gate supplies configuration; never redirects guests itself.
  */
 export default async function proxy(request: NextRequest) {
-  const response = NextResponse.next({ request });
+  let response = NextResponse.next({ request });
   if (!isSupabaseConfigured()) return response;
   const supabase = createServerClient(supabaseUrl() ?? "", supabaseAnonKey() ?? "", {
     cookies: {
       getAll: () => request.cookies.getAll(),
       setAll: (toSet) => {
+        toSet.forEach(({ name, value }) => request.cookies.set(name, value));
+        response = NextResponse.next({ request });
         toSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
       },
     },
   });
-  await supabase.auth.getUser();
+  try {
+    await supabase.auth.getUser();
+  } catch {
+    // Protected routes reverify auth; the guest board stays usable offline.
+  }
+  response.headers.set("Cache-Control", "private, no-store");
   return response;
 }
 

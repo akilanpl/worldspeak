@@ -59,3 +59,7 @@ do $$ begin
 end $$;
 
 grant usage on schema public, auth, storage to anon, authenticated;
+
+-- Managed Storage provides these grants and RLS before app migrations.
+grant select, insert, update, delete on storage.objects to anon, authenticated;
+alter table storage.objects enable row level security;

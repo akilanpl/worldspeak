@@ -17,7 +17,9 @@
     "pretypecheck": "node scripts/build-offline.mjs",
     "test:db": "bash scripts/test-db.sh",
     "check:secrets": "node scripts/check-secrets.mjs",
-    "dev": "pnpm --filter @worldspeak/web dev"
+    "dev": "pnpm --filter @worldspeak/web dev",
+    "test:hosted": "node scripts/test-hosted.mjs",
+    "check:schema": "node scripts/check-schema-drift.mjs"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

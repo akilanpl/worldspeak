@@ -1,5 +1,6 @@
 "use client";
 
+import type { Database } from "@worldspeak/db";
 import { createBrowserClient } from "@supabase/ssr";
 import { supabaseAnonKey, supabaseUrl } from "./env";
 
@@ -10,5 +11,5 @@ export function createClient() {
   if (!url || !key) {
     throw new Error("Supabase is not configured (cloud provisioning gate).");
   }
-  return createBrowserClient(url, key);
+  return createBrowserClient<Database>(url, key);
 }

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import SwRegister from "./sw-register";
@@ -28,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <p>Point, preview, then speak — your words, your control.</p>
             </div>
             <nav aria-label="Primary">
-              <a href="/">Board</a> · <a href="/offline">Offline</a> · <a href="/history">History</a>{" "}
+              <Link href="/" prefetch={false}>Board</Link> · <a href="/offline">Offline</a> · <a href="/history">History</a>{" "}
               · <a href="/favorites">Favorites</a> · <a href="/settings">Settings</a> ·{" "}
               <a href="/sign-in">Sign in</a>
             </nav>
@@ -36,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main id="main">{children}</main>
           <footer className="app-footer">
             <p className="status">
-              Local-only slice · Tamil text review-pending · Speech uses this device&apos;s voices.
+              Guest/offline board + optional private account · Tamil text review-pending · Speech uses this device&apos;s voices.
             </p>
           </footer>
         </div>

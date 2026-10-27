@@ -1,0 +1,53 @@
+{
+  "projectRef": "cafkyowssdemzivhzxbb",
+  "region": "ap-south-1",
+  "plan": "free",
+  "creationQuote": {
+    "amount": 0,
+    "currency": "USD",
+    "recurrence": "monthly"
+  },
+  "migrations": [
+    {
+      "originalLocalName": "202610270001_core.sql",
+      "path": "supabase/migrations/20261027022848_worldspeak_001_core.sql",
+      "version": "20261027022848",
+      "sha256": "30bab219a697e2a5672354c369214ad23c989ba52b492eff7df4ce893fd4327d"
+    },
+    {
+      "originalLocalName": "202610270002_ownership_rls.sql",
+      "path": "supabase/migrations/20261027022858_worldspeak_002_ownership_rls.sql",
+      "version": "20261027022858",
+      "sha256": "80e9f2895b4fbc1f901f64e7cff7d116ba458e7550db15e2f45e7ce3f877089f"
+    },
+    {
+      "originalLocalName": "202610270003_storage.sql",
+      "path": "supabase/migrations/20261027023027_worldspeak_003_private_storage.sql",
+      "version": "20261027023027",
+      "sha256": "ee51f464e8cd2fa4d4f90e8b6646c2afe6ec71272c63276fd9859ff462f6e35f"
+    },
+    {
+      "originalLocalName": "202610270004_search.sql",
+      "path": "supabase/migrations/20261027023036_worldspeak_004_search.sql",
+      "version": "20261027023036",
+      "sha256": "b4a461ae6d1f60b2a59ef33d3ceb322dde8604baef5e82cfb35e46d71c084ab7"
+    },
+    {
+      "originalLocalName": "202610270005_hardening.sql",
+      "path": "supabase/migrations/20261027023355_worldspeak_005_hardening.sql",
+      "version": "20261027023355",
+      "sha256": "d26b8adc8f7a031eba91a45821fa5c6931357c15b344014985651164c18c214a"
+    },
+    {
+      "originalLocalName": "202610270006_atomic_favorites.sql",
+      "path": "supabase/migrations/20261027024901_worldspeak_006_atomic_favorites.sql",
+      "version": "20261027024901",
+      "sha256": "180f71d617408750b9385552cad4b57d06acfe7d4bc2b58ff44f6ed591048c74"
+    }
+  ],
+  "types": {
+    "path": "packages/db/src/database.types.ts",
+    "sha256": "01bc51b8f58ffbf32456fc9973375f042a0e035beb13f029c67db64fff82c7c4"
+  },
+  "note": "Canonical filenames match the hosted apply_migration versions. Original local names retained here for provenance; public Git history was not rewritten."
+}

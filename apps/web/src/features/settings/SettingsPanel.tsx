@@ -9,6 +9,7 @@ export default function SettingsPanel() {
   const [historyEnabled, setHistoryEnabled] = useState<boolean | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<"content" | "account" | null>(null);
+  const [deletePassword, setDeletePassword] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -37,32 +38,36 @@ export default function SettingsPanel() {
   }
 
   async function wipeAccount() {
-    const res = await fetch("/api/v1/account", { method: "DELETE" });
+    const res = await fetch("/api/v1/account?scope=data", { method: "DELETE", headers: { "x-worldspeak-confirm": "erase" } });
     const body = (await res.json()) as { data?: { authUserDeleted: boolean } };
     if (!res.ok) {
-      setNotice("Deletion failed; nothing was hidden silently — try again.");
+      setNotice("Data reset failed. No partial reset was applied; try again.");
       return;
     }
     if (!body.data?.authUserDeleted) {
-      setNotice("Your saved content was deleted. Sign-in record removal needs the cloud console step.");
+      setNotice("Saved content and consent records deleted; profile and preferences reset. Your sign-in identity remains. Full account removal requires a separate verified support step.");
     }
-    await createClient().auth.signOut().catch(() => {});
-    router.push("/");
+    setHistoryEnabled(false);
+    setConfirmDelete(null);
   }
 
   async function deleteContent() {
-    for (const id of await conversationIds()) {
-      await fetch(`/api/v1/conversations/${id}`, { method: "DELETE" });
-    }
+    const res = await fetch("/api/v1/account?scope=content", { method: "DELETE", headers: { "x-worldspeak-confirm": "erase" } });
+    if (!res.ok) { setNotice("Content deletion failed. Please retry."); return; }
     setConfirmDelete(null);
     setNotice("Saved content deleted.");
   }
 
-  async function conversationIds(): Promise<string[]> {
-    const res = await fetch("/api/v1/conversations", { cache: "no-store" });
-    if (!res.ok) return [];
-    const body = (await res.json()) as { data: { id: string }[] };
-    return body.data.map((c) => c.id);
+  async function deleteIdentity() {
+    const res = await fetch("/api/v1/account?scope=identity", {
+      method: "DELETE", headers: { "content-type": "application/json", "x-worldspeak-confirm": "erase" },
+      body: JSON.stringify({ password: deletePassword }),
+    });
+    setDeletePassword("");
+    if (!res.ok) { setNotice("Account removal was not completed. Check your password; OAuth-only accounts or an unavailable deletion service require a verified support step. No preliminary data wipe was performed."); return; }
+    await createClient().auth.signOut().catch(() => {});
+    router.push("/");
+    router.refresh();
   }
 
   return (
@@ -99,7 +104,7 @@ export default function SettingsPanel() {
             Delete my saved content
           </button>
           <button type="button" className="btn btn-secondary" onClick={() => setConfirmDelete("account")}>
-            Delete my account and content
+            Delete saved data and reset settings
           </button>
         </div>
       )}
@@ -118,10 +123,10 @@ export default function SettingsPanel() {
       )}
       {confirmDelete === "account" && (
         <div className="notice" role="alert">
-          <p>Permanently delete your account and all saved content? This cannot be undone.</p>
+          <p>Permanently delete saved content and consent records, and reset your profile and settings? Your sign-in identity remains. This cannot be undone.</p>
           <div className="btn-row">
             <button type="button" className="btn" onClick={() => void wipeAccount()}>
-              Yes, delete account
+              Yes, delete data and reset settings
             </button>
             <button type="button" className="btn btn-secondary" onClick={() => setConfirmDelete(null)}>
               Cancel
@@ -130,6 +135,13 @@ export default function SettingsPanel() {
         </div>
       )}
       <h3>Session</h3>
+      <details>
+        <summary>Remove sign-in identity and all saved data</summary>
+        <p>This is permanent. Enter your existing email-account password to reauthenticate. OAuth-only accounts require a verified support step.</p>
+        <label htmlFor="delete-password">Current password for permanent account removal</label>
+        <input id="delete-password" className="field" type="password" autoComplete="current-password" value={deletePassword} onChange={(event) => setDeletePassword(event.target.value)} />
+        <button type="button" className="btn btn-secondary" disabled={deletePassword.length < 8} onClick={() => void deleteIdentity()}>Permanently remove my account and data</button>
+      </details>
       <div className="btn-row">
         <button
           type="button"

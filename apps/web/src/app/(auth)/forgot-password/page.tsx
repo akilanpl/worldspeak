@@ -17,7 +17,7 @@ export default function ForgotPasswordPage() {
         <form
           onSubmit={async (e) => {
             e.preventDefault();
-            const base = (process.env["NEXT_PUBLIC_APP_URL"] ?? window.location.origin).replace(/\/$/, "");
+            const base = (process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin).replace(/\/$/, "");
             const { error } = await createClient().auth.resetPasswordForEmail(email, {
               redirectTo: `${base}/auth/callback?next=/reset-password`,
             });

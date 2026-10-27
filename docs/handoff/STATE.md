@@ -1,33 +1,15 @@
-# STATE — WorldSpeak Phase 2 (local Supabase foundation)
+# STATE — Phase 2 hosted foundation
 
-Architecture: WORLDSPEAK-PHASE-0 v1.0. Package/runtime revisions: Node
-25.9.0 (dev) / 22 (CI), pnpm 10.18.0, next 16.4.3, react 19.3.1,
-typescript 5.9.3, @supabase/ssr 0.12.7, @supabase/supabase-js 2.118.0,
-PostgreSQL 15 (local harness) / 15 (CI service).
-Schema migration head (local): 202610270004_search.sql. No remote project
-linked, touched, or created. Flags: Tamil still `review-pending`; no
-provider calls; no cloud resources.
+Date: 27 October 2026 (IST). Phase 2 is not fully accepted; Phase 3 has not started.
 
-## Tested capabilities (all passing 27 Oct 2026, IST)
+Baseline `aa58466d68c4e8ae14e20703167a110fafc9eb8f` was verified and normally fast-forward published to public `akilanpl/worldspeak`; later fixes are recorded in Git history. Dedicated Supabase `cafkyowssdemzivhzxbb`, Mumbai `ap-south-1`, Free plan, creation quote $0/month. No unrelated project was modified.
 
-- `pnpm test` (vitest): 40/40 — Phase 1 suites (contracts, catalog,
-  renderer, reducer/approval, speech gateway, component, offline parity)
-  plus API validation (schemas, LIKE escaping, cursor codec, error mapping).
-- `pnpm test:db`: migrations apply from empty state; 10/10 RLS isolation
-  scenarios PASS (provisioning, anonymous denied, owner reads, cross-user
-  read/update/delete blocked, spoofed owner rejected, owner immutable,
-  cross-owner links rejected, messages immutable/idempotent, favorites
-  cascade, consent append-only, storage folder isolation).
-- `pnpm test:e2e` (Playwright/Chromium): 9/9 — Phase 1 flow/keyboard/axe/
-  offline plus guest board with zero redirects and zero `/api` requests,
-  honest not-configured states on auth-gated pages.
-- `pnpm lint` exit 0, `pnpm typecheck` exit 0, `pnpm build` exit 0
-  (all API routes + auth/private pages render; proxy registered),
-  `pnpm check:secrets` exit 0.
+Six migrations applied; canonical names/hosted versions and checksums: `docs/evidence/supabase-project.json`. `packages/db/src/database.types.ts` is generated from this actual hosted database; aliases refine CHECK-constrained strings. Types/client operations are no longer `any`. `pnpm check:schema` is an offline approved-artifact check, not a live schema query.
 
-## Current errors
+Current executed checks: pnpm 10.18.0 frozen lockfile installation; lint/typecheck; 43 unit tests including a Tamil help regression; 12 local PostgreSQL scenarios from an empty scratch DB; 16 hosted Auth/Storage/Data API/Next API scenario groups; configured and unconfigured production builds. See `docs/evidence/hosted-phase2.json` for exact groups and limits. Hosted fixtures and objects were independently confirmed cleaned to zero.
 
-None in the verified local scope. Authenticated live flows (sign-up,
-Google OAuth, save/favorites/search/delete against real GoTrue + hosted
-DB) are implemented but unverified — blocked at the cloud provisioning
-gate, recorded as not-run in `docs/evidence/manifest.json`.
+Local Playwright browser launch is blocked by macOS Mach-port permissions: nine launches failed before assertions. Muse's earlier 9/9 result belongs to baseline code and is preserved separately; it is not claimed for current fixes. GitHub CI result must be recorded after publication.
+
+Email provider and confirmation requirement inspected in Brave and hosted settings. Confirmation/recovery protocol tests use genuine hosted tokens from official administrative fixture generation. Public registration to reserved test addresses was rejected and then hit service email rate limits. Inbox delivery is not proven. Google was disabled with empty credentials; the human was given the exact client/callback setup. Site URL was set to http://127.0.0.1:3101; callback allowlist persistence still needs independent dashboard verification.
+
+No Meta model calls, capture, worker/jobs, GPU, paid service or production application deployment. Protected local `.env.hosted.local` is ignored and mode 600; never log/copy its values. Runtime test server processes may need local-terminal cleanup if the sandbox cannot signal them; do not kill another developer's processes.

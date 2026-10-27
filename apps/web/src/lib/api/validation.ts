@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { ErrorCode } from "@worldspeak/contracts";
+import { IntentSchema, type ErrorCode } from "@worldspeak/contracts";
 
 /**
  * API input validation (architecture §D). Unknown keys rejected; bounds match
@@ -43,7 +43,7 @@ export const MessageCreateSchema = z
     kind: z.enum(["communication", "partner"]).default("communication"),
     text: z.string().min(1).max(1000),
     locale: LocaleSchema,
-    intent: z.unknown().optional(),
+    intent: IntentSchema.nullable().optional(),
     origin: z.enum(["template", "user_text", "partner_transcript"]),
     revision: z.number().int().min(1).default(1),
     text_hash: z.string().regex(/^[0-9a-f]{8}$/),
@@ -68,6 +68,8 @@ export const FavoriteCreateSchema = z
     message: "exactly one of message_id or snapshot",
   });
 
+export const RecentQuerySchema = z.object({ limit: z.coerce.number().int().min(1).max(30).default(30) }).strict();
+
 export const SearchQuerySchema = z
   .object({
     q: z.string().min(1).max(100),
@@ -87,8 +89,9 @@ export function encodeCursor(createdAt: string, id: string): string {
 }
 
 export function decodeCursor(cursor: string): { createdAt: string; id: string } {
+  if (cursor.length > 200) throw new Error("Cursor too long");
   const parsed = JSON.parse(Buffer.from(cursor, "base64url").toString("utf8")) as unknown;
-  const schema = z.object({ createdAt: z.string(), id: UuidSchema }).strict();
+  const schema = z.object({ createdAt: z.string().datetime({ offset: true }), id: UuidSchema }).strict();
   return schema.parse(parsed);
 }
 

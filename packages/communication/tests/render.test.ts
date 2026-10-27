@@ -3,6 +3,10 @@ import { ESSENTIAL_TILES } from "../../catalog/src/index";
 import { RenderError, renderComposition, renderIntent, textHash } from "../src/index";
 
 describe("deterministic renderer", () => {
+  it("Tamil help is requested for the user rather than for the object", () => {
+    const sentence = renderIntent({ kind: "request-help", object: { catalogId: "phone", selectedObjectId: null } }, "ta");
+    expect(sentence.text).toBe("தயவுசெய்து தொலைபேசி தொடர்பாக எனக்கு உதவுங்கள்.");
+  });
   it("renders the protected seed pair", () => {
     const en = renderIntent(
       { kind: "request-object", object: { catalogId: "water", selectedObjectId: null }, polarity: "want" },

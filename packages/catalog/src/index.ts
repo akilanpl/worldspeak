@@ -12,7 +12,7 @@ import essentials from "../data/essentials.json";
 
 export const CATALOG_VERSION = "catalog.v1";
 export const OBJECTS_VERSION = "objects.v1";
-export const TEMPLATES_VERSION = "templates.v1";
+export const TEMPLATES_VERSION = "templates.v2";
 export const ESSENTIALS_VERSION = "essentials.v1";
 export const REVIEW_STATUS = "review-pending" as const;
 

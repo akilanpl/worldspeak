@@ -7,8 +7,17 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# Destructive reset is allowed only in a named local scratch database.
+# Refuse hosted URLs/hosts even when a caller accidentally exports them.
 DB_NAME="${PGDATABASE:-worldspeak_phase2}"
 DB_PORT="${PGPORT:-54399}"
+case "$DB_NAME" in worldspeak_phase2|worldspeak_phase2_[a-zA-Z0-9_]*) ;; *) echo "Refusing non-scratch database" >&2; exit 2;; esac
+[[ "$DB_NAME" =~ ^[a-zA-Z0-9_]+$ ]] || exit 2
+[[ "$DB_PORT" =~ ^[0-9]+$ ]] || exit 2
+if [ -n "${DATABASE_URL:-}${PGSERVICE:-}${PGSERVICEFILE:-}" ]; then
+  echo "Refusing connection URL/service configuration in destructive local harness" >&2; exit 2
+fi
+case "${PGHOST:-}" in ""|localhost|127.0.0.1|::1|/tmp/*|/private/tmp/*|/var/folders/*|/private/var/folders/*) ;; *) echo "Refusing non-local PGHOST" >&2; exit 2;; esac
 export PGDATABASE="$DB_NAME" PGPORT="$DB_PORT"
 
 started=""
@@ -25,13 +34,7 @@ if [ -z "${PGHOST:-}" ]; then
   DATA_DIR="${TMPDIR:-/tmp}/worldspeak-pg-$DB_PORT"
   if [ ! -f "$DATA_DIR/PG_VERSION" ]; then
     rm -rf "$DATA_DIR" /tmp/.s.PGSQL."$DB_PORT"* 2>/dev/null || true
-    if ! initdb -D "$DATA_DIR" -U postgres --auth=trust >/dev/null 2>&1; then
-      # Sandboxed users without passwd lookup cannot initdb; clone the
-      # system template cluster instead (override with SYSTEM_PGDATA).
-      cp -a "${SYSTEM_PGDATA:-/opt/homebrew/var/postgresql@15}/" "$DATA_DIR"
-      rm -f "$DATA_DIR/postmaster.pid"
-      chmod 700 "$DATA_DIR"
-    fi
+    initdb -D "$DATA_DIR" -U postgres --auth=trust >/dev/null
   fi
   if ! pg_ctl -D "$DATA_DIR" -l "$DATA_DIR.log" status >/dev/null 2>&1; then
     pg_ctl -D "$DATA_DIR" -l "$DATA_DIR.log" -o "-p $DB_PORT -k $DATA_DIR" start >/dev/null

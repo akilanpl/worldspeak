@@ -1,3 +1,4 @@
+import type { Database } from "@worldspeak/db";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { supabaseAnonKey, supabaseUrl } from "./env";
@@ -10,7 +11,7 @@ export async function createClient() {
     throw new Error("Supabase is not configured (cloud provisioning gate).");
   }
   const store = await cookies();
-  return createServerClient(url, key, {
+  return createServerClient<Database>(url, key, {
     cookies: {
       getAll: () => store.getAll(),
       setAll: (toSet) => {
@@ -35,11 +36,11 @@ export async function verifiedOwnerId(): Promise<string | null> {
   return data.user.id;
 }
 
-/** Admin client for unavoidable Auth operations (account deletion only). */
+/** Server-only Auth deletion capability; never imported by browser modules. */
 export async function createAdminClient() {
   const url = supabaseUrl();
-  const serviceKey = process.env["SUPABASE_SERVICE_ROLE_KEY"] ?? null;
-  if (!url || !serviceKey) return null;
-  const { createClient: createAdmin } = await import("@supabase/supabase-js");
-  return createAdmin(url, serviceKey, { auth: { persistSession: false } });
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return null;
+  const { createClient: admin } = await import("@supabase/supabase-js");
+  return admin<Database>(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
 }

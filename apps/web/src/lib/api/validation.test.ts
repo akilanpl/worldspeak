@@ -54,6 +54,7 @@ describe("api validation", () => {
     });
     expect(() => decodeCursor("!!!")).toThrow();
     expect(() => decodeCursor(encodeCursor("x", "not-a-uuid"))).toThrow();
+    expect(() => decodeCursor(encodeCursor("x,owner_id.neq.null", "00000000-0000-4000-8000-000000000001"))).toThrow();
   });
 
   it("maps storage errors without leaking internals or oracles", () => {

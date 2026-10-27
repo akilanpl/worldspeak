@@ -5,11 +5,11 @@
  * "not configured" state instead of crashing or faking auth.
  */
 export function supabaseUrl(): string | null {
-  return process.env["NEXT_PUBLIC_SUPABASE_URL"] ?? null;
+  return process.env.NEXT_PUBLIC_SUPABASE_URL ?? null;
 }
 
 export function supabaseAnonKey(): string | null {
-  return process.env["NEXT_PUBLIC_SUPABASE_ANON_KEY"] ?? null;
+  return (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) ?? null;
 }
 
 export function isSupabaseConfigured(): boolean {

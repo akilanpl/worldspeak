@@ -1,42 +1,42 @@
-# Supabase cloud provisioning checklist (human step — Phase 2 gate)
+# WorldSpeak hosted setup and safe verification
 
-The implementation task stops before this. Do NOT create or modify cloud
-resources from the coding agent; the human performs each step below in the
-Supabase dashboard against a NEW, isolated WorldSpeak project.
+Dedicated project: `cafkyowssdemzivhzxbb`, Mumbai (`ap-south-1`), Free plan. Creation was quoted at $0/month and authorized on 27 October 2026. Neither unrelated project was modified. API URL: https://cafkyowssdemzivhzxbb.supabase.co . No application deployment was provisioned.
 
-## 1. Create the project
+## Schema
 
-- New project in the selected region; record the project ref. Never reuse an
-  unrelated project (no unrelated-resource mutation).
-- Note the anon key and (separately, server-only) service-role key. Keys live
-  in local `.env.local` / hosting secrets — never in git.
+Six reviewed migrations have been applied, in order. `docs/evidence/supabase-project.json` records canonical hosted versions, filenames and source hashes. Filenames were aligned with actual hosted migration versions so future CLI pushes do not replay earlier migrations. Do not relink or repair another project. Storage policies use platform-owned tables without ALTER/FORCE RLS on managed Storage objects; the local shim models the platform grants separately.
 
-## 2. Apply migrations
+Generated types are in `packages/db/src/database.types.ts`; row aliases derive from them. `pnpm check:schema` verifies the approved SQL/type artifact snapshot offline. It is not a live schema query: regenerate with the connected Supabase type-generation capability after any real schema change and compare before updating the snapshot.
 
-- From an empty database, apply in order:
-  `202610270001_core.sql`, `202610270002_ownership_rls.sql`,
-  `202610270003_storage.sql`, `202610270004_search.sql`.
-- Regenerate TypeScript types (`supabase gen types`) and replace
-  `packages/db/src/types.ts`; fail CI on drift afterwards.
+**Never run `pnpm test:db` on a hosted project.** It drops/recreates a scratch database and applies fake Auth/Storage platform tables. Its host/name guards now reject hosted hosts, connection URLs and non-scratch database names. Hosted tests use real Auth, Data API and Storage over HTTPS, never the shim.
 
-## 3. Auth configuration
+## Local configuration
 
-- Email: enable email provider, require confirmation; set Site URL and add
-  redirect allowlist entries for `/auth/callback` on every environment URL.
-- Google: create the OAuth client (Google console), enable the provider with
-  PKCE, add the same callback allowlist. Validate `next` stays local (the
-  callback already rejects non-local paths).
-- Password recovery uses the dedicated `/reset-password` return route.
+`.env.hosted.local` is ignored and owner-readable only. It contains the project URL, publishable key, local app URL, expected project ref and a server-only administrative key. Never paste keys in chat, commit the file or put an administrative key in a `NEXT_PUBLIC_` variable. Standard `pnpm build`/CI use the unconfigured guest path; `node scripts/run-hosted.mjs build` loads the protected configuration for a hosted-connected build. Then `node scripts/run-hosted.mjs start -H 127.0.0.1 -p 3101` serves it locally. Do not run two servers on that port or build while another developer is changing the application.
 
-## 4. Verify
+`node scripts/test-hosted.mjs --api` validates the isolated project and calls the local application. For an internal verification port, set `WORLDSPEAK_API_ORIGIN` while keeping the configured public application origin in request Origin headers. `--browser` additionally requires an environment that can launch Playwright; it disables trace capture and never logs credentials. Synthetic fixture accounts use `example.test` and are deleted after the run. Inspect cleanup counts in the evidence and verify zero residual objects through the project tools.
 
-- Sign up → confirm → sign in works; Google sign-in works.
-- Run `pnpm test:db` against the new project (scratch data only): all PASS.
-- Confirm two-user isolation in the dashboard (user B sees none of user A's rows).
-- Record opening/closing Model/API balances if any paid step ran (none expected).
+## Email and redirects
 
-## 5. Hand back to implementation
+Email sign-up enabled; email confirmation remains required. Sign-in, confirmation tokens, recovery tokens, password updates, refresh and sign-out were exercised with real hosted Auth using official admin-generated disposable-user token fixtures. This does not establish public registration or inbox delivery. Public registration with reserved test addresses returned `email_address_invalid`, then `over_email_send_rate_limit`; stop retrying until a controlled inbox and SMTP/rate limits are ready. Do not turn off confirmation to make tests pass.
 
-- Supply `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
-  `NEXT_PUBLIC_APP_URL`; service-role key only if account-deletion via Auth
-  admin is approved. Then authorize the authenticated-path verification task.
+The local verification Site URL is `http://127.0.0.1:3101`. Callback entries prepared in Brave:
+
+- `http://127.0.0.1:3101/auth/callback`
+- `http://127.0.0.1:3101/auth/callback?next=/history`
+- `http://127.0.0.1:3101/auth/callback?next=/reset-password`
+
+The three exact saved entries and Site URL were independently verified in Brave after the human completed configuration. Use exact URLs, no wildcard. Add production URLs only after a hosting origin is selected.
+
+## Google OAuth — exact remaining actions
+
+1. In a WorldSpeak Google Cloud project, complete the OAuth consent screen and add the chosen Google test user if the application is in Testing.
+2. Create a Web application OAuth client. Authorized redirect URI: `https://cafkyowssdemzivhzxbb.supabase.co/auth/v1/callback`. Authorized local origin: `http://127.0.0.1:3101`.
+3. Enter client ID and secret directly into this Supabase project's Google provider form and enable it. Keep nonce checks enabled and missing-email access disabled. No secrets in chat or Git.
+4. Finish a real Google login through the application, verify PKCE callback/session, then sign out and confirm protected routes deny access. Record outcomes, never credential-bearing URLs or tokens.
+
+Google was initially disabled; the human subsequently configured its client/provider. A real application Google redirect has begun; session/callback success is not inferred from configuration alone. [Supabase Google guide](https://supabase.com/docs/guides/auth/social-sign-in/auth-google).
+
+## Erasure
+
+Saved-data reset uses an atomic owner-derived RPC, retains a minimal default profile/preferences and explicitly retains the Auth identity. Full email-account identity removal requires a fresh password check and a server-only administrative client; the hosted API test proves wrong-password denial and successful Auth deletion/cascade. OAuth-only removal still needs a separately verified support/reauthentication path. Never delete Storage database rows to erase file bytes: use the Storage API.

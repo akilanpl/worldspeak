@@ -1,7 +1,7 @@
 # AGENTS.md — WorldSpeak (Phase 1 slice)
 
 Read this file, `docs/handoff/STATE.md`, `NEXT.md`, `BLOCKERS.md`, and the
-architecture freeze before editing. Inspect `git status` before edits.
+architecture freeze before editing (local ../docs/WORLDSPEAK-PHASE-0.md; public summary docs/architecture.md). Inspect `git status` before edits.
 
 ## Scope (Phase 2: local Supabase foundation + frozen Phase 1 slice)
 
@@ -11,8 +11,8 @@ architecture freeze before editing. Inspect `git status` before edits.
   fixes keep `review-pending` status.
 - Phase 2 adds: local SQL migrations + RLS, email/Google auth code paths,
   profiles/preferences, saved history/favorites/search/delete, guest access
-  without sign-in. No cloud changes: prepare locally, stop at the
-  provisioning gate. No model, media-capture, deployment, or training.
+  without sign-in. Cloud continuation was explicitly authorized for dedicated project
+  cafkyowssdemzivhzxbb only; do not change unrelated projects. No model, media-capture, deployment, or training.
 - Edit only this `worldspeak/` root. Do not modify siblings or global CLI
   configuration. Never use `outputs/` as the repository. Never touch an
   existing unrelated Supabase project.

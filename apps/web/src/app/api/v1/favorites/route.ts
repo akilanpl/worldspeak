@@ -1,11 +1,11 @@
-import type { FavoriteRow, MessageRow } from "@worldspeak/db";
+import type { FavoriteRow } from "@worldspeak/db";
 import { FavoriteCreateSchema } from "@/lib/api/validation";
-import { fail, ok, requireOwner } from "@/lib/api/route";
+import { fail, ok, readJson, requireOwner } from "@/lib/api/route";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
-  const auth = await requireOwner();
+export async function GET(request: Request) {
+  const auth = await requireOwner(request);
   if (!auth.ok) return auth.res;
   const { owner, supabase } = auth.ctx;
   const { data, error } = await supabase
@@ -19,12 +19,12 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const auth = await requireOwner();
+  const auth = await requireOwner(request);
   if (!auth.ok) return auth.res;
   const { owner, supabase } = auth.ctx;
   let body: unknown;
   try {
-    body = await request.json();
+    body = await readJson(request);
   } catch {
     return fail("INVALID_INPUT", "favorites.bad_json", 400);
   }
@@ -33,52 +33,11 @@ export async function POST(request: Request) {
 
   // Explicit-save shortcut: persist the current preview as a message first.
   // Favorites are explicit saves even when general history is off.
-  let messageId = parsed.data.message_id ?? null;
+  const messageId = parsed.data.message_id ?? null;
   if (parsed.data.snapshot) {
-    const snap = parsed.data.snapshot;
-    const convTitle = parsed.data.conversation_title || snap.text.slice(0, 60);
-    const conv = await supabase
-      .from("conversations")
-      .insert({ owner_id: owner, title: convTitle, language: snap.locale })
-      .select("id")
-      .single();
-    if (conv.error || !conv.data) return fail("INVALID_INPUT", "favorites.snapshot_failed", 500);
-    const msg = await supabase
-      .from("messages")
-      .insert({
-        owner_id: owner,
-        conversation_id: (conv.data as { id: string }).id,
-        kind: snap.kind,
-        text: snap.text,
-        locale: snap.locale,
-        intent: snap.intent ?? null,
-        origin: snap.origin,
-        revision: snap.revision,
-        text_hash: snap.text_hash,
-        template_version: snap.template_version,
-        client_event_id: snap.client_event_id,
-      })
-      .select("id")
-      .single();
-    if (msg.error) {
-      if ((msg.error as { code?: string }).code === "23505") {
-        const existing = await supabase
-          .from("messages")
-          .select("id")
-          .eq("owner_id", owner)
-          .eq("client_event_id", snap.client_event_id)
-          .maybeSingle();
-        if (!existing.error && existing.data) {
-          messageId = (existing.data as MessageRow).id;
-        } else {
-          return fail("INVALID_INPUT", "favorites.snapshot_failed", 500);
-        }
-      } else {
-        return fail("INVALID_INPUT", "favorites.snapshot_failed", 500);
-      }
-    } else {
-      messageId = (msg.data as MessageRow).id;
-    }
+    const result = await supabase.rpc("save_favorite_snapshot", { snapshot: parsed.data.snapshot, conversation_title: parsed.data.conversation_title });
+    if (result.error) return fail("INVALID_INPUT", "favorites.snapshot_failed", 400);
+    return ok(result.data, 201);
   }
   if (!messageId) return fail("INVALID_INPUT", "favorites.invalid", 400);
   const fav = await supabase

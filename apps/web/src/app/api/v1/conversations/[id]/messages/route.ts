@@ -1,6 +1,6 @@
 import type { MessageRow } from "@worldspeak/db";
 import { MessageCreateSchema } from "@/lib/api/validation";
-import { fail, ok, requireOwner } from "@/lib/api/route";
+import { fail, ok, readJson, requireOwner } from "@/lib/api/route";
 import { toCode } from "@/lib/api/validation";
 
 export const dynamic = "force-dynamic";
@@ -9,8 +9,8 @@ function codeOf(err: unknown) {
   return toCode(err);
 }
 
-export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await requireOwner();
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const auth = await requireOwner(request);
   if (!auth.ok) return auth.res;
   const { owner, supabase } = auth.ctx;
   const { id } = await params;
@@ -32,13 +32,13 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 }
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await requireOwner();
+  const auth = await requireOwner(request);
   if (!auth.ok) return auth.res;
   const { owner, supabase } = auth.ctx;
   const { id } = await params;
   let body: unknown;
   try {
-    body = await request.json();
+    body = await readJson(request);
   } catch {
     return fail("INVALID_INPUT", "messages.bad_json", 400);
   }

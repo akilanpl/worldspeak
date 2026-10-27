@@ -9,13 +9,10 @@ insert into storage.buckets (id, name, public) values
   ('private-pictograms', 'private-pictograms', false)
 on conflict (id) do nothing;
 
--- Revoke broad access, then grant narrowly to authenticated.
-revoke all on storage.objects from anon, authenticated;
-
-grant select, insert, delete on storage.objects to authenticated;
-
-alter table storage.objects enable row level security;
-alter table storage.objects force row level security;
+-- Supabase owns storage.objects and already enables RLS/grants. Do not ALTER
+-- the managed table or change its platform grants. With no matching policy,
+-- anonymous access and UPDATE/upsert remain denied. The local shim supplies
+-- the same platform RLS/grant surface before applying application policies.
 
 -- First path segment must equal the caller's user id; bucket allowlisted.
 create policy storage_read on storage.objects for select to authenticated

@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
  * NFC-normalized, LIKE metacharacters escaped, cursor pagination.
  */
 export async function GET(request: Request) {
-  const auth = await requireOwner();
+  const auth = await requireOwner(request);
   if (!auth.ok) return auth.res;
   const { owner, supabase } = auth.ctx;
   const url = new URL(request.url);

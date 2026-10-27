@@ -1,15 +1,17 @@
-import { decodeCursor, encodeCursor } from "@/lib/api/validation";
+import { decodeCursor, encodeCursor, RecentQuerySchema } from "@/lib/api/validation";
 import { fail, ok, requireOwner } from "@/lib/api/route";
 
 export const dynamic = "force-dynamic";
 
 /** Recent saves for the owner, cursor-paginated (no query term). */
 export async function GET(request: Request) {
-  const auth = await requireOwner();
+  const auth = await requireOwner(request);
   if (!auth.ok) return auth.res;
   const { owner, supabase } = auth.ctx;
   const url = new URL(request.url);
-  const limit = Math.min(Math.max(Number(url.searchParams.get("limit") ?? 30), 1), 30);
+  const parsed = RecentQuerySchema.safeParse({ limit: url.searchParams.get("limit") ?? undefined });
+  if (!parsed.success) return fail("INVALID_INPUT", "search.invalid", 400);
+  const limit = parsed.data.limit;
   const cursor = url.searchParams.get("cursor");
   let query = supabase
     .from("messages")
