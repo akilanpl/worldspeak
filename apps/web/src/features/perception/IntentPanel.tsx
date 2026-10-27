@@ -15,7 +15,7 @@ export interface ApprovedSnapshot {
 export interface IntentPanelProps {
   locale: Locale;
   onLocaleChange: (locale: Locale) => void;
-  object: PerceivedObject;
+  object: Pick<PerceivedObject, "labelEn" | "labelTa" | "catalogId">;
   onBack: () => void;
   /**
    * Handoff for integration: the approved intent + locale, ready to become a

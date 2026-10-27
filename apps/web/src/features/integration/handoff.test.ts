@@ -163,3 +163,10 @@ describe("private handoff transport", () => {
     }
   });
 });
+
+ it("preserves truthful manual video and pictogram provenance", () => {
+   for (const source of ["video", "pictogram"] as const) {
+     const payload = snapshotToPayload({intent: {kind: "user-text", text: "My exact words", locale: "en"}, locale: "en"}, {source, objectLabel: "My object", objectCatalogId: null, provenance: "manual"});
+     expect(decodeHandoff(encodeHandoff(payload))).toEqual(payload);
+   }
+ });

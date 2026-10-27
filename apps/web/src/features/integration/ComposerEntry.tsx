@@ -16,9 +16,9 @@ function newId(): string {
 }
 
 function provenanceNotice(payload: HandoffPayload): { en: string; ta: string } {
-  const where = payload.source === "perception" ? "camera" : "video";
+  const where = payload.source === "perception" ? "camera" : payload.source === "pictogram" ? "personalized pictogram" : "video";
   const kind =
-    payload.provenance === "fixture" ? "demo fixture — not a real model" : "model detection";
+    payload.provenance === "fixture" ? "demo fixture — not a real model" : payload.provenance === "manual" ? "manual human selection — no model inference" : "model detection";
   return {
     en: `From ${where} (${kind}): ${payload.objectLabel} — review the sentence below, then Speak.`,
     ta: `${where === "camera" ? "கேமரா" : "வீடியோ"} (${kind}): ${payload.objectLabel} — கீழே சரிபார்த்து, பின் பேசுக.`,
@@ -72,7 +72,7 @@ function ComposerDraft({
     <>
       {entry.invalid && (
         <p className="notice" role="alert" data-testid="handoff-invalid-notice">
-          That camera/video draft is unavailable or expired. Only tab-local draft keys are accepted. Return to the previous screen or enter your words here.
+          That communication draft is unavailable or expired. Only tab-local draft keys are accepted. Return to the previous screen or enter your words here.
         </p>
       )}
       {entry.notice && (
