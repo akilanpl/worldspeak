@@ -104,3 +104,11 @@ All times IST. Author: Muse Code implementation engineer.
 - Security advisors: no ERROR, five private deny-all INFOs, six reviewed owner-derived definer WARNs and one Free-plan leaked-password-protection WARN. Seven unused-index performance INFOs. No plan upgrade, unrelated project or billable resource changes.
 - Hosted budgets/reservations/spend, permits and smoke authorizations remain zero. Meta balance privately reconfirmed; no model request. Free-credit product-improvement notice recorded; genuine inference and the $0.05 two-call smoke remain separately gated. Phase 2 manual gaps preserved.
 - A metadata inspection exposed only disposable fixture passwords in local tool output; affected accounts were deleted and cascades verified. No project/worker/real-user credentials or tokens emitted. Fixture credential file removed.
+
+## 2026-10-27 — JSONB result persistence repair
+
+- Reproduced the real-smoke defect with pinned Postgres.js 3.4.9 against an isolated local PostgreSQL scratch database: a manually stringified JSONB parameter is serialized again and stored as a JSON string. The new production-store regression failed before the fix (`string !== object`).
+- Replaced only the worker finish boundary's manual stringify with `sql.json(result)`, retaining SQL NULL for absent results. No response-schema relaxation, migration or historical-result rewrite.
+- Added five real-driver database regression groups using a disposable least-privilege local login and the actual `makeStore().store.finish` implementation. They cover exact nested detection/box/mask/provenance/usage round trips, owner RPC `JobViewSchema`, failed/null results, cancellation and wrong/expired/finalized leases. HTTP is forbidden in this suite; no provider or hosted call is involved.
+- The first smoke remains a historical partial result: Spark provider success, durable contract failure, SAM unexecuted. Hosted billing, consumed/disabled permits and the permanent authorization tombstone were not changed or reset by this repair. Another live inference run is not authorized.
+- Initial repair CI passed with one retry in the unchanged guest evaluation: its final `toHaveCount(0)` assertion was not awaited and raced test teardown. Added the missing await without changing the assertion or application behavior; final CI must verify the complete suite on that head.

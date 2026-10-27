@@ -94,7 +94,7 @@ test("5. guests never trigger uploads: fixture journeys make zero media calls", 
   await page.getByRole("button", { name: /^continue$/i }).click();
   await page.getByRole("button", { name: /approve for composer/i }).click();
   expect(uploads).toEqual([]);
-  expect(page.getByRole("button", { name: /analyze with meta/i })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /analyze with meta/i })).toHaveCount(0);
 });
 
 test("6. no speech before an explicit Speak action", async ({ page }) => {
