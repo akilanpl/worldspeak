@@ -42,6 +42,10 @@ Executed expected failures:
 - Candidate with every detection omitted: exit **1**, precision/recall/box-IoU
   quality failures recorded in JSON.
 - Unknown CLI flag: exit **2**.
+- Input/output path collision: exit **2**, candidate bytes preserved.
+- Deliberately changed one analytical unit-test expectation in this isolated clone,
+  ran the CLI, then restored the source: exit **1** and report `passed: false`
+  even though the scoring test passed. The runner propagates whole-suite failure.
 - The metric suite also checks invalid/oversized JSON, duplicate/missing case IDs,
   unsupported versions/provenance, invalid masks, unordered timestamps, identity
   switches, missing samples, exact-time alignment, bounds and empty denominators.

@@ -37,7 +37,9 @@ invalid input, a regression or failed quality gates. Invalid/duplicate CLI flags
 exit 2. The runner writes two report files in the output directory; existing files
 with those names are replaced. A failure marker is written before evaluation so
 invalid JSON, missing inputs or a crashed test cannot leave a stale PASS report.
-Detailed validation errors remain in the command diagnostics.
+Detailed validation errors remain in the command diagnostics. A failing analytical
+unit test also invalidates the report even if the scoring test itself passed.
+Input/output path collisions reject before replacing any candidate bytes.
 
 The independent `local-model-evaluation` workflow runs this command and strict
 TypeScript checking, and uploads reports even on failure. It has read-only GitHub

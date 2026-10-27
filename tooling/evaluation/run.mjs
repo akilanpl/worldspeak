@@ -1,6 +1,12 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, realpathSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  realpathSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
 import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 const root = fileURLToPath(new URL("../../", import.meta.url));
@@ -93,5 +99,25 @@ const result = spawnSync(
     },
   },
 );
+// A metric unit-test failure must also invalidate a report whose scoring test passed.
+if (result.status !== 0) {
+  const reportPath = resolve(out, "report.json"),
+    markdownPath = resolve(out, "report.md");
+  const report = JSON.parse(readFileSync(reportPath, "utf8"));
+  report.passed = false;
+  report.failures.push(
+    "Evaluation test process failed; inspect command diagnostics",
+  );
+  writeFileSync(reportPath, JSON.stringify(report, null, 2) + "\n");
+  const markdown = readFileSync(markdownPath, "utf8").replace(
+    "\nResult: PASS",
+    "\nResult: FAIL",
+  );
+  writeFileSync(
+    markdownPath,
+    markdown +
+      "\nEvaluation test process failed; inspect command diagnostics.\n",
+  );
+}
 if (result.error) process.stderr.write(result.error.message + "\n");
 process.exit(result.status ?? 1);

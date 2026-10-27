@@ -1,7 +1,7 @@
 {
   "reportVersion": "worldspeak-evaluation-report.v1",
   "datasetVersion": "worldspeak-eval.v1",
-  "evaluatorSha256": "e1089d6ebc6b3b15a662c24258a5697d52eb13039d31eb2ce59bc1aca5bdf79d",
+  "evaluatorSha256": "b1cb9536fe6a29a3dae947a87dfc63618fea5d15cead84d14006c3952da240cb",
   "contractsSha256": "6083cad524c4705fd901da561bed03fdc2c6d9a7123c5b08444a81e8a592783b",
   "lockfileSha256": "d17e09e557fbaac0fe921be2edbf834c09d8f7b122e7efd92414ad42c4688765",
   "datasetSha256": "4c8ca6325be30fa2714f9d9d16e9abec76ebf25d3f6a319458f68a1761fabc40",
