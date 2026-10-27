@@ -6,7 +6,7 @@ import {
   JobViewSchema,
   type Operation,
 } from "@worldspeak/contracts";
-import { adaptDetectionList } from "../integration/adapters";
+import { adaptDetectionList, adaptSegmentationList } from "../integration/adapters";
 import type { PerceivedObject } from "../perception/types";
 
 /** Consent-triggered submission only. GET polling never submits or retries.
@@ -197,7 +197,13 @@ export function useAnalysisJob(): AnalysisApi {
           });
           return;
         }
-        const batch = adaptDetectionList(result.data.detections, newId);
+        const batch = operation === "segment"
+          ? adaptSegmentationList(result.data.detections, result.data.segmentationMasks, newId)
+          : adaptDetectionList(result.data.detections, newId);
+        if (operation === "segment" && batch.rejected > 0) {
+          set({ name: "failed", code: "invalid segmentation", detail: "Mask data or object identity could not be validated. Nothing was retried." });
+          return;
+        }
         set({
           name: "succeeded",
           jobId: r.jobId,

@@ -12,6 +12,8 @@ const polygon = z
   .nullable();
 export const DetectionSchema = z
   .object({
+    // Stable SAM record identity; absent for legacy/scene detections.
+    objectId: z.string().min(1).max(160).optional(),
     label: z.string().trim().min(1).max(120),
     catalogId: z.string().max(120).nullable(),
     box: NormalizedBoxSchema,

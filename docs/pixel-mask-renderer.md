@@ -1,0 +1,15 @@
+# SAM pixel-mask rendering
+
+27 October 2026. Non-paid implementation, synthetic verification only. No actual SAM generation, hosted migration, spending control or authorization change.
+
+SAM parsing already produces a cropped binary row-major raster (one byte 0/1 per pixel) and normalized source-image bounds. The SAM detection now includes the same stable `objectId` as its mask. This optional additive Detection field preserves scene/legacy compatibility; scene IDs are not invented. The frontend `adaptSegmentationList` joins only on IDs, never array order, labels, bounding-box similarity or index. Duplicate, missing, orphaned or malformed associations reject the entire segmentation batch. Zero detections/zero masks remains valid.
+
+Before decoding, the adapter limits masks to 32, dimensions to 1–512 and exact canonical base64 byte length. It rejects nonbinary samples, invalid/empty geometry, malformed/noncanonical base64 and data/remote URLs. All-zero rasters are valid transparent masks. Aggregate accepted binary pixels are capped at 1,048,576: at most 1 MiB decoded pixels plus 4 MiB canvas backing; one bounded candidate can be decoded before aggregate rejection. The source API JSON/schema limits also remain in force.
+
+`RasterMaskCanvas` paints one small source-resolution RGBA texture at the supplied raster bounds inside `MaskOverlay`'s fitted image layer. Resize/letterboxing uses existing normalized CSS geometry, never a full-frame stretch or redraw/redecode on every viewport change. Selection changes CSS opacity only. Unmount releases canvas backing. No contour/polygon approximation is synthesized. Existing fixture polygons remain a separate fixture representation.
+
+The canvas is aria-hidden and pointer-events:none. Accessible native object buttons above it and the companion object list remain the only selection controls, exposing aria-pressed and keyboard/touch/click selection. Users still explicitly confirm an object, choose intent, approve deterministic text and separately press Speak. No rendering lifecycle calls speech or uploads.
+
+Tests cover strict payload validation, aggregate memory limit, stable association with reordered same-label overlapping objects, exact RGBA pixels/transparent holes, letterboxed placement, no repaint on selection and backing release. The existing mocked Spark browser journey now explicitly requests SAM refinement with fresh consent, verifies exact canvas pixels and real composited screenshot samples at desktop/mobile widths, checks normalized pixel geometry during resizing, selects by keyboard/pointer and continues to bilingual composer/Speak. All provider receipts and mask pixels in these tests are synthetic, not evidence of real SAM inference or a real chair mask. Provider-parser integration separately exercises the official SAM grammar through the new raster adapter.
+
+Actual SAM entitlement, paid inference, native-device accessibility/audio and fresh physical cleanup verification remain separate acceptance gates. The first smoke tombstone/permits are untouched. The new independent SAM authorization work is separate from this renderer.

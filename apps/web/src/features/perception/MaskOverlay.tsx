@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Locale } from "@worldspeak/contracts";
 import { boxToPercent, computeFittedRect, type FittedRect } from "./geometry";
 import { pstr } from "./strings";
+import RasterMaskCanvas from "./RasterMaskCanvas";
 import type { PerceivedObject } from "./types";
 
 export interface MaskOverlayProps {
@@ -25,7 +26,8 @@ export interface MaskOverlayProps {
 /**
  * Reusable segmentation overlay. A fitted layer matches the displayed image
  * rect; object regions are percentage-positioned buttons inside it (exact for
- * any aspect ratio, DPR-independent), with vector mask polygons underneath.
+ * any aspect ratio, DPR-independent), with validated SAM pixel masks (or
+ * existing synthetic polygon fixtures) underneath.
  * Every object is equally reachable by pointer, touch, keyboard, and the
  * companion list — overlap never strands a selection.
  */
@@ -103,6 +105,7 @@ export default function MaskOverlay({
           data-testid="mask-layer"
           style={{ position: "absolute", left: fitted.x, top: fitted.y, width: fitted.width, height: fitted.height }}
         >
+          {objects.map(o => o.rasterMask ? <RasterMaskCanvas key={o.id} mask={o.rasterMask} selected={o.id === selectedId} /> : null)}
           <svg
             viewBox="0 0 100 100"
             preserveAspectRatio="none"

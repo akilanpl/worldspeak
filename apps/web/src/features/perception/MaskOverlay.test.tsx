@@ -4,6 +4,7 @@ import "@testing-library/jest-dom/vitest";
 
 afterEach(() => cleanup());
 import MaskOverlay from "./MaskOverlay";
+import { decodeRasterMask } from "./rasterMask";
 import { FIXTURE_SCENES } from "./fixtures";
 
 const table = FIXTURE_SCENES.find((s) => s.id === "table")!;
@@ -91,4 +92,21 @@ describe("MaskOverlay", () => {
     expect(screen.queryAllByRole("button")).toHaveLength(0);
     expect(screen.getByRole("status")).toHaveTextContent(/no objects detected/i);
   });
+});
+
+it("positions a real raster inside the letterboxed fitted image and preserves accessible controls", () => {
+  const context = { createImageData: () => ({ data: new Uint8ClampedArray(16) }), putImageData: vi.fn() };
+  const mock = vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(context as unknown as CanvasRenderingContext2D);
+  const onSelect = vi.fn();
+  const object = { ...table.objects[0]!, id: "raster-object", mask: null,
+    rasterMask: decodeRasterMask({ width: 2, height: 2, bounds: { x1: .25, y1: .125, x2: .75, y2: .625 }, rasterBase64: "AAEBAA==" })! };
+  render(<MaskOverlay locale="en" imageUrl={null} imageAlt="Synthetic image" naturalWidth={400} naturalHeight={200}
+    objects={[object]} selectedId={null} onSelect={onSelect} testContainerSize={{ width: 400, height: 300 }} />);
+  const layer = screen.getByTestId("mask-layer");
+  expect(layer.style.top).toBe("50px"); expect(layer.style.height).toBe("200px");
+  expect(screen.getByTestId("raster-mask").style.top).toBe("12.5%");
+  expect(screen.getByTestId("raster-mask").style.height).toBe("50%");
+  const region = screen.getByRole("button"); region.focus(); expect(document.activeElement).toBe(region);
+  fireEvent.click(region); expect(onSelect).toHaveBeenCalledWith("raster-object");
+  mock.mockRestore();
 });
