@@ -53,12 +53,20 @@ do $$ begin
   if not exists (select from pg_roles where rolname = 'anon') then
     create role anon nologin;
   end if;
+  if not exists (select from pg_roles where rolname = 'service_role') then
+    create role service_role nologin;
+  end if;
   if not exists (select from pg_roles where rolname = 'authenticated') then
     create role authenticated nologin;
   end if;
 end $$;
 
-grant usage on schema public, auth, storage to anon, authenticated;
+grant usage on schema public, auth, storage to anon, authenticated, service_role;
+
+-- Test-local emulation of the hosted public-function default grant. ALTER
+-- FUNCTION RENAME preserves it; omitting this hid the migration-008 ACL gap.
+-- Private world_inference functions do not receive this grant.
+alter default privileges in schema public grant execute on functions to service_role;
 
 -- Managed Storage provides these grants and RLS before app migrations.
 grant select, insert, update, delete on storage.objects to anon, authenticated;
