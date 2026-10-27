@@ -2,6 +2,8 @@ import { fileURLToPath } from "node:url";
 const localClip = fileURLToPath(new URL("./fixtures/manual-region.webm", import.meta.url));
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
+// All camera access in this file uses Chromium’s synthetic device.
+test.use({launchOptions:{args:["--use-fake-device-for-media-stream","--use-fake-ui-for-media-stream"]}});
 
 /** Video prototype: synthetic tracking fixtures only — no camera, uploads, calls, or speech. */
 test("fixture flow completes to an approved intent with zero backend calls", async ({ page }) => {
@@ -116,7 +118,6 @@ test("invalid local video can be retried with real media", async ({page}) => {
 });
 
 test.describe("synthetic browser camera recording", () => {
-  test.use({launchOptions:{args:["--use-fake-device-for-media-stream","--use-fake-ui-for-media-stream"]}});
   test("records actual browser media without microphone audio and stops all camera tracks", async ({page,context}) => {
     await context.grantPermissions(["camera"]);
     await page.addInitScript({path:fileURLToPath(new URL("./stub-speech.js",import.meta.url))});
