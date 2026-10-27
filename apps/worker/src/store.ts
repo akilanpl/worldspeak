@@ -1,4 +1,9 @@
 import postgres from "postgres";
+import {
+  workerDatabaseOptions,
+  assertWorldSpeakStorageUrl,
+  WORKER_CAPABILITY_SQL,
+} from "@worldspeak/inference";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import type { InferenceResult } from "@worldspeak/contracts";
@@ -32,7 +37,10 @@ export function makeStore(config: {
   supabaseUrl: string;
   storageKey: string;
 }) {
-  const sql = postgres(config.databaseUrl, {
+  const connection = workerDatabaseOptions(config.databaseUrl);
+  assertWorldSpeakStorageUrl(config.supabaseUrl);
+  const sql = postgres(connection.url, {
+    ssl: connection.ssl,
     max: 1,
     prepare: false,
     connect_timeout: 10,
@@ -51,8 +59,17 @@ export function makeStore(config: {
     const rows = await query;
     return rows[0]?.value ?? null;
   }
+  let verified = false;
+  async function ensureWorker() {
+    if (verified) return;
+    const rows = await sql.unsafe(WORKER_CAPABILITY_SQL);
+    if (rows[0]?.allowed !== true)
+      throw Error("A least-privilege inference worker login is required");
+    verified = true;
+  }
   const store: WorkerStore = {
     async claim() {
+      await ensureWorker();
       const raw = await scalar(sql`select world_inference.claim() as value`);
       if (!raw) return null;
       const j = Claim.parse(raw);
@@ -105,6 +122,7 @@ export function makeStore(config: {
     store,
     close: () => sql.end({ timeout: 5 }),
     async cleanupOnce() {
+      await ensureWorker();
       await sql`select world_inference.sweep()`;
       const raw = await scalar(
         sql`select world_inference.claim_cleanup() as value`,

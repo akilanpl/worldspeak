@@ -1,4 +1,9 @@
 import "server-only";
+import {
+  workerDatabaseOptions,
+  assertWorldSpeakStorageUrl,
+  WORKER_CAPABILITY_SQL,
+} from "@worldspeak/inference";
 import postgres from "postgres";
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -36,8 +41,17 @@ export function inferenceConfigured() {
 export async function markMediaReady(id: string): Promise<boolean> {
   const url = process.env.INFERENCE_DATABASE_URL;
   if (!url) return false;
-  const sql = postgres(url, { max: 1, prepare: false, connect_timeout: 10 });
+  const connection = workerDatabaseOptions(url);
+  const sql = postgres(connection.url, {
+    ssl: connection.ssl,
+    max: 1,
+    prepare: false,
+    connect_timeout: 10,
+  });
   try {
+    const role = await sql.unsafe(WORKER_CAPABILITY_SQL);
+    if (role[0]?.allowed !== true)
+      throw Error("A least-privilege inference worker login is required");
     const rows = await sql`select world_inference.media_ready(${id}) as ready`;
     return rows[0]?.ready === true;
   } finally {
@@ -53,6 +67,7 @@ export async function createInferenceStorage(): Promise<
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY,
     url = supabaseUrl();
   if (!key || !url) throw Error("Unavailable");
+  assertWorldSpeakStorageUrl(url);
   return createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
     global: {

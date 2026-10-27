@@ -1,5 +1,6 @@
 /* eslint-disable no-console -- aggregate synthetic test outcomes only */
 import postgres from "postgres";
+import { WORKER_CAPABILITY_SQL } from "@worldspeak/inference";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 const host = process.env.PGHOST,
@@ -124,6 +125,15 @@ try {
     await sql`insert into auth.users(id,email) values(${id},${"inference-" + id + "@example.test"})`;
   const aa = await asset(a),
     bb = await asset(b);
+  await check(
+    "runtime capability check accepts only the worker role",
+    async () => {
+      const allowed = await worker((t) => t.unsafe(WORKER_CAPABILITY_SQL));
+      assert.equal(allowed[0]?.allowed, true);
+      const admin = await sql.unsafe(WORKER_CAPABILITY_SQL);
+      assert.equal(admin[0]?.allowed, false);
+    },
+  );
   await check(
     "zero default budget, bad consent, spoof and private worker denial",
     async () => {

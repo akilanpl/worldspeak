@@ -14,7 +14,7 @@
   "localChecks": {
     "unit": {
       "exit": 0,
-      "passed": 176
+      "passed": 180
     },
     "existingRls": {
       "exit": 0,
@@ -22,7 +22,7 @@
     },
     "inferenceDatabase": {
       "exit": 0,
-      "scenarioGroups": 16
+      "scenarioGroups": 17
     },
     "smokeAuthorization": {
       "exit": 0,
@@ -40,6 +40,11 @@
     },
     "schemaGuard": {
       "exit": 0
+    },
+    "connectionGuard": {
+      "verifiedTls": true,
+      "projectScoped": true,
+      "rejectAdministrativeLogin": true
     }
   },
   "hosted": {
@@ -54,12 +59,17 @@
     "migration007Applied": false,
     "explicitApprovalRequired": true,
     "newBucketPhysicalDeletionVerified": false,
-    "workerCredentialsAndSupervision": "not provisioned"
+    "workerCredentialsAndSupervision": "not provisioned",
+    "approval": {
+      "scope": "exact reviewed 007 plus non-paid hosted tests; no funding/permits/model calls/billable resources",
+      "sqlSha256": "1e8420ca5316ea2f1df898dca447d5b8410acdc2a7b45897fe5e4c95b76e6be2",
+      "status": "approved by human; execution awaits final CI"
+    }
   },
   "meta": {
     "paidCalls": 0,
     "pricingReconfirmed": "https://dev.meta.ai/docs/pricing-rate-limits",
-    "balance": "verification blocked by Meta sign-in; prior $149.82 is stale"
+    "balance": "Human reports Meta signed in; read-only balance check pending"
   },
   "manualAcceptanceGaps": "preserved in docs/handoff/BLOCKERS.md"
 }
