@@ -1,7 +1,7 @@
 {
   "phase": 1,
   "updated": "2026-10-27T07:25:00+05:30",
-  "commit": "PENDING",
+  "commit": "ef84e9b98ccfb2322e50e2b5cabbe0e9700bc364",
   "commands": [
     { "cmd": "pnpm install --frozen-lockfile", "exit": 0, "note": "pinned lockfile committed" },
     { "cmd": "pnpm lint", "exit": 0 },
@@ -9,7 +9,7 @@
     { "cmd": "pnpm test", "exit": 0, "note": "34/34 vitest (contracts, catalog, renderer, reducer/approval, speech gateway, component, offline parity)" },
     { "cmd": "pnpm build", "exit": 0, "note": "offline board cacheVersion v1-e382dba8, 26 tiles; Next static / and /offline" },
     { "cmd": "pnpm test:e2e", "exit": 0, "note": "6/6 Playwright Chromium: flow, keyboard-only, axe zero serious/critical, prepared-offline with zero /api requests" },
-    { "cmd": "pnpm check:secrets", "exit": 0, "note": "no secrets in tracked files" }
+    { "cmd": "pnpm check:secrets", "exit": 0, "note": "no secrets in tracked files (scanner self-exclusion fix for its own pattern literals)" }
   ],
   "providerCalls": { "count": 0, "note": "Phase 1 makes no Meta Model API calls by design." },
   "verified": [

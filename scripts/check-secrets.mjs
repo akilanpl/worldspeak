@@ -7,6 +7,8 @@
 import { execSync } from "node:child_process";
 
 const ALLOWLIST = new Set([".env.example"]);
+// The scanner's own pattern definitions trivially match themselves.
+const SKIP_CONTENT = new Set(["scripts/check-secrets.mjs"]);
 
 const PATTERNS = [
   /BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY/,
@@ -37,6 +39,7 @@ for (const file of trackedFiles()) {
   } catch {
     continue;
   }
+  if (SKIP_CONTENT.has(file)) continue;
   for (const pattern of PATTERNS) {
     const lines = text.split("\n");
     lines.forEach((line, i) => {
