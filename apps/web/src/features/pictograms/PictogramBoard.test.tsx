@@ -68,6 +68,25 @@ describe("personal pictograms (mocked image decoding)", () => {
     view.unmount(); resolve("blob:late");
     await waitFor(() => expect(revoke).toHaveBeenCalledWith("blob:late"));
   });
+  it("bounds board capacity and allows creation after deletion", async () => {
+    render(<PictogramBoard />);
+    for (let i = 0; i < 8; i++) await create(`Meaning ${i}`);
+    fireEvent.change(screen.getByLabelText("Local image"), { target: { files: [new File(["x"], "x.png", { type: "image/png" })] } });
+    fireEvent.change(screen.getByLabelText("My exact meaning or words"), { target: { value: "Ninth" } });
+    fireEvent.change(screen.getByLabelText("Image description for accessibility"), { target: { value: "Description" } });
+    fireEvent.submit(screen.getByRole("button", { name: "Create pictogram" }).closest("form")!);
+    expect(screen.getByRole("alert")).toHaveTextContent(/at most 8/);
+    expect(loadLocalImage).toHaveBeenCalledTimes(8);
+    fireEvent.click(screen.getByRole("button", { name: "Delete pictogram: Meaning 0" }));
+    fireEvent.submit(screen.getByRole("button", { name: "Create pictogram" }).closest("form")!);
+    await screen.findByRole("button", { name: "Use pictogram: Ninth" });
+  });
+  it("keeps custom words exact when Tamil is explicitly selected", async () => {
+    render(<PictogramBoard />); await create("My own word");
+    fireEvent.click(screen.getByRole("button", { name: /Use pictogram:/ }));
+    fireEvent.click(screen.getByRole("button", { name: "தமிழ்" }));
+    expect(screen.getByText("My own word", { selector: "p.preview-sentence" })).toHaveAttribute("lang", "ta");
+  });
   it("reports decoding errors and permits retry", async () => {
     vi.mocked(loadLocalImage).mockRejectedValueOnce(new Error("Invalid local image"));
     render(<PictogramBoard />);
