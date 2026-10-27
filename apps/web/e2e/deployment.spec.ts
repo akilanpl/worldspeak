@@ -11,7 +11,13 @@ test("large text preserves bilingual guest composition and reflow", async ({ pag
   await expect(page.getByText("I want water.", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "தமிழ்", exact: true }).first().click();
   await expect(page.getByText("எனக்கு தண்ணீர் வேண்டும்.", { exact: true })).toBeVisible();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  const overflow = await page.evaluate(() => ({
+    scrollWidth: document.documentElement.scrollWidth, viewport: window.innerWidth,
+    // Geometry-only failure evidence; no user text or form values.
+    elements: [...document.querySelectorAll("body *")].filter(el => el.getBoundingClientRect().right > window.innerWidth + 1)
+      .slice(0, 12).map(el => ({ tag: el.tagName, className: el.className.toString(), right: Math.round(el.getBoundingClientRect().right) })),
+  }));
+  expect(overflow.scrollWidth, JSON.stringify(overflow)).toBeLessThanOrEqual(overflow.viewport);
   expect(await page.evaluate(() => (window as unknown as { __speakCalls: unknown[] }).__speakCalls)).toEqual([]);
 });
 

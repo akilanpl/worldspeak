@@ -60,7 +60,7 @@ node scripts/deployment-smoke.mjs --base-url https://YOUR_APPROVED_ORIGIN --mode
 
 Replace the placeholder deliberately; never use credential-bearing URLs. The report contains check names, HTTP status and elapsed milliseconds, without response bodies, cookies or keys. HTTP redirects are failures; configure the canonical origin instead of following to another host.
 
-CI runs this runner against its own local production server through `apps/web/e2e/deployment.spec.ts`. Tests use synthetic HTTP responses for failure injection (network, oversized body, cache leakage, public private-data response), and existing Chromium guest/mock authenticated journeys. The new browser checks cover 200% text bilingual composition and service-worker caches containing only public offline assets. Existing mobile, reduced-motion, offline and speech-approval regressions remain required. Browser mocks are not hosted Auth or physical device evidence.
+CI runs this runner against its own local production server through `apps/web/e2e/deployment.spec.ts`. Tests use synthetic HTTP responses for failure injection (network, oversized body, cache leakage, public private-data response), and existing Chromium guest/mock authenticated journeys. The new browser checks cover 200% text bilingual composition (including a workspace grid intrinsic-minimum fix exposed by the first CI run) and service-worker caches containing only public offline assets. Existing mobile, reduced-motion, offline and speech-approval regressions remain required. Browser mocks are not hosted Auth or physical device evidence.
 
 ## HTTPS, OAuth and session acceptance — manual, not newly passed
 
