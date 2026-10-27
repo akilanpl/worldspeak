@@ -19,13 +19,13 @@ Spark uses one authoritative non-generation `POST /v1/responses/input_tokens` pr
 
 ## Bounded execution after explicit approval only
 
-Operator uses a transaction to set the existing global and the single designated smoke user's budget limit to at most 50,000 micro-USD **including existing spent/reserved counters**; never reset counters to create room. Default other users stay at zero. Set each generation_permits row to `remaining=1` exactly once. Private role limits each to 0/1; dispatch consumes it atomically, even if the worker crashes before transmission. Do not replenish a consumed permit on a timeout.
+Operator calls the private, operator-only `world_inference.authorize_first_smoke(designated_auth_user_uuid)` exactly once after explicit approval. This reviewed migration-007 function locks the global budget, rejects any previous authorization/dispatch/credit receipt or existing job, requires pristine global/designated counters, verifies every other account has zero limit/spend/reservation, and asserts exactly the two expected operations are unarmed. It atomically installs a permanent authorization tombstone, binds both one-shot permits to that one owner and sets only global/designated limits to 50,000 micro-USD. It never resets counters. Worker/web/user roles cannot execute it. Dispatch requires the same owner and records `consumed_at` atomically. Repeating setup cannot rearm consumed permits, including after Auth/job deletion. Do not bypass it with direct table updates.
 
-Enable API only on loopback/approved staging origin and set worker approval marker `WORLDSPEAK_LIVE_INFERENCE_APPROVED=two-call-smoke-v1`. Upload the still after explicit Send, create one `scene` job with a new UUID key, and run the worker once. Only after a validated scene success, explicitly confirm the noun and submit one `segment` job using the same unexpired asset and one new UUID key; run worker once. Poll GET routes only; no model calls from polling. Source output must be `model`, never a fixture. No Speak action is part of this smoke.
+Enable API only on loopback/approved staging origin and set worker approval marker `WORLDSPEAK_LIVE_INFERENCE_APPROVED=two-call-smoke-v1`. Upload the still after explicit Send, create one `scene` job with a new UUID key, and run the worker once. Only after a validated scene success, explicitly confirm the noun and submit one `segment` job using the same sanitized still, fresh per-upload consent and one new UUID key. The UI creates a new transient asset for SAM after revoking the scene asset; verify matching normalized SHA-256 and retain both IDs for cleanup; run worker once. Poll GET routes only; no model calls from polling. Source output must be `model`, never a fixture. No Speak action is part of this smoke.
 
 At most **one Spark generation and one SAM still generation**. The durable dispatch marker and one-shot permit commit before even the token-count transmission. A crash during counting is conservatively uncertain and never resubmitted. The separate Spark token-count endpoint generates/stores no response; its media transmission is included in consent. Do not run any generation if preflight is unavailable/over cap. Stop after any uncertain response, malformed result, exhausted credit, unexpected pricing/usage, cancellation or privacy issue. Do not run SAM after a failed/uncertain scene. Zero automatic paid retries; leave conservative reservation held for reconciliation. Abort cannot promise an upstream billing reversal.
 
-Immediately unset live marker/disable API, leave permits exhausted/zero, revoke the asset, run cleanup and verify bytes absent through Storage API. Keep ordinary cleanup enabled. Review actual provider receipts against the $0.05 ceiling before any further approval. Budget/permit limits constrain application admissions, not an independently verified provider-side billing guarantee.
+Immediately unset live marker/disable API, leave permits exhausted/zero, revoke both temporary assets, run cleanup and verify bytes absent through Storage API. Keep ordinary cleanup enabled. Review actual provider receipts against the $0.05 ceiling before any further approval. Budget/permit limits constrain application admissions, not an independently verified provider-side billing guarantee.
 
 ## Evidence to retain, without content/secrets
 
@@ -33,27 +33,10 @@ Commit SHA, model/adapter/pricing versions, exactly one response ID per generati
 
 Official specifications: [Responses](https://dev.meta.ai/docs/protocols/responses), [schemas/token-count body](https://dev.meta.ai/docs/api-reference/responses/schemas), [image understanding](https://dev.meta.ai/docs/image-understanding), [structured output](https://dev.meta.ai/docs/structured-output), [SAM requests](https://dev.meta.ai/docs/sam/segmenting), [SAM grammar](https://dev.meta.ai/docs/sam/reading-segmentation), [official parser](https://dev.meta.ai/docs/sam/client-libraries). Retrieved 27 October 2026; request shapes still require live entitlement/schema confirmation during the approved smoke.
 
-Operator SQL outline (review only; substitute the designated existing Auth user UUID, execute only after the explicit approval above):
+Reviewed operator invocation, only after approval and successful hosted migration/security checks:
 
 ```sql
-begin;
-select account from world_inference.budgets where account='global' for update;
--- Stop if any inference has already been dispatched; this is a FIRST smoke,
--- not a mechanism for replenishing exhausted permits or resetting spending.
-do $$ begin
- if exists(select 1 from public.inference_jobs where dispatched_at is not null)
- then raise exception 'Existing dispatches: separate reconciliation/approval required'; end if;
- if exists(select 1 from world_inference.budgets where account='global'
-           and spent_micro+reserved_micro>50000)
- then raise exception 'Insufficient approved headroom'; end if;
-end $$;
-update world_inference.budgets set limit_micro=50000 where account='global';
-insert into world_inference.budgets(account,limit_micro)
-values('<DESIGNATED_AUTH_USER_UUID>',50000)
-on conflict(account) do update set limit_micro=50000;
--- Inspect this user's existing spent/reserved counters; abort if above 50000.
-update world_inference.generation_permits set remaining=1;
-commit;
+select world_inference.authorize_first_smoke('<DESIGNATED_AUTH_USER_UUID>'::uuid);
 ```
 
-The DB login role/password must be provisioned privately by the operator; never paste a password into this script or committed docs. Keep all other user budgets zero and do not expose the API broadly during this smoke. A completed/uncertain dispatch is never automatically reconciled by this outline.
+This invocation is not part of migrations, deployment, CI or worker startup. It must not be run during hosted readiness preparation, which keeps budgets/permits zero and Meta generation disabled. The authorization tombstone survives account deletion. Any subsequent test window requires separately reviewed authorization design and explicit human approval; do not delete the tombstone or reset counters to manufacture headroom.

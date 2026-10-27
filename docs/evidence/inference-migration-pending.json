@@ -5,7 +5,7 @@
   "artifacts": [
     {
       "path": "supabase/migrations/20261027040029_worldspeak_007_inference_core.sql",
-      "sha256": "3bb40963759f6aa7beb88ab0c84bf50f8a8296a9e3d79ad2b87ba598fbbdd50a"
+      "sha256": "1e8420ca5316ea2f1df898dca447d5b8410acdc2a7b45897fe5e4c95b76e6be2"
     },
     {
       "path": "packages/db/src/inference-rpc.ts",

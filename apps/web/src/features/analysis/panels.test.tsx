@@ -12,7 +12,14 @@ afterEach(() => {
 describe("ConsentPanel", () => {
   it("gates Send behind an explicit checkbox and explains retention", () => {
     const onSend = vi.fn();
-    render(<ConsentPanel locale="en" imageName="photo.jpg" onBack={() => {}} onSend={onSend} />);
+    render(
+      <ConsentPanel
+        locale="en"
+        imageName="photo.jpg"
+        onBack={() => {}}
+        onSend={onSend}
+      />,
+    );
     const send = screen.getByTestId("consent-send");
     expect(send).toBeDisabled();
     fireEvent.click(send);
@@ -30,38 +37,108 @@ describe("JobStatus", () => {
   const noop = () => {};
   it("shows queued and processing distinctly, and terminal states honestly", () => {
     const { rerender } = render(
-      <JobStatus locale="en" outcome={{ name: "queued", jobId: "j", assetId: "a", operation: "scene" }} onCancel={noop} onStartOver={noop} />,
+      <JobStatus
+        locale="en"
+        outcome={{
+          name: "queued",
+          jobId: "j",
+          assetId: "a",
+          operation: "scene",
+        }}
+        onCancel={noop}
+        onStartOver={noop}
+      />,
     );
     expect(screen.getByText(/queued/i)).toBeInTheDocument();
     rerender(
-      <JobStatus locale="en" outcome={{ name: "processing", jobId: "j", assetId: "a", operation: "scene" }} onCancel={noop} onStartOver={noop} />,
+      <JobStatus
+        locale="en"
+        outcome={{
+          name: "processing",
+          jobId: "j",
+          assetId: "a",
+          operation: "scene",
+        }}
+        onCancel={noop}
+        onStartOver={noop}
+      />,
     );
     expect(screen.getByText(/analyzing/i)).toBeInTheDocument();
     rerender(
       <JobStatus
         locale="en"
-        outcome={{ name: "succeeded", jobId: "j", assetId: "a", operation: "scene", objects: [], rejected: 2, model: "muse-spark-1.3" }}
+        outcome={{
+          name: "succeeded",
+          jobId: "j",
+          assetId: "a",
+          operation: "scene",
+          objects: [],
+          rejected: 2,
+          model: "muse-spark-1.3",
+        }}
         onCancel={noop}
         onStartOver={noop}
       />,
     );
-    expect(screen.getByText(/discarded as invalid geometry/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/discarded as invalid geometry/i),
+    ).toBeInTheDocument();
     rerender(
-      <JobStatus locale="en" outcome={{ name: "canceled" }} onCancel={noop} onStartOver={noop} />,
+      <JobStatus
+        locale="en"
+        outcome={{ name: "canceled" }}
+        onCancel={noop}
+        onStartOver={noop}
+      />,
     );
-    expect(screen.getByText(/revoked/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/physical deletion is separate/i),
+    ).toBeInTheDocument();
     rerender(
-      <JobStatus locale="en" outcome={{ name: "uncertain", detail: "maybe later" }} onCancel={noop} onStartOver={noop} />,
+      <JobStatus
+        locale="en"
+        outcome={{ name: "uncertain", detail: "maybe later" }}
+        onCancel={noop}
+        onStartOver={noop}
+      />,
     );
-    expect(screen.getByText(/uncertain/i).parentElement?.textContent).toMatch(/maybe later/);
+    expect(screen.getByText(/uncertain/i).parentElement?.textContent).toMatch(
+      /maybe later/,
+    );
   });
 
   it("failed states name the code and offer start-over, never retry", () => {
     render(
-      <JobStatus locale="en" outcome={{ name: "failed", code: "PROVIDER_HTTP_500", detail: "bad" }} onCancel={noop} onStartOver={noop} />,
+      <JobStatus
+        locale="en"
+        outcome={{ name: "failed", code: "PROVIDER_HTTP_500", detail: "bad" }}
+        onCancel={noop}
+        onStartOver={noop}
+      />,
     );
     expect(screen.getByText(/PROVIDER_HTTP_500/)).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /retry/i })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /start over/i })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /retry/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /start over/i }),
+    ).toBeInTheDocument();
   });
+});
+
+it("cancellation request never promises upstream termination or physical deletion", () => {
+  render(
+    <JobStatus
+      locale="en"
+      outcome={{ name: "cancel_requested", serverAcknowledged: false }}
+      onCancel={() => {}}
+      onStartOver={() => {}}
+    />,
+  );
+  expect(
+    screen.getByText(/acknowledgement could not be confirmed/i),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByText(/Analysis canceled\. The upload was revoked/i),
+  ).not.toBeInTheDocument();
 });

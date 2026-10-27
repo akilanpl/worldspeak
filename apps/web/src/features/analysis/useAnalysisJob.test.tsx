@@ -19,12 +19,21 @@ function Harness({ onApi }: { onApi: (api: AnalysisApi) => void }) {
 
 function renderHook() {
   let api!: AnalysisApi;
-  render(<Harness onApi={(a) => { api = a; }} />);
+  render(
+    <Harness
+      onApi={(a) => {
+        api = a;
+      }}
+    />,
+  );
   return () => api;
 }
 
 function jsonResponse(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "content-type": "application/json" },
+  });
 }
 
 function modelResult() {
@@ -81,13 +90,20 @@ describe("useAnalysisJob", () => {
     const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
       calls.push(init === undefined ? { url } : { url, init });
       if (url === "/api/v1/media") {
-        expect(init?.headers).toMatchObject({ "x-worldspeak-consent": "scene-v1" });
+        expect(init?.headers).toMatchObject({
+          "x-worldspeak-consent": "scene-v1",
+        });
         return jsonResponse({ ok: true, data: { assetId: ASSET } }, 201);
       }
       if (url === "/api/v1/jobs") {
-        const body = JSON.parse(init?.body as string) as { idempotencyKey: string };
+        const body = JSON.parse(init?.body as string) as {
+          idempotencyKey: string;
+        };
         expect(body.idempotencyKey).toMatch(/^[0-9a-f-]{36}$/);
-        return jsonResponse({ ok: true, data: { jobId: JOB, pollAfterMs: 1000 } }, 202);
+        return jsonResponse(
+          { ok: true, data: { jobId: JOB, pollAfterMs: 1000 } },
+          202,
+        );
       }
       return jsonResponse(jobView("succeeded", { result: modelResult() }));
     });
@@ -96,22 +112,35 @@ describe("useAnalysisJob", () => {
     getApi().submit(bytes, "image/png", "scene");
     await vi.waitFor(() => expect(getApi().outcome.name).toBe("succeeded"));
     const done = getApi().outcome;
-    expect(done).toMatchObject({ name: "succeeded", jobId: JOB, model: "muse-spark-1.3" });
+    expect(done).toMatchObject({
+      name: "succeeded",
+      jobId: JOB,
+      model: "muse-spark-1.3",
+    });
     if (done.name === "succeeded") {
       expect(done.objects).toHaveLength(1);
-      expect(done.objects[0]).toMatchObject({ labelEn: "chair", origin: "model" });
+      expect(done.objects[0]).toMatchObject({
+        labelEn: "chair",
+        origin: "model",
+      });
       expect(done.rejected).toBe(0);
     }
     // Exactly: 1 upload + 1 submit + 1 poll. No retries, no dispatch from polling.
-    expect(calls.map((c) => c.url)).toEqual(["/api/v1/media", "/api/v1/jobs", `/api/v1/jobs/${JOB}`]);
+    expect(calls.map((c) => c.url)).toEqual([
+      "/api/v1/media",
+      "/api/v1/jobs",
+      `/api/v1/jobs/${JOB}`,
+    ]);
   });
 
   it("rejects non-model results instead of showing them", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(async (url: string) => {
-        if (url === "/api/v1/media") return jsonResponse({ ok: true, data: { assetId: ASSET } }, 201);
-        if (url === "/api/v1/jobs") return jsonResponse({ ok: true, data: { jobId: JOB } }, 202);
+        if (url === "/api/v1/media")
+          return jsonResponse({ ok: true, data: { assetId: ASSET } }, 201);
+        if (url === "/api/v1/jobs")
+          return jsonResponse({ ok: true, data: { jobId: JOB } }, 202);
         const result = modelResult();
         (result.provenance as { source: string }).source = "fixture";
         return jsonResponse(jobView("succeeded", { result }));
@@ -120,7 +149,10 @@ describe("useAnalysisJob", () => {
     const getApi = renderHook();
     getApi().submit(bytes, "image/png", "scene");
     await vi.waitFor(() => expect(getApi().outcome.name).toBe("failed"));
-    expect(getApi().outcome).toMatchObject({ name: "failed", code: "invalid result" });
+    expect(getApi().outcome).toMatchObject({
+      name: "failed",
+      code: "invalid result",
+    });
   });
 
   it("surfaces failed, canceled, and uncertain terminal states", async () => {
@@ -133,8 +165,10 @@ describe("useAnalysisJob", () => {
       vi.stubGlobal(
         "fetch",
         vi.fn(async (url: string) => {
-          if (url === "/api/v1/media") return jsonResponse({ ok: true, data: { assetId: ASSET } }, 201);
-          if (url === "/api/v1/jobs") return jsonResponse({ ok: true, data: { jobId: JOB } }, 202);
+          if (url === "/api/v1/media")
+            return jsonResponse({ ok: true, data: { assetId: ASSET } }, 201);
+          if (url === "/api/v1/jobs")
+            return jsonResponse({ ok: true, data: { jobId: JOB } }, 202);
           return jsonResponse(jobView(status, extra));
         }),
       );
@@ -159,7 +193,7 @@ describe("useAnalysisJob", () => {
     }
   });
 
-  it("cancel fences the job, revokes the bytes, and reports canceled at once", async () => {
+  it("cancel fences the job, requests cleanup and reports cancellation requested", async () => {
     const deleted: string[] = [];
     vi.stubGlobal(
       "fetch",
@@ -168,8 +202,10 @@ describe("useAnalysisJob", () => {
           deleted.push(url);
           return jsonResponse({ ok: true });
         }
-        if (url === "/api/v1/media") return jsonResponse({ ok: true, data: { assetId: ASSET } }, 201);
-        if (url === "/api/v1/jobs") return jsonResponse({ ok: true, data: { jobId: JOB } }, 202);
+        if (url === "/api/v1/media")
+          return jsonResponse({ ok: true, data: { assetId: ASSET } }, 201);
+        if (url === "/api/v1/jobs")
+          return jsonResponse({ ok: true, data: { jobId: JOB } }, 202);
         return jsonResponse(jobView("leased"));
       }),
     );
@@ -180,7 +216,9 @@ describe("useAnalysisJob", () => {
       expect(o.name === "queued" || o.name === "processing").toBe(true);
     });
     getApi().cancel();
-    await vi.waitFor(() => expect(getApi().outcome).toEqual({ name: "canceled" }));
+    await vi.waitFor(() =>
+      expect(getApi().outcome).toMatchObject({ name: "cancel_requested" }),
+    );
     await vi.waitFor(() => expect(deleted).toContain(`/api/v1/jobs/${JOB}`));
     expect(deleted).toContain(`/api/v1/media/${ASSET}`);
   });
@@ -192,10 +230,103 @@ describe("useAnalysisJob", () => {
     vi.stubGlobal("fetch", fetchMock);
     const getApi = renderHook();
     getApi().submit(bytes, "image/png", "scene");
-    await vi.waitFor(() => expect(getApi().outcome.name).toBe("failed"));
+    await vi.waitFor(() => expect(getApi().outcome.name).toBe("uncertain"));
     const attempts = fetchMock.mock.calls.length;
     await new Promise((r) => setTimeout(r, 300));
     // No background retry: the count is frozen and only a fresh user gesture resubmits.
     expect(fetchMock.mock.calls.length).toBe(attempts);
+  });
+});
+
+it("cancel during upload prevents late admission and requests cleanup of late asset IDs", async () => {
+  let finish!: (r: Response) => void;
+  const pending = new Promise<Response>((r) => {
+    finish = r;
+  });
+  const calls: string[] = [];
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (url: string) => {
+      calls.push(url);
+      if (url === "/api/v1/media") return pending;
+      return jsonResponse({ ok: true });
+    }),
+  );
+  const getApi = renderHook();
+  getApi().submit(bytes, "image/png", "scene");
+  getApi().cancel();
+  finish(jsonResponse({ ok: true, data: { assetId: ASSET } }, 201));
+  await vi.waitFor(() => expect(calls).toContain(`/api/v1/media/${ASSET}`));
+  expect(calls).not.toContain("/api/v1/jobs");
+  expect(getApi().outcome.name).toBe("cancel_requested");
+});
+it("cancel during admission fences late job IDs without polling or publishing", async () => {
+  let finish!: (r: Response) => void;
+  const pending = new Promise<Response>((r) => {
+    finish = r;
+  });
+  const calls: { url: string; method: string }[] = [];
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (url: string, init?: RequestInit) => {
+      calls.push({ url, method: init?.method ?? "GET" });
+      if (init?.method === "DELETE") return jsonResponse({ ok: true });
+      if (url === "/api/v1/media")
+        return jsonResponse({ ok: true, data: { assetId: ASSET } }, 201);
+      return pending;
+    }),
+  );
+  const getApi = renderHook();
+  getApi().submit(bytes, "image/png", "scene");
+  await vi.waitFor(() =>
+    expect(calls.some((c) => c.url === "/api/v1/jobs")).toBe(true),
+  );
+  getApi().cancel();
+  finish(jsonResponse({ ok: true, data: { jobId: JOB } }, 202));
+  await vi.waitFor(() =>
+    expect(calls).toContainEqual({
+      url: `/api/v1/jobs/${JOB}`,
+      method: "DELETE",
+    }),
+  );
+  expect(calls.some((c) => c.method === "GET")).toBe(false);
+  expect(getApi().outcome.name).toBe("cancel_requested");
+});
+it("unmount during upload cannot submit a job after the component is gone", async () => {
+  let finish!: (r: Response) => void;
+  const pending = new Promise<Response>((r) => {
+    finish = r;
+  });
+  const calls: string[] = [];
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (url: string) => {
+      calls.push(url);
+      if (url === "/api/v1/media") return pending;
+      return jsonResponse({ ok: true });
+    }),
+  );
+  const getApi = renderHook();
+  getApi().submit(bytes, "image/png", "scene");
+  cleanup();
+  finish(jsonResponse({ ok: true, data: { assetId: ASSET } }, 201));
+  await vi.waitFor(() => expect(calls).toContain(`/api/v1/media/${ASSET}`));
+  expect(calls).not.toContain("/api/v1/jobs");
+});
+it("admission acknowledgement loss is uncertain, never reported as nothing sent", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (url: string, init?: RequestInit) => {
+      if (init?.method === "DELETE") return jsonResponse({ ok: true });
+      if (url === "/api/v1/media")
+        return jsonResponse({ ok: true, data: { assetId: ASSET } }, 201);
+      throw Error("lost response");
+    }),
+  );
+  const getApi = renderHook();
+  getApi().submit(bytes, "image/png", "scene");
+  await vi.waitFor(() => expect(getApi().outcome.name).toBe("uncertain"));
+  expect(getApi().outcome).toMatchObject({
+    detail: expect.stringContaining("a job may exist"),
   });
 });

@@ -6,7 +6,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "once": "tsx src/main.ts",
-    "test:db": "tsx tests/database.ts"
+    "test:db": "tsx tests/smoke-authorization.ts && tsx tests/database.ts"
   },
   "dependencies": {
     "@worldspeak/contracts": "workspace:*",

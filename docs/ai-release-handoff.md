@@ -20,7 +20,7 @@ pushed to main and PR #1 was not modified.
     `adaptDetectionList` (fixtures can never enter it). No automatic retry
     anywhere: failed submissions return to idle and need fresh consent +
     fresh idempotency key; cancel fires job DELETE + media DELETE and
-    reports `canceled` immediately; stale polls are fenced by job identity.
+    reports `cancel_requested` immediately; stale polls are fenced by job identity.
   - `ConsentPanel.tsx` — one-upload consent copy (WorldSpeak + Meta
     recipients, 15-minute retention, no retraction after send, provider
     terms, per-upload approval); the `scene-v1` header is sent ONLY from
@@ -41,10 +41,9 @@ pushed to main and PR #1 was not modified.
   `PerceivedObject`/`ObjectTrack` construction is unchanged).
 - `handoff.ts` + `ComposerEntry` + `page.tsx`: privacy transport.
   `handoffHref` stores the payload in sessionStorage under a random key and
-  navigates to `/?handoff=<key>`; the composer resolves the key (legacy
-  inline payloads still decode) and remounts per key, so consecutive
+  navigates to `/?handoff=<key>`; the composer resolves the key (legacy inline payload links are rejected) and remounts per key, so consecutive
   handoffs swap state with no full reload and user-entered text never lands
-  in browser history. Storage-unavailable falls back to the inline payload.
+  in browser history. Storage-unavailable falls back to bounded, expiring tab-memory with client navigation. No payload is put in a URL; reload/new-tab without storage fails closed.
   Guest offline operation needs no network. Open-in-composer and journey
   nav links are Next `Link` (client navigation, `prefetch={false}` like
   Sol's Board link).
@@ -72,24 +71,7 @@ pushed to main and PR #1 was not modified.
 
 ## Smoke-test SQL review (proposal only — nothing executed, no approval)
 
-The outline in `docs/meta-inference-smoke-test.md` is almost right; two
-tightenings are recommended before any live run:
-
-1. `update world_inference.generation_permits set remaining=1;` is
-   unscoped: it arms BOTH operations for ANY funded identity and silently
-   replenishes an already-consumed permit on re-run. Scope and guard it:
-   `update ... set remaining=1 where operation in ('scene','segment') and
-   remaining=0`, then assert exactly 2 rows changed — abort otherwise
-   (a non-zero row means a prior dispatch or a repeated outline).
-2. The designated-user budget insert has no spent/reserved guard (only the
-   global one does). Add the same `raise exception` guard for the
-   designated user's existing counters before setting the limit, so the
-   $0.05 ceiling math is enforced rather than commented.
-
-Permits are per-operation, not per-identity — the outline's safety rests
-entirely on every other budget staying zero. Verify with
-`select account,limit_micro,spent_micro,reserved_micro from
-world_inference.budgets` immediately before enabling anything.
+The earlier permit-update outline was unsafe and has been removed. Migration 007 now supplies operator-only `world_inference.authorize_first_smoke(uuid)`: durable single-use authorization, designated-owner binding, exact operation scope, pristine global/user counters, all other accounts zero, previous dispatch/receipt rejection, atomic activation and immutable consumption history. Rerunning setup cannot rearm permits after jobs or identities are removed. Activation still requires separate explicit human approval. During hosted preparation all budgets/permits remain zero.
 
 ## Hosted requirements before the first real smoke (all still open)
 
@@ -120,3 +102,7 @@ world_inference.budgets` immediately before enabling anything.
 - Remaining manual gates from Phase 2/3 (native Tamil review, real-device
   camera/shaping/airplane-mode checks, audible Speak verification) are
   unchanged by this branch.
+
+## Final consolidation corrections
+
+The only valid project reference is `cafkyowssdemzivhzxbb`. PR #1 was reviewed and normally merged first; PR #2 was retargeted to main for final verification. Cancellation acknowledges only a request/accepted publication fence, not provider termination or physical byte deletion. Upload/admission/poll continuations are fenced by run epoch; late IDs are used solely for cleanup after cancel/unmount. Admission acknowledgement loss is uncertain, not a promise that nothing was sent. Raw logical expiry and scheduled byte deletion are distinguished in both consent and status copy. No hosted migration, funding, permit activation or paid generation is implied by merging.

@@ -25,9 +25,17 @@ export default function JobStatus({
   if (outcome.name === "idle") return null;
   if (outcome.name === "uploading") {
     return (
-      <p className="status" role="status">
-        {t("Uploading your photo…", "புகைப்படம் பதிவேறுகிறது…")}
-      </p>
+      <div role="status">
+        <p className="status">
+          {t(
+            "Sending your photo and requesting analysis…",
+            "படம் அனுப்பப்பட்டு பகுப்பாய்வு கோரப்படுகிறது…",
+          )}
+        </p>
+        <button type="button" className="btn btn-secondary" onClick={onCancel}>
+          {t("Request cancellation", "ரத்து செய்யக் கோரு")}
+        </button>
+      </div>
     );
   }
   if (outcome.name === "queued" || outcome.name === "processing") {
@@ -39,7 +47,11 @@ export default function JobStatus({
             : t("Model is analyzing…", "மாதிரி பகுப்பாய்கிறது…")}
         </p>
         <div className="btn-row">
-          <button type="button" className="btn btn-secondary" onClick={onCancel}>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={onCancel}
+          >
             {t("Cancel analysis", "பகுப்பாய்வை நிறுத்து")}
           </button>
         </div>
@@ -61,14 +73,27 @@ export default function JobStatus({
       </p>
     );
   }
-  if (outcome.name === "canceled") {
+  if (outcome.name === "canceled" || outcome.name === "cancel_requested") {
     return (
       <div className="panel" role="status">
         <p className="status">
-          {t("Analysis canceled. The upload was revoked.", "பகுப்பாய்வு நிறுத்தப்பட்டது. பதிவேற்றம் நீக்கப்பட்டது.")}
+          {t(
+            outcome.name === "canceled"
+              ? "Job result canceled. Upstream processing or charges may already have occurred; physical deletion is separate."
+              : outcome.serverAcknowledged === true
+                ? "Cancellation requested and accepted by the server. Upstream processing/billing may continue. Media deletion is queued, not yet physically verified."
+                : outcome.serverAcknowledged === false
+                  ? "Cancellation requested, but server acknowledgement could not be confirmed. Processing may continue; media cleanup is not yet verified."
+                  : "Requesting cancellation. This does not guarantee upstream termination or immediate media deletion.",
+            "ரத்து செய்யக் கோரப்பட்டுள்ளது. வழங்குநரின் செயலாக்கம் அல்லது கட்டணம் தொடரலாம்; கோப்பு நீக்கம் இன்னும் சரிபார்க்கப்படவில்லை.",
+          )}
         </p>
         <div className="btn-row">
-          <button type="button" className="btn btn-secondary" onClick={onStartOver}>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={onStartOver}
+          >
             {t("Start over", "மீண்டும் தொடங்கு")}
           </button>
         </div>
@@ -82,7 +107,11 @@ export default function JobStatus({
           {t("Uncertain outcome: ", "நிச்சயமற்ற முடிவு: ") + outcome.detail}
         </p>
         <div className="btn-row">
-          <button type="button" className="btn btn-secondary" onClick={onStartOver}>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={onStartOver}
+          >
             {t("Start over", "மீண்டும் தொடங்கு")}
           </button>
         </div>
@@ -94,7 +123,11 @@ export default function JobStatus({
       <div className="panel" role="alert">
         <p className="status">{outcome.detail}</p>
         <div className="btn-row">
-          <button type="button" className="btn btn-secondary" onClick={onStartOver}>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={onStartOver}
+          >
             {t("Back to photo", "புகைப்படத்திற்குத் திரும்பு")}
           </button>
         </div>
@@ -104,10 +137,15 @@ export default function JobStatus({
   return (
     <div className="panel" role="alert">
       <p className="status">
-        {t("Analysis failed", "பகுப்பாய்வு தோல்வி")} ({outcome.code}): {outcome.detail}
+        {t("Analysis failed", "பகுப்பாய்வு தோல்வி")} ({outcome.code}):{" "}
+        {outcome.detail}
       </p>
       <div className="btn-row">
-        <button type="button" className="btn btn-secondary" onClick={onStartOver}>
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={onStartOver}
+        >
           {t("Start over", "மீண்டும் தொடங்கு")}
         </button>
       </div>

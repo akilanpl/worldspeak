@@ -57,9 +57,10 @@ describe("ComposerEntry", () => {
     expect(calls).toHaveLength(0);
   });
 
-  it("still decodes legacy inline payloads", async () => {
+  it("rejects legacy inline payload links instead of using URL content", async () => {
     renderEntry(encodeHandoff(videoPhonePayload()));
-    expect(await screen.findByText("I want phone.", { exact: true })).toBeInTheDocument();
+    expect(await screen.findByTestId("handoff-invalid-notice")).toBeInTheDocument();
+    expect(screen.queryByText("I want phone.", { exact: true })).not.toBeInTheDocument();
   });
 
   it("requires a separate Speak gesture before any speech call", async () => {

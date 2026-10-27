@@ -10,7 +10,20 @@ insert into world_inference.budgets(account) values('global');
 alter table world_inference.budgets enable row level security;
 
 -- Explicit one-shot smoke permits, consumed atomically at dispatch (not at claim).
-create table world_inference.generation_permits(operation text primary key check(operation in('scene','segment')), remaining integer not null default 0 check(remaining between 0 and 1));
+create table world_inference.generation_permits(
+ operation text primary key check(operation in('scene','segment')),
+ remaining integer not null default 0 check(remaining between 0 and 1),
+ owner_id uuid, armed_at timestamptz, consumed_at timestamptz,
+ check(remaining=0 or (owner_id is not null and armed_at is not null and consumed_at is null))
+);
+-- Permanent operator authorization tombstone; no Auth FK/cascade may erase it.
+create table world_inference.smoke_authorizations(
+ singleton boolean primary key default true check(singleton),
+ owner_id uuid not null, cap_micro bigint not null check(cap_micro=50000),
+ operations text[] not null check(operations=array['scene','segment']::text[]),
+ armed_at timestamptz not null default now()
+);
+alter table world_inference.smoke_authorizations enable row level security;
 insert into world_inference.generation_permits(operation) values('scene'),('segment');
 alter table world_inference.generation_permits enable row level security;
 
@@ -205,7 +218,7 @@ declare j public.inference_jobs;
 begin
  perform world_inference.lock_budget(); perform world_inference.sweep();
  if (select count(*) from public.inference_jobs where status in('leased','dispatching'))>=2 then return null; end if;
- select * into j from public.inference_jobs where status='queued' and exists(select 1 from world_inference.generation_permits p where p.operation=inference_jobs.operation and p.remaining>0) order by created_at,id for update skip locked limit 1;
+ select * into j from public.inference_jobs where status='queued' and exists(select 1 from world_inference.generation_permits p where p.operation=inference_jobs.operation and p.owner_id=inference_jobs.owner_id and p.remaining>0 and p.consumed_at is null) order by created_at,id for update skip locked limit 1;
  if not found then return null; end if;
  update public.inference_jobs set status='leased',lease_token=gen_random_uuid(),lease_until=now()+interval '45 seconds',attempt_count=attempt_count+1 where id=j.id returning * into j;
  return to_jsonb(j);
@@ -227,7 +240,7 @@ begin
  if not found then return null; end if;
  select * into a from public.inference_media where id=j.asset_id and owner_id=j.owner_id and state='ready' and expires_at>now();
  if not found then return null; end if;
- update world_inference.generation_permits set remaining=remaining-1 where operation=j.operation and remaining>0;
+ update world_inference.generation_permits set remaining=0,consumed_at=now() where operation=j.operation and owner_id=j.owner_id and armed_at is not null and consumed_at is null and remaining=1;
  if not found then return null; end if;
  update public.inference_jobs set status='dispatching',dispatched_at=now() where id=j.id;
  return jsonb_build_object('job',to_jsonb(j),'media',to_jsonb(a));
@@ -361,3 +374,36 @@ begin
 end $$;
 create trigger inference_identity_delete before delete on auth.users for each row execute function world_inference.before_identity_delete();
 revoke all on function world_inference.before_identity_delete() from public,anon,authenticated;
+
+
+-- Operator-only first-smoke activation. Never granted to web/user/worker roles.
+-- Atomic and one-shot even after all jobs or the Auth identity are deleted.
+create function world_inference.authorize_first_smoke(p_owner uuid) returns void
+language plpgsql security definer set search_path='' as $$
+declare changed integer;
+begin
+ perform world_inference.lock_budget();
+ if p_owner is null or not exists(select 1 from auth.users where id=p_owner) then raise exception 'SMOKE_OWNER_NOT_FOUND'; end if;
+ if exists(select 1 from world_inference.smoke_authorizations)
+    or exists(select 1 from public.inference_jobs where dispatched_at is not null)
+    or exists(select 1 from world_inference.credit_events) then raise exception 'SMOKE_ALREADY_USED'; end if;
+ if exists(select 1 from public.inference_jobs) then raise exception 'SMOKE_PENDING_JOBS'; end if;
+ if (select count(*) from world_inference.generation_permits)<>2
+    or exists(select 1 from world_inference.generation_permits where operation not in('scene','segment') or remaining<>0 or owner_id is not null or armed_at is not null or consumed_at is not null)
+ then raise exception 'SMOKE_PERMITS_NOT_PRISTINE'; end if;
+ if not exists(select 1 from world_inference.budgets where account='global' and limit_micro=0 and spent_micro=0 and reserved_micro=0)
+ then raise exception 'SMOKE_GLOBAL_NOT_PRISTINE'; end if;
+ if exists(select 1 from world_inference.budgets where account=p_owner::text and (limit_micro<>0 or spent_micro<>0 or reserved_micro<>0))
+ then raise exception 'SMOKE_OWNER_NOT_PRISTINE'; end if;
+ if exists(select 1 from world_inference.budgets where account not in('global',p_owner::text) and (limit_micro<>0 or spent_micro<>0 or reserved_micro<>0))
+ then raise exception 'SMOKE_OTHER_ACCOUNT_NOT_ZERO'; end if;
+ insert into world_inference.smoke_authorizations(owner_id,cap_micro,operations) values(p_owner,50000,array['scene','segment']);
+ update world_inference.budgets set limit_micro=50000 where account='global';
+ insert into world_inference.budgets(account,limit_micro) values(p_owner::text,50000)
+ on conflict(account) do update set limit_micro=excluded.limit_micro;
+ update world_inference.generation_permits set remaining=1,owner_id=p_owner,armed_at=now()
+ where operation in('scene','segment') and remaining=0 and armed_at is null and consumed_at is null and owner_id is null;
+ get diagnostics changed=row_count;
+ if changed<>2 then raise exception 'SMOKE_SCOPE_MISMATCH'; end if;
+end $$;
+revoke all on function world_inference.authorize_first_smoke(uuid) from public,anon,authenticated,worldspeak_inference_worker;

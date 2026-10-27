@@ -110,7 +110,7 @@ async function config(global = 1000000) {
   await sql`update world_inference.budgets set limit_micro=${global}`;
   for (const u of users)
     await sql`insert into world_inference.budgets(account,limit_micro) values(${u},1000000) on conflict(account) do update set limit_micro=1000000`;
-  await sql`update world_inference.generation_permits set remaining=1`;
+  await sql`update world_inference.generation_permits set remaining=1,owner_id=${a},armed_at=now(),consumed_at=null`;
 }
 async function reserved() {
   return Number(
@@ -194,6 +194,15 @@ try {
     await assert.rejects(submit(a, aa), /RATE_LIMITED/);
     await cancel(a, id);
   });
+  await check(
+    "permits bind owner even if another account is accidentally funded",
+    async () => {
+      const id = await submit(b, bb);
+      assert.equal(await claim(), null);
+      await cancel(b, id);
+      assert.equal(await reserved(), 0);
+    },
+  );
   await check(
     "lease restart safe, stale tokens fenced, bounded pre-send attempts",
     async () => {

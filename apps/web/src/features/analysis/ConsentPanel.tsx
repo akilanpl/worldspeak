@@ -23,20 +23,27 @@ export default function ConsentPanel({
   const [understood, setUnderstood] = useState(false);
   return (
     <section className="panel" aria-labelledby="consent-h">
-      <h2 id="consent-h" data-step-heading tabIndex={-1} style={{ outline: "none" }}>
+      <h2
+        id="consent-h"
+        data-step-heading
+        tabIndex={-1}
+        style={{ outline: "none" }}
+      >
         {ta ? "அனுமதி: மாதிரி பகுப்பாய்வு" : "Consent: model analysis"}
       </h2>
       <p className="status">
         {ta
           ? "இந்தப் புகைப்படம் WorldSpeak-க்கும் Meta-வுக்கும் பகுப்பாய்வுக்காக அனுப்பப்படும்."
           : "This photo will be uploaded to WorldSpeak and Meta for analysis."}{" "}
-        {ta ? `கோப்பு: ${imageName ?? "பதிவு"}` : `File: ${imageName ?? "capture"}`}
+        {ta
+          ? `கோப்பு: ${imageName ?? "பதிவு"}`
+          : `File: ${imageName ?? "capture"}`}
       </p>
       <ul className="status">
         <li>
           {ta
-            ? "படம் தற்காலிகமாக மட்டும் வைக்கப்படும் (15 நிமிடம்), பின் நீக்கப்படும்."
-            : "The image is kept transiently (15 minutes), then deleted."}
+            ? "15 நிமிடங்களுக்குப் பிறகு புதிய பகுப்பாய்வுக்கு படம் கிடைக்காது. கோப்பு நீக்கப்பட வரிசையில் சேர்க்கப்படும்; நீக்கம் தாமதமாகலாம். முடிவுகள் 24 மணி நேரம் வரை இருக்கலாம்."
+            : "The image becomes unavailable for new analysis after 15 minutes and is queued for deletion. Physical cleanup can be delayed if the worker is unavailable. Derived results may remain for up to 24 hours."}
         </li>
         <li>
           {ta

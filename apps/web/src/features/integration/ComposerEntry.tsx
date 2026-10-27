@@ -46,7 +46,7 @@ function ComposerDraft({
   /**
    * Session-storage handoff key from `?handoff=`. The parent keys this
    * component by the key, so navigating between handoffs remounts with
-   * fresh state and no full reload. Legacy inline payloads still decode.
+   * fresh state and no full reload. Legacy inline payload links are rejected.
    */
   handoffKey?: string | null | undefined;
   /** Test seam: inject a gateway backed by a fake synthesizer. */
@@ -72,7 +72,7 @@ function ComposerDraft({
     <>
       {entry.invalid && (
         <p className="notice" role="alert" data-testid="handoff-invalid-notice">
-          That camera/video draft is unavailable or expired. It was not put in the URL. Return to the previous screen or enter your words here.
+          That camera/video draft is unavailable or expired. Only tab-local draft keys are accepted. Return to the previous screen or enter your words here.
         </p>
       )}
       {entry.notice && (

@@ -3,27 +3,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   InferenceResultSchema,
-  type Detection,
-  type JobStatus,
-  type JobView,
+  JobViewSchema,
   type Operation,
 } from "@worldspeak/contracts";
 import { adaptDetectionList } from "../integration/adapters";
 import type { PerceivedObject } from "../perception/types";
 
-/**
- * Still-image Meta analysis: upload (with prior explicit consent) → scene
- * or segment job → bounded GET-only polling → validated model detections.
- *
- * Billable safety, by construction:
- * - `submit` runs only from an explicit user gesture (the consent panel).
- * - Polling uses GET only and never dispatches or resubmits.
- * - There is no automatic retry anywhere. A failed submission returns to
- *   idle and requires a fresh consent + fresh idempotency key.
- * - Cancellation fires job DELETE + media DELETE and reports `canceled`
- *   without waiting for the server roundtrip.
+/** Consent-triggered submission only. GET polling never submits or retries.
+ * Every asynchronous continuation is fenced by a run epoch, including uploads
+ * and admission. Late IDs are used only to request cancellation/cleanup.
  */
-
 export type AnalysisOutcome =
   | { name: "idle" }
   | { name: "uploading" }
@@ -39,218 +28,282 @@ export type AnalysisOutcome =
       model: string;
     }
   | { name: "failed"; code: string; detail: string }
+  | { name: "cancel_requested"; serverAcknowledged: boolean | null }
   | { name: "canceled" }
   | { name: "uncertain"; detail: string }
   | { name: "unavailable"; detail: string };
-
+interface Resources {
+  epoch: number;
+  assetId: string | null;
+  jobId: string | null;
+}
 const POLL_DELAYS = [1000, 2000, 5000];
 const MAX_POLLS = 20;
 const MAX_POLL_ERRORS = 3;
-
-function newId(): string {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
-  return `00000000-0000-4000-8000-${String(Math.floor(Math.random() * 1e12)).padStart(12, "0")}`;
-}
-
-async function readProblem(res: Response): Promise<{ code: string; status: number }> {
-  let code = "request failed";
+const newId = () => crypto.randomUUID();
+async function readProblem(res: Response): Promise<string> {
   try {
-    const body = (await res.json()) as { ok?: boolean; error?: { code?: string } };
-    if (typeof body?.error?.code === "string" && body.error.code) code = body.error.code;
+    const b = (await res.json()) as { error?: { code?: unknown } };
+    if (typeof b.error?.code === "string") return b.error.code;
   } catch {
-    /* non-JSON error body */
+    /* bounded generic error below */
   }
-  return { code, status: res.status };
+  return "request failed";
 }
-
+async function revoke(r: Resources): Promise<boolean> {
+  const urls = [
+    ...(r.jobId ? [`/api/v1/jobs/${r.jobId}`] : []),
+    ...(r.assetId ? [`/api/v1/media/${r.assetId}`] : []),
+  ];
+  if (!urls.length) return false; // In-flight upload has not returned an ID yet.
+  const results = await Promise.allSettled(
+    urls.map(async (url) => {
+      const response = await fetch(url, { method: "DELETE" });
+      if (!response.ok) return false;
+      const body = (await response.json()) as { ok?: boolean };
+      return body.ok === true;
+    }),
+  );
+  return results.every((x) => x.status === "fulfilled" && x.value === true);
+}
 export interface AnalysisApi {
   outcome: AnalysisOutcome;
-  submit: (bytes: Uint8Array, mime: string, operation: Operation, concept?: string) => void;
+  submit: (
+    bytes: Uint8Array,
+    mime: string,
+    operation: Operation,
+    concept?: string,
+  ) => void;
   cancel: () => void;
   reset: () => void;
 }
-
 export function useAnalysisJob(): AnalysisApi {
   const [outcome, setOutcome] = useState<AnalysisOutcome>({ name: "idle" });
-  const liveRef = useRef(true);
-  const timerRef = useRef<number | null>(null);
   const stateRef = useRef<AnalysisOutcome>({ name: "idle" });
-  // Stale in-flight polls (e.g. resolved after cancel/reset/submit) must
-  // never overwrite newer state. The check reads the single-writer state
-  // mirror: only the poll that owns the current job id may continue.
-  const isCurrentJob = useCallback((jobId: string) => {
-    const current = stateRef.current;
-    return (
-      (current.name === "queued" || current.name === "processing") && current.jobId === jobId
-    );
+  const liveRef = useRef(true),
+    epochRef = useRef(0);
+  const resourcesRef = useRef<Resources>({
+    epoch: 0,
+    assetId: null,
+    jobId: null,
+  });
+  const timerRef = useRef<number | null>(null);
+  const clearTimer = useCallback(() => {
+    if (timerRef.current !== null) window.clearTimeout(timerRef.current);
+    timerRef.current = null;
   }, []);
-
   const set = useCallback((next: AnalysisOutcome) => {
     stateRef.current = next;
     if (liveRef.current) setOutcome(next);
   }, []);
-
+  const active = useCallback(
+    (epoch: number) => liveRef.current && epochRef.current === epoch,
+    [],
+  );
+  const invalidate = useCallback(() => ++epochRef.current, []);
   useEffect(() => {
     liveRef.current = true;
     return () => {
       liveRef.current = false;
-      if (timerRef.current !== null) window.clearTimeout(timerRef.current);
-    };
-  }, []);
-
-  const clearTimer = useCallback(() => {
-    if (timerRef.current !== null) {
-      window.clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-  }, []);
-
-  const fail = useCallback(
-    (code: string, detail: string) => {
+      invalidate();
       clearTimer();
-      set({ name: "failed", code, detail });
-    },
-    [clearTimer, set],
-  );
-
-  type PollArgs = [jobId: string, assetId: string, operation: Operation, pollIndex: number, errorStreak: number];
-  // Latest-poll ref: the loop re-enters through this stable handle so the
-  // callback itself never self-references (hooks rules) and no cross-callback
-  // mutation is needed (immutability rule).
+      void revoke(resourcesRef.current); // Existing IDs only; no inference submission.
+    };
+  }, [clearTimer, invalidate]);
+  type PollArgs = [
+    r: Resources,
+    operation: Operation,
+    index: number,
+    errors: number,
+  ];
   const pollRef = useRef<(...args: PollArgs) => void>(() => {});
   const poll = useCallback(
-    async (jobId: string, assetId: string, operation: Operation, pollIndex: number, errorStreak: number) => {
-      if (!liveRef.current || !isCurrentJob(jobId)) return;
+    async (
+      r: Resources,
+      operation: Operation,
+      index: number,
+      errors: number,
+    ) => {
+      if (!active(r.epoch) || !r.jobId) return;
+      const later = (delay: number, nextIndex = index, nextErrors = errors) => {
+        timerRef.current = window.setTimeout(
+          () => pollRef.current(r, operation, nextIndex, nextErrors),
+          delay,
+        );
+      };
       if (document.visibilityState === "hidden") {
-        // Pause while hidden; resume on the next visible tick — never poll blind.
-        timerRef.current = window.setTimeout(() => {
-          pollRef.current(jobId, assetId, operation, pollIndex, errorStreak);
-        }, 2000);
+        later(2000);
         return;
       }
-      let res: Response;
+      let response: Response, body: unknown;
       try {
-        res = await fetch(`/api/v1/jobs/${jobId}`, { method: "GET" });
+        response = await fetch(`/api/v1/jobs/${r.jobId}`, { method: "GET" });
+        if (!active(r.epoch)) return;
+        if (!response.ok) {
+          const code = await readProblem(response);
+          if (active(r.epoch))
+            set({
+              name: "uncertain",
+              detail: `Could not confirm job status (${code}). No submission was retried.`,
+            });
+          return;
+        }
+        body = await response.json();
       } catch {
-        if (!isCurrentJob(jobId)) return;
-        if (errorStreak + 1 >= MAX_POLL_ERRORS) {
-          set({ name: "uncertain", detail: "Lost contact while checking the job. It may still complete — nothing was retried automatically." });
+        if (!active(r.epoch)) return;
+        if (errors + 1 >= MAX_POLL_ERRORS)
+          set({
+            name: "uncertain",
+            detail:
+              "Lost contact with the job. It may still run; no submission was retried.",
+          });
+        else later(5000, index, errors + 1);
+        return;
+      }
+      if (!active(r.epoch)) return;
+      const parsed = JobViewSchema.safeParse(
+        (body as { data?: unknown } | null)?.data,
+      );
+      if (
+        !parsed.success ||
+        parsed.data.id !== r.jobId ||
+        parsed.data.operation !== operation
+      ) {
+        set({
+          name: "failed",
+          code: "invalid response",
+          detail:
+            "The server result could not be validated. Nothing was retried.",
+        });
+        return;
+      }
+      const view = parsed.data;
+      if (view.cancelRequested || view.status === "canceled") {
+        set(
+          view.status === "canceled"
+            ? { name: "canceled" }
+            : { name: "cancel_requested", serverAcknowledged: true },
+        );
+        return;
+      }
+      if (view.status === "succeeded") {
+        const result = InferenceResultSchema.safeParse(view.result);
+        if (!result.success || result.data.provenance.source !== "model") {
+          set({
+            name: "failed",
+            code: "invalid result",
+            detail: "Invalid or synthetic model output was discarded.",
+          });
           return;
         }
-        timerRef.current = window.setTimeout(() => {
-          pollRef.current(jobId, assetId, operation, pollIndex, errorStreak + 1);
-        }, 5000);
-        return;
-      }
-      if (!res.ok) {
-        const problem = await readProblem(res);
-        fail(problem.code, `Checking the job failed (${res.status}). Nothing was retried automatically.`);
-        return;
-      }
-      const body = (await res.json()) as { ok: boolean; data?: JobView };
-      if (!isCurrentJob(jobId)) return;
-      const view = body.data;
-      if (!view) {
-        fail("invalid response", "The job check returned an empty body.");
-        return;
-      }
-      const status: JobStatus = view.status;
-      if (status === "succeeded") {
-        const parsed = InferenceResultSchema.safeParse(view.result);
-        if (!parsed.success || parsed.data.provenance.source !== "model") {
-          fail("invalid result", "The model returned a result this app cannot validate. It was discarded — no boxes or masks were shown.");
-          return;
-        }
-        const { accepted, rejected } = adaptDetectionList(parsed.data.detections as Detection[], newId);
+        const batch = adaptDetectionList(result.data.detections, newId);
         set({
           name: "succeeded",
-          jobId,
-          assetId,
+          jobId: r.jobId,
+          assetId: r.assetId!,
           operation,
-          objects: accepted,
-          rejected,
-          model: parsed.data.provenance.model,
+          objects: batch.accepted,
+          rejected: batch.rejected,
+          model: result.data.provenance.model,
         });
         return;
       }
-      if (status === "failed") {
-        fail(view.errorCode ?? "job failed", "The analysis job failed. No charge beyond the reservation is expected; check the notice for the exact code.");
+      if (view.status === "failed") {
+        set({
+          name: "failed",
+          code: view.errorCode ?? "job failed",
+          detail:
+            "Analysis failed. Processing or charges may already have occurred; check recorded usage before any new attempt.",
+        });
         return;
       }
-      if (status === "uncertain") {
-        clearTimer();
+      if (view.status === "uncertain") {
         set({
           name: "uncertain",
-          detail: view.errorCode
-            ? `The job reported ${view.errorCode} and its outcome could not be confirmed. It was not retried automatically.`
-            : "The job outcome could not be confirmed. It may still complete — nothing was retried automatically.",
+          detail:
+            "The upstream outcome is uncertain and its budget may remain reserved. Do not resubmit until it is reconciled.",
         });
         return;
       }
-      if (status === "canceled" || view.cancelRequested) {
-        if (status === "canceled") {
-          clearTimer();
-          set({ name: "canceled" });
-          return;
-        }
-        // Cancel requested but the worker has not finished fencing yet.
-        set({ name: "processing", jobId, assetId, operation });
-      } else if (status === "queued") {
-        set({ name: "queued", jobId, assetId, operation });
-      } else {
-        set({ name: "processing", jobId, assetId, operation });
-      }
-      if (pollIndex + 1 >= MAX_POLLS) {
-        set({ name: "uncertain", detail: "The job is taking unusually long. It may still complete — check back later rather than resubmitting." });
+      set({
+        name: view.status === "queued" ? "queued" : "processing",
+        jobId: r.jobId,
+        assetId: r.assetId!,
+        operation,
+      });
+      if (index + 1 >= MAX_POLLS) {
+        set({
+          name: "uncertain",
+          detail:
+            "The job may still complete. Check its status later; no submission was retried.",
+        });
         return;
       }
-      const delay = POLL_DELAYS[Math.min(pollIndex, POLL_DELAYS.length - 1)]!;
-      timerRef.current = window.setTimeout(() => {
-        pollRef.current(jobId, assetId, operation, pollIndex + 1, 0);
-      }, delay);
+      later(POLL_DELAYS[Math.min(index, 2)]!, index + 1, 0);
     },
-    [clearTimer, fail, isCurrentJob, set],
+    [active, set],
   );
-
-  // Keep the re-entry handle current. Ref writes happen here in an effect —
-  // never during render — so the loop always resumes the latest closure.
   useEffect(() => {
     pollRef.current = poll;
   });
-
   const submit = useCallback(
-    (bytes: Uint8Array, mime: string, operation: Operation, concept?: string) => {
+    (
+      bytes: Uint8Array,
+      mime: string,
+      operation: Operation,
+      concept?: string,
+    ) => {
+      if (["uploading", "queued", "processing"].includes(stateRef.current.name))
+        return;
       clearTimer();
+      const r: Resources = {
+        epoch: ++epochRef.current,
+        assetId: null,
+        jobId: null,
+      };
+      resourcesRef.current = r;
+      const key = newId();
       set({ name: "uploading" });
       const run = async () => {
-        let assetId: string;
         try {
           const upload = await fetch("/api/v1/media", {
             method: "POST",
-            headers: { "content-type": mime, "x-worldspeak-consent": "scene-v1" },
+            headers: {
+              "content-type": mime,
+              "x-worldspeak-consent": "scene-v1",
+            },
             body: bytes as BodyInit,
           });
           if (!upload.ok) {
-            const problem = await readProblem(upload);
-            if (upload.status === 503) {
-              set({ name: "unavailable", detail: "Model analysis is currently disabled on this server. Your photo was not uploaded." });
-              return;
-            }
-            if (upload.status === 401) {
-              set({ name: "unavailable", detail: "Your sign-in expired. Sign in again, then send once more." });
-              return;
-            }
-            fail(problem.code, "The upload was rejected. Your photo was not sent for analysis.");
+            const code = await readProblem(upload);
+            if (active(r.epoch))
+              set({
+                name:
+                  upload.status === 503 || upload.status === 401
+                    ? "unavailable"
+                    : "uncertain",
+                detail: `Upload was not confirmed (${code}). No analysis job was submitted; media cleanup may still be pending.`,
+              });
             return;
           }
-          const uploaded = (await upload.json()) as { ok: boolean; data?: { assetId?: string } };
-          if (!uploaded.data?.assetId) {
-            fail("invalid response", "The upload response was empty.");
+          const uploaded = (await upload.json()) as {
+            data?: { assetId?: unknown };
+          };
+          const id = uploaded.data?.assetId;
+          if (typeof id !== "string" || !/^[-a-f0-9]{36}$/.test(id))
+            throw Error("Invalid upload response");
+          r.assetId = id;
+          if (!active(r.epoch)) {
+            await revoke(r);
             return;
           }
-          assetId = uploaded.data.assetId;
         } catch {
-          fail("network", "The upload could not reach the server. Nothing was sent — start over to try again with a fresh approval.");
+          if (active(r.epoch))
+            set({
+              name: "uncertain",
+              detail:
+                "Upload acknowledgement was lost. The photo may have reached the server and expire through cleanup. No analysis job was submitted.",
+            });
           return;
         }
         try {
@@ -259,53 +312,68 @@ export function useAnalysisJob(): AnalysisApi {
             headers: { "content-type": "application/json" },
             body: JSON.stringify(
               operation === "segment"
-                ? { operation, assetId, idempotencyKey: newId(), concept }
-                : { operation, assetId, idempotencyKey: newId() },
+                ? {
+                    operation,
+                    assetId: r.assetId,
+                    idempotencyKey: key,
+                    concept,
+                  }
+                : { operation, assetId: r.assetId, idempotencyKey: key },
             ),
           });
           if (!submitted.ok) {
-            const problem = await readProblem(submitted);
-            await fetch(`/api/v1/media/${assetId}`, { method: "DELETE" }).catch(() => undefined);
-            if (submitted.status === 503) {
-              set({ name: "unavailable", detail: "Model analysis is currently disabled on this server." });
-              return;
-            }
-            fail(problem.code, "The analysis job was not accepted. The uploaded photo was revoked.");
+            const code = await readProblem(submitted);
+            await revoke(r);
+            if (active(r.epoch))
+              set({
+                name: "failed",
+                code,
+                detail:
+                  "Admission was not confirmed. Cleanup was requested; physical deletion and any charges require verification.",
+              });
             return;
           }
-          const admitted = (await submitted.json()) as { ok: boolean; data?: { jobId?: string } };
-          if (!admitted.data?.jobId) {
-            fail("invalid response", "The job admission response was empty.");
+          const admitted = (await submitted.json()) as {
+            data?: { jobId?: unknown };
+          };
+          const id = admitted.data?.jobId;
+          if (typeof id !== "string" || !/^[-a-f0-9]{36}$/.test(id))
+            throw Error("Invalid admission response");
+          r.jobId = id;
+          if (!active(r.epoch)) {
+            await revoke(r);
             return;
           }
-          set({ name: "queued", jobId: admitted.data.jobId, assetId, operation });
-          pollRef.current(admitted.data.jobId, assetId, operation, 0, 0);
+          set({ name: "queued", jobId: id, assetId: r.assetId!, operation });
+          pollRef.current(r, operation, 0, 0);
         } catch {
-          await fetch(`/api/v1/media/${assetId}`, { method: "DELETE" }).catch(() => undefined);
-          fail("network", "The job request could not reach the server. The uploaded photo was revoked — start over with a fresh approval.");
+          await revoke(r);
+          if (active(r.epoch))
+            set({
+              name: "uncertain",
+              detail:
+                "Admission acknowledgement was lost: a job may exist. Cleanup was requested; no submission was retried. Reconcile before sending again.",
+            });
         }
       };
       void run();
     },
-    [clearTimer, fail, set],
+    [active, clearTimer, set],
   );
-
   const cancel = useCallback(() => {
-    const current = stateRef.current;
     clearTimer();
-    if (current.name === "queued" || current.name === "processing") {
-      // Best-effort privacy: fence the job, then revoke the bytes. The UI
-      // reports canceled immediately; the server fences publication.
-      void fetch(`/api/v1/jobs/${current.jobId}`, { method: "DELETE" }).catch(() => undefined);
-      void fetch(`/api/v1/media/${current.assetId}`, { method: "DELETE" }).catch(() => undefined);
-    }
-    set({ name: "canceled" });
-  }, [clearTimer, set]);
-
+    const epoch = ++epochRef.current;
+    set({ name: "cancel_requested", serverAcknowledged: null });
+    void revoke(resourcesRef.current).then((ack) => {
+      if (active(epoch))
+        set({ name: "cancel_requested", serverAcknowledged: ack });
+    });
+  }, [active, clearTimer, set]);
   const reset = useCallback(() => {
     clearTimer();
+    epochRef.current++;
+    void revoke(resourcesRef.current);
     set({ name: "idle" });
   }, [clearTimer, set]);
-
   return { outcome, submit, cancel, reset };
 }
