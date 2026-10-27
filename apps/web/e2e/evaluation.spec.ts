@@ -69,8 +69,16 @@ test("4. unknown objects degrade to exact user text", async ({ page }) => {
     objectCatalogId: "not-a-real-thing",
     provenance: "fixture",
   };
-  const encoded = Buffer.from(JSON.stringify(payload), "utf8").toString("base64url");
-  await page.goto(`/?handoff=${encoded}`);
+  // Tab-local key transport only: the merged handoff contract rejects legacy
+  // inline base64 payloads (privacy: no user text in browser history).
+  const key = "ws-handoff-22222222-2222-4222-8222-222222222222";
+  await page.addInitScript(
+    ({ key, payload }) => {
+      sessionStorage.setItem(key, JSON.stringify({ expiresAt: Date.now() + 600000, payload }));
+    },
+    { key, payload },
+  );
+  await page.goto(`/?handoff=${key}`);
   await expect(page.getByText("mystery thing", { exact: true })).toBeVisible();
   expect(await speakCalls(page)).toEqual([]);
 });
