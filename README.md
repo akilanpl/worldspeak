@@ -27,3 +27,7 @@ The unconfigured app reports account features unavailable and never fakes a sess
 Dedicated WorldSpeak project: `cafkyowssdemzivhzxbb`, Mumbai, Free plan. No credentials are published. Follow [safe setup and testing](docs/supabase-setup.md); **never point `pnpm test:db` at a hosted database**. It is a destructive local scratch harness; hosted tests are separate. Actual generated types and migration lineage are in [project evidence](docs/evidence/supabase-project.json).
 
 No production app deployment is claimed. Google client credentials and email delivery require external setup. Browser speech tests use spies; they are not proof of audible output or independent language review. [Build log](docs/build-log.md), [hackathon verification](docs/rules-verification.md), [MIT license](LICENSE).
+
+## Isolated Phase 3 inference core
+
+Non-paid backend implementation is on `feat/meta-inference-core`: durable owner-scoped jobs, atomic micro-USD reservations, fenced dispatch/uncertain outcomes, consent-scoped transient media and durable cleanup, typed Standard Spark/SAM adapters. Hosted migration and paid inference are **not verified**. Phase 2 manual gaps remain open. See [integration handoff](docs/meta-inference-handoff.md) and [unapproved two-call smoke proposal](docs/meta-inference-smoke-test.md). Fixtures are not real inference; no speech is triggered by model output.
