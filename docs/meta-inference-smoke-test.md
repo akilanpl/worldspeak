@@ -1,3 +1,5 @@
+> Historical protocol — consumed, never rerun. The authorized first Spark generation succeeded but its application persistence failed; PR #6 repaired JSONB afterward. SAM was not dispatched. No new spending is authorized. See [current validation](ai-workflow-validation.md) and [separate SAM-only proposal](sam-only-acceptance-proposal.md). Preserve the original tombstone and disabled/consumed permits.
+
 # Two-call Meta smoke — prepared, NOT approved or executed
 
 Human must explicitly approve the exact two generation requests below and a **$0.05 total ceiling** before any live worker approval marker, budget or generation permit is enabled. This document is a proposal, not authorization. No live calls were made during core implementation.

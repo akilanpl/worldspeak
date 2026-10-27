@@ -330,3 +330,16 @@ it("admission acknowledgement loss is uncertain, never reported as nothing sent"
     detail: expect.stringContaining("a job may exist"),
   });
 });
+
+it("rejects a valid SAM result on a scene job rather than misreporting provenance", async () => {
+  const result = modelResult();
+  result.provenance.model = "sam-3.1";
+  vi.stubGlobal("fetch", vi.fn(async (url: string) => {
+    if (url === "/api/v1/media") return jsonResponse({ data: { assetId: ASSET } });
+    if (url === "/api/v1/jobs") return jsonResponse({ data: { jobId: JOB } });
+    return jsonResponse(jobView("succeeded", { result }));
+  }));
+  const api = renderHook();
+  api().submit(bytes, "image/png", "scene");
+  await vi.waitFor(() => expect(api().outcome).toMatchObject({ name: "failed", code: "invalid result" }));
+});

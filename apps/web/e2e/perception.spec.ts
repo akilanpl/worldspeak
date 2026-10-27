@@ -52,3 +52,85 @@ test("perception slice has no serious or critical axe findings", async ({ page }
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations.filter((v) => v.impact === "serious" || v.impact === "critical")).toEqual([]);
 });
+
+// Mock-only production browser journey. The image is a synthetic one-pixel PNG;
+// detections reconstruct sanitized chair geometry, never a new provider receipt.
+test("reconstructed Spark chair → mock status → overlay → intent → English/Tamil Speak", async ({ page }) => {
+  test.skip(process.env.WORLDSPEAK_MOCK_AUTH_E2E !== "1", "Needs synthetic public build config; CI supplies it, never real credentials.");
+  // This simulated browser session is not hosted Auth/RLS evidence. Cookie
+  // reads are mocked in JS only; no credential is sent to the Next server.
+  await page.addInitScript(() => {
+    const enc = (s: string) => btoa(s).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
+    const token = `${enc(JSON.stringify({ alg: "HS256", typ: "JWT" }))}.${enc(JSON.stringify({ sub: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", exp: 4102444800, role: "authenticated" }))}.synthetic`;
+    const session = { access_token: token, refresh_token: "synthetic-not-usable", expires_at: 4102444800,
+      expires_in: 3600, token_type: "bearer", user: { id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa" } };
+    Object.defineProperty(document, "cookie", { configurable: true,
+      get: () => `sb-worldspeak-e2e-auth-token=base64-${enc(JSON.stringify(session))}`, set: () => {} });
+  });
+  await page.route("**/*", async route => {
+    const req = route.request(), url = new URL(req.url());
+    if (url.hostname !== "127.0.0.1") return route.abort();
+    const assetId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", jobId = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+    if (!url.pathname.startsWith("/api/v1/")) return route.continue();
+    if (url.pathname === "/api/v1/preferences") return route.fulfill({ status: 401, json: { error: { code: "UNAUTHORIZED" } } });
+    if (req.method() === "DELETE") return route.fulfill({ json: { ok: true } });
+    if (url.pathname === "/api/v1/media") {
+      expect(req.headers()["x-worldspeak-consent"]).toBe("scene-v1");
+      return route.fulfill({ json: { data: { assetId } } });
+    }
+    if (url.pathname === "/api/v1/jobs") {
+      expect(req.postDataJSON()).toMatchObject({ operation: "scene", assetId });
+      return route.fulfill({ json: { data: { jobId } } });
+    }
+    expect(url.pathname).toBe(`/api/v1/jobs/${jobId}`);
+    return route.fulfill({ json: { data: {
+      id: jobId, operation: "scene", status: "succeeded", cancelRequested: false, errorCode: null,
+      reservedMicroUsd: 25000, chargedMicroUsd: 4402, billingState: "settled",
+      createdAt: "2026-10-27T00:00:00Z", expiresAt: "2026-10-28T00:00:00Z",
+      result: { detections: [{ label: "chair", catalogId: null, confidence: 0.99, mask: null,
+        box: { x1: 0.247, y1: 0.139, x2: 0.746, y2: 0.868 } }], tracks: [], segmentationMasks: [],
+        provenance: { source: "model", model: "muse-spark-1.3", adapterVersion: "meta-v1",
+          responseId: "synthetic-browser-reconstruction-not-real-receipt", inputSha256: "a".repeat(64),
+          inputTokens: 424, outputTokens: 911, costMicroUsd: 4402 } }
+    } } });
+  });
+  await page.addInitScript({ path: "apps/web/e2e/stub-speech.js" });
+  const media: string[] = [];
+  page.on("request", r => {
+    if (new URL(r.url()).pathname.startsWith("/api/v1/")) media.push(r.url());
+  });
+  await page.goto("/perception");
+  await page.getByRole("button", { name: /use synthetic fixtures/i }).click();
+  await page.getByLabel(/upload image/i).setInputFiles({ name: "synthetic-pixel.png", mimeType: "image/png",
+    buffer: Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64") });
+  await page.getByRole("button", { name: /analyze with meta/i }).click();
+  expect(media).toEqual([]);
+  await expect(page.getByTestId("consent-send")).toBeDisabled();
+  await page.getByRole("checkbox").check();
+  expect(media).toEqual([]);
+  await page.getByTestId("consent-send").click();
+  await page.getByRole("button", { name: /use these objects/i }).click();
+  await expect(page.getByTestId("model-results-notice")).toContainText("muse-spark-1.3");
+  const region = page.getByTestId("mask-layer").getByRole("button", { name: "chair", exact: true });
+  expect(await region.evaluate(el => (el as HTMLElement).style.left)).toBe("24.7%");
+  await region.click();
+  await page.getByRole("button", { name: /correct the label/i }).click();
+  await page.getByRole("button", { name: /apply label/i }).click();
+  await page.getByRole("button", { name: /^continue$/i }).click();
+  await page.getByRole("button", { name: "I want", exact: true }).click();
+  await expect(page.getByText("I want chair.", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: /approve for composer/i }).click();
+  await page.getByRole("link", { name: /open in composer/i }).click();
+  await expect(page.getByText("I want chair.", { exact: true })).toBeVisible();
+  const spoken = () => page.evaluate(() => (window as unknown as { __speakCalls: { text: string }[] }).__speakCalls);
+  expect(await spoken()).toEqual([]);
+  await page.getByRole("button", { name: /speak this sentence/i }).click();
+  expect(await spoken()).toMatchObject([{ text: "I want chair." }]);
+  await page.getByRole("button", { name: "தமிழ்", exact: true }).first().click();
+  await expect(page.getByText("எனக்கு நாற்காலி வேண்டும்.", { exact: true })).toBeVisible();
+  expect(await spoken()).toHaveLength(1);
+  await page.getByRole("button", { name: /speak this sentence/i }).click();
+  expect(await spoken()).toMatchObject([{ text: "I want chair." }, { text: "எனக்கு நாற்காலி வேண்டும்." }]);
+  expect(media.filter(u => new URL(u).pathname === "/api/v1/media")).toHaveLength(1);
+  expect(media.filter(u => new URL(u).pathname === "/api/v1/jobs")).toHaveLength(1);
+});
