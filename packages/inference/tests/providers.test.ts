@@ -92,6 +92,7 @@ describe("official-wire synthetic providers (no network)", () => {
     const r = await parseProviderResponse(sam(maskLine), segment, "fixture");
     expect(r.detections).toEqual([
       {
+        objectId: "7",
         label: "chair",
         catalogId: null,
         box: { x1: 0, y1: 0, x2: 1, y2: 1 },
