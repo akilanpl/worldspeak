@@ -114,3 +114,42 @@ test("invalid local video can be retried with real media", async ({page}) => {
   await page.getByRole("button",{name:"Retake"}).click();
   await expect(page.getByRole("button",{name:"Upload clip",exact:true})).toBeVisible();
 });
+
+test.describe("synthetic browser camera recording", () => {
+  test.use({launchOptions:{args:["--use-fake-device-for-media-stream","--use-fake-ui-for-media-stream"]}});
+  test("records actual browser media without microphone audio and stops all camera tracks", async ({page,context}) => {
+    await context.grantPermissions(["camera"]);
+    await page.addInitScript({path:fileURLToPath(new URL("./stub-speech.js",import.meta.url))});
+    await page.addInitScript(() => {
+      const streams: MediaStream[] = [];
+      Object.defineProperty(window,"__videoTestStreams",{value:streams});
+      const getUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+      navigator.mediaDevices.getUserMedia = async constraints => {
+        const stream = await getUserMedia(constraints); streams.push(stream); return stream;
+      };
+    });
+    const apiRequests: string[] = [];
+    page.on("request",request => {if (/\/api\//.test(request.url())) apiRequests.push(request.url());});
+    await page.goto("/video");
+    await page.getByRole("button",{name:"Use local video"}).click();
+    expect(await page.evaluate(() => (window as unknown as {__videoTestStreams:MediaStream[]}).__videoTestStreams.length)).toBe(0);
+    await page.getByRole("button",{name:"Open camera",exact:true}).click();
+    await expect(page.getByLabel("Camera preview")).toBeVisible();
+    await page.getByRole("button",{name:"Record (10s)",exact:true}).click();
+    // Allow actual MediaRecorder chunks, rather than substituting fake blob bytes.
+    await page.waitForTimeout(650);
+    await page.getByRole("button",{name:/stop recording/i}).click();
+    await expect(page.getByRole("heading",{name:"Clip preview"})).toBeVisible();
+    expect(await page.evaluate(() => (window as unknown as {__videoTestStreams:MediaStream[]}).__videoTestStreams.every(stream => stream.getAudioTracks().length === 0 && stream.getTracks().every(track => track.readyState === "ended")))).toBe(true);
+    await page.getByRole("button",{name:"Continue",exact:true}).click();
+    await expect(page.getByRole("button",{name:"Select current frame"})).toBeEnabled();
+    await page.getByRole("button",{name:"Select current frame"}).click();
+    await expect(page.getByRole("img",{name:/frozen local video frame/i})).toBeVisible();
+    await page.getByRole("button",{name:"Confirm region",exact:true}).click();
+    await page.getByLabel("Reviewed catalog object").selectOption("water");
+    await page.getByRole("button",{name:"Confirm object and choose intent"}).click();
+    await expect(page.getByText("I want water.",{exact:true})).toBeVisible();
+    expect(await page.evaluate(() => (window as unknown as {__speakCalls:unknown[]}).__speakCalls)).toEqual([]);
+    expect(apiRequests).toEqual([]);
+  });
+});

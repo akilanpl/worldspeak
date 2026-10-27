@@ -43,7 +43,10 @@ approval gating and ownership; they do not prove browser decoding.
 `apps/web/e2e/video.spec.ts` separately uploads the original synthetic 2-second
 VP9 WebM fixture to a real browser, seeks, freezes, marks a region, preserves
 selection across intent Back, approves exact text and checks speech occurs
-only after Speak. Invalid-media retry is a separate browser case. Existing
+only after Speak. Invalid-media retry is a separate browser case. A third real-browser case uses
+Chromium’s synthetic camera device and actual MediaRecorder bytes, checks zero
+audio tracks and stopped camera tracks, then decodes/selects a recorded frame.
+This is synthetic-device browser validation, not physical-camera acceptance. Existing
 synthetic timeline tests remain distinct. See PR CI for executed browser
 results; local macOS Chromium launch is blocked by MachPort permissions.
 
