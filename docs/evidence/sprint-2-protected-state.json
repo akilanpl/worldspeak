@@ -1,0 +1,23 @@
+{
+  "observed_at_utc": "2026-10-27T11:32:31Z",
+  "project_id": "cafkyowssdemzivhzxbb",
+  "method": "read-only Supabase MCP aggregate; no hosted writes",
+  "state": {
+    "migration_008_tables_absent": true,
+    "nonzero_limits": 0,
+    "reserved_micro": 0,
+    "global_spent_micro": 4402,
+    "active_permits": 0,
+    "first_authorization_tombstones": 1,
+    "active_jobs": 0,
+    "completed_cleanup": 3,
+    "unfinished_cleanup": 0,
+    "stored_media_objects": 0
+  },
+  "limits": [
+    "Storage listing count is not a new fresh authenticated byte-read deletion receipt.",
+    "Existing cleanup supervisor was not modified or redeployed.",
+    "Private Meta balance and provider billing attribution were not rechecked.",
+    "No new model inference or media-bearing preflight occurred."
+  ]
+}
