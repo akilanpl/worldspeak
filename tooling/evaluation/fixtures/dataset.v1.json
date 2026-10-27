@@ -1,0 +1,217 @@
+{
+  "version": "worldspeak-eval.v1",
+  "provenance": "author-created-synthetic",
+  "license": "CC0-1.0",
+  "description": "Numeric conformance fixtures. No captured media, model runs or trained baseline.",
+  "scenes": [
+    {
+      "id": "two-objects",
+      "asset": "images/two-objects.png",
+      "inputSha256": "f9e67f3fb7d061be37e328c7ed09846e51f1243ec3e9d911193f3a349edba196",
+      "model": "muse-spark-1.3",
+      "expected": [
+        {
+          "label": "red rectangle",
+          "box": {
+            "x1": 0,
+            "y1": 0,
+            "x2": 0.4,
+            "y2": 1
+          },
+          "catalogId": null,
+          "confidence": null,
+          "mask": null
+        },
+        {
+          "label": "blue rectangle",
+          "box": {
+            "x1": 0.6,
+            "y1": 0,
+            "x2": 1,
+            "y2": 1
+          },
+          "catalogId": null,
+          "confidence": null,
+          "mask": null
+        }
+      ]
+    },
+    {
+      "id": "partial-overlap",
+      "asset": "images/partial-overlap.png",
+      "inputSha256": "0d9b70826a636f13999d3a695d50b2b38d593ae62938bfb0e4182c138bf5819e",
+      "model": "muse-spark-1.3",
+      "expected": [
+        {
+          "label": "red rectangle",
+          "box": {
+            "x1": 0,
+            "y1": 0,
+            "x2": 0.6,
+            "y2": 1
+          },
+          "catalogId": null,
+          "confidence": null,
+          "mask": null
+        },
+        {
+          "label": "green rectangle",
+          "box": {
+            "x1": 0.7,
+            "y1": 0,
+            "x2": 1,
+            "y2": 0.4
+          },
+          "catalogId": null,
+          "confidence": null,
+          "mask": null
+        }
+      ]
+    },
+    {
+      "id": "empty-scene",
+      "asset": "images/empty-scene.png",
+      "inputSha256": "9a554b06679e03cbdb3aa9b00da1eae5c2f3e713610d8e6b4b445bbb5f00422f",
+      "model": "muse-spark-1.3",
+      "expected": []
+    }
+  ],
+  "masks": [
+    {
+      "id": "partial-mask",
+      "expected": {
+        "objectId": "7",
+        "bounds": {
+          "x1": 0,
+          "y1": 0,
+          "x2": 1,
+          "y2": 1
+        },
+        "width": 2,
+        "height": 2,
+        "rasterBase64": "AQEAAA=="
+      }
+    },
+    {
+      "id": "empty-mask",
+      "expected": {
+        "objectId": "7",
+        "bounds": {
+          "x1": 0,
+          "y1": 0,
+          "x2": 1,
+          "y2": 1
+        },
+        "width": 2,
+        "height": 2,
+        "rasterBase64": "AAAAAA=="
+      }
+    }
+  ],
+  "tracks": [
+    {
+      "id": "moving-chair",
+      "expected": [
+        {
+          "trackId": "truth-chair",
+          "label": "chair",
+          "catalogId": null,
+          "confidence": null,
+          "points": [
+            {
+              "t": 0,
+              "box": {
+                "x1": 0,
+                "y1": 0,
+                "x2": 0.4,
+                "y2": 1
+              },
+              "mask": null
+            },
+            {
+              "t": 0.1,
+              "box": {
+                "x1": 0.1,
+                "y1": 0,
+                "x2": 0.5,
+                "y2": 1
+              },
+              "mask": null
+            },
+            {
+              "t": 0.2,
+              "box": {
+                "x1": 0.2,
+                "y1": 0,
+                "x2": 0.6,
+                "y2": 1
+              },
+              "mask": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "two-identities",
+      "expected": [
+        {
+          "trackId": "truth-a",
+          "label": "phone",
+          "catalogId": null,
+          "confidence": null,
+          "points": [
+            {
+              "t": 0,
+              "box": {
+                "x1": 0,
+                "y1": 0,
+                "x2": 0.4,
+                "y2": 1
+              },
+              "mask": null
+            },
+            {
+              "t": 0.1,
+              "box": {
+                "x1": 0,
+                "y1": 0,
+                "x2": 0.4,
+                "y2": 1
+              },
+              "mask": null
+            }
+          ]
+        },
+        {
+          "trackId": "truth-b",
+          "label": "phone",
+          "catalogId": null,
+          "confidence": null,
+          "points": [
+            {
+              "t": 0,
+              "box": {
+                "x1": 0.6,
+                "y1": 0,
+                "x2": 1,
+                "y2": 1
+              },
+              "mask": null
+            },
+            {
+              "t": 0.1,
+              "box": {
+                "x1": 0.6,
+                "y1": 0,
+                "x2": 1,
+                "y2": 1
+              },
+              "mask": null
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,3 +1,5 @@
+> Implemented-design update: PR #11 supplies migration 008 and worker/tests for the independent SAM-only capability. It remains **unapplied and unarmed**. This is the original PR #7 proposal, not an operator execution permit. Use the [reviewed implementation handoff](sam-only-authorization-handoff.md) for the exact checksum and separate approvals.
+
 # SAM-only acceptance proposal — unapproved, no execution
 
 27 October 2026 (IST). This is a design for a future reviewed forward migration and worker change, not migration SQL, authorization, deployment or an instruction to arm the current permit. No new call is authorized. `authorize_first_smoke` must never be called again. Keep its permanent tombstone, historical receipts, consumed scene permit and disabled segment permit unchanged.
@@ -27,6 +29,6 @@ Record approved commit/migration checksum, exact image hash/consent, zero prefli
 
 Then disable the new live marker, close admission headroom, revoke transient assets, run the restricted cleanup entry point, verify fresh authenticated cache-busted reads unavailable plus empty Storage listing and completed cleanup receipt. Reconcile provider charge/credit balance separately from the integer internal estimate. Stop on contradictory deletion or billing evidence.
 
-Current frontend acceptance limit: the provider retains decoded masks separately in segmentationMasks, but adaptDetectionList/MaskOverlay expose clickable boxes with mask:null. No actual SAM pixel mask is rendered; no polygon is invented. A box-selection demonstration can pass independently, but a rendered segmentation-mask demonstration remains blocked until a separately scoped implementation is tested. Real SAM inference remains unverified.
+Frontend update: PR #9 now joins decoded masks to detections by stable objectId and renders bounded binary raster canvases, with exact-pixel, transparency, resize and accessible-selection tests. These masks are synthetic fixtures; no real SAM output has been generated. No polygon is invented. Real SAM inference remains unverified.
 
 Sources checked 27 October 2026: [SAM prompts](https://dev.meta.ai/docs/sam/segmenting), [SAM grammar and raster decoding](https://dev.meta.ai/docs/sam/reading-segmentation). Request construction, parser bounds, malformed masks, cost accounting, disabled provider, duplicate sends and uncertain-send/no-retry behavior are covered by synthetic tests; those tests establish no provider entitlement.

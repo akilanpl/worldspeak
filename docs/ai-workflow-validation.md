@@ -1,3 +1,5 @@
+> Sprint 2 update: PR #9 implements and pixel-tests the bounded raster renderer; PR #10 adds deployment checks/reflow tests; PR #11 implements local-tested migration 008, still pending hosted approval. This document preserves the earlier PR #7 verification snapshot. See [current continuation](handoff/SPRINT-2.md) and [SAM authorization handoff](sam-only-authorization-handoff.md). No additional Meta inference has occurred.
+
 # AI workflow validation and minimal demo
 
 27 October 2026 (IST). Baseline ecb62232b7d224d3f6b90022edd7bcaf491eaebf. This work makes no Meta request, media-bearing preflight, hosted database change or budget/permit change.
@@ -33,4 +35,4 @@ Public build config: NEXT_PUBLIC_APP_URL and dedicated project's NEXT_PUBLIC_SUP
 
 ## Remaining acceptance gaps
 
-Real SAM entitlement/output and fresh append-only authorization mechanism; SAM pixel-mask rendering (boxes currently shown); hosted billing attribution; fresh hosted cleanup/device verification; inbox confirmation/recovery delivery; remaining signed-in history/preferences/search/replay/delete manual checks; OAuth-only deletion reauthentication; independent native Tamil wording, physical audible English/Tamil/Stop, phone camera permissions/orientation, zoom/shaping/contrast and offline speech/board on named devices; final participant rules. Automated Chromium speech stubs do not prove audio or native language quality. See sam-only-acceptance-proposal.md and existing Phase 2 BLOCKERS. No new assignment to Muse.
+Real SAM entitlement/output and fresh append-only authorization mechanism; SAM real-output acceptance (pixel rendering is now implemented with synthetic tests in PR #9); hosted billing attribution; fresh hosted cleanup/device verification; inbox confirmation/recovery delivery; remaining signed-in history/preferences/search/replay/delete manual checks; OAuth-only deletion reauthentication; independent native Tamil wording, physical audible English/Tamil/Stop, phone camera permissions/orientation, zoom/shaping/contrast and offline speech/board on named devices; final participant rules. Automated Chromium speech stubs do not prove audio or native language quality. See sam-only-acceptance-proposal.md and existing Phase 2 BLOCKERS. No new assignment to Muse.
