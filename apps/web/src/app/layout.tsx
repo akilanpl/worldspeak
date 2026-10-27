@@ -30,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
             <nav aria-label="Primary">
               <Link href="/" prefetch={false} className="nav-link">Board</Link> · <Link href="/perception" prefetch={false} className="nav-link">Camera</Link> · <Link href="/video" prefetch={false} className="nav-link">Video</Link>{" "}
-              · <a href="/offline" className="nav-link">Offline</a> · <a href="/history" className="nav-link">History</a>{" "}
+              · <Link href="/pictograms" prefetch={false} className="nav-link">Pictograms</Link> · <a href="/offline" className="nav-link">Offline</a> · <a href="/history" className="nav-link">History</a>{" "}
               · <a href="/favorites" className="nav-link">Favorites</a> · <a href="/settings" className="nav-link">Settings</a> ·{" "}
               <a href="/sign-in" className="nav-link">Sign in</a>
             </nav>

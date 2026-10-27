@@ -7,14 +7,16 @@ function required(name: string) {
 }
 // No daemon installed/provisioned by this command. Supervision/scheduling is an
 // explicit operator action. Cleanup can run while model dispatch stays disabled.
+const marker = process.env.WORLDSPEAK_LIVE_INFERENCE_APPROVED;
 const run = makeStore({
   databaseUrl: required("INFERENCE_DATABASE_URL"),
   supabaseUrl: required("NEXT_PUBLIC_SUPABASE_URL"),
   storageKey: required("SUPABASE_SERVICE_ROLE_KEY"),
+  dispatchMode: marker === "sam-only-smoke-v2" ? "sam-only" : "legacy",
 });
 try {
   await run.cleanupOnce();
-  if (process.env.WORLDSPEAK_LIVE_INFERENCE_APPROVED === "two-call-smoke-v1") {
+  if (marker === "two-call-smoke-v1" || marker === "sam-only-smoke-v2") {
     await runOnce(
       run.store,
       new MetaProvider({

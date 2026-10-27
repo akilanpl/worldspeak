@@ -1,0 +1,9 @@
+{
+  "applied": false,
+  "artifacts": [
+    {
+      "path": "supabase/migrations/20261027110517_worldspeak_008_sam_only_authorization.sql",
+      "sha256": "a1246064dca1907225f2df17f98f748652966dd15b66a7a02cceb615d408d271"
+    }
+  ]
+}

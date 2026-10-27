@@ -17,11 +17,14 @@ function newId(): string {
 
 function provenanceNotice(payload: HandoffPayload): { en: string; ta: string } {
   const where = payload.source === "perception" ? "camera" : payload.source === "pictogram" ? "personalized pictogram" : "video";
+  // Pictogram wording has no reviewed Tamil translation: retain an honest
+  // English source label rather than mislabeling it as video.
+  const whereTa = payload.source === "perception" ? "கேமரா" : payload.source === "video" ? "வீடியோ" : "personalized pictogram";
   const kind =
     payload.provenance === "fixture" ? "demo fixture — not a real model" : payload.provenance === "manual" ? "manual human selection — no model inference" : "model detection";
   return {
     en: `From ${where} (${kind}): ${payload.objectLabel} — review the sentence below, then Speak.`,
-    ta: `${where === "camera" ? "கேமரா" : "வீடியோ"} (${kind}): ${payload.objectLabel} — கீழே சரிபார்த்து, பின் பேசுக.`,
+    ta: `${whereTa} (${kind}): ${payload.objectLabel} — கீழே சரிபார்த்து, பின் பேசுக.`,
   };
 }
 
