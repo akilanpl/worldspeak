@@ -1,0 +1,34 @@
+{
+  "phase": 1,
+  "updated": "2026-10-27T07:25:00+05:30",
+  "commit": "PENDING",
+  "commands": [
+    { "cmd": "pnpm install --frozen-lockfile", "exit": 0, "note": "pinned lockfile committed" },
+    { "cmd": "pnpm lint", "exit": 0 },
+    { "cmd": "pnpm typecheck", "exit": 0 },
+    { "cmd": "pnpm test", "exit": 0, "note": "34/34 vitest (contracts, catalog, renderer, reducer/approval, speech gateway, component, offline parity)" },
+    { "cmd": "pnpm build", "exit": 0, "note": "offline board cacheVersion v1-e382dba8, 26 tiles; Next static / and /offline" },
+    { "cmd": "pnpm test:e2e", "exit": 0, "note": "6/6 Playwright Chromium: flow, keyboard-only, axe zero serious/critical, prepared-offline with zero /api requests" },
+    { "cmd": "pnpm check:secrets", "exit": 0, "note": "no secrets in tracked files" }
+  ],
+  "providerCalls": { "count": 0, "note": "Phase 1 makes no Meta Model API calls by design." },
+  "verified": [
+    "every valid bilingual catalog composition renders; unknown/missing slots reject; negation preserved; user text exact",
+    "zero speak calls on load/tile/intent/locale/voice/restore/online-offline/voice-enumeration paths (unit + e2e stubs)",
+    "one Speak gesture speaks exactly the current preview once; stale/duplicate refused; Stop/visibility/unmount cancel",
+    "Tamil voice missing never falls back to English (unit + gateway + board logic)",
+    "keyboard-only completion; native focusable controls; axe zero serious/critical on the slice",
+    "prepared offline board opens with network disabled, composes a sentence, issues zero backend requests"
+  ],
+  "mocked": ["speechSynthesis (FakeSpeechSynthesis / Playwright stub — no audible output asserted)"],
+  "notRun": [
+    "audible English/Tamil speech and Stop on named desktop/phone devices",
+    "native Tamil review (all Tamil text review-pending)",
+    "real-device text-resize / Tamil-shaping / airplane-mode check"
+  ],
+  "risks": [
+    "Tamil wording is review-pending; fixtures are not release-quality translations.",
+    "Speech start event is not sound proof; audibility needs human device checks.",
+    "E2E locally required PLAYWRIGHT_BROWSERS_PATH=/tmp/ms-playwright plus one escalated shell (sandbox blocks the default browser cache path and Mach IPC)."
+  ]
+}

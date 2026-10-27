@@ -1,0 +1,19 @@
+{
+  "name": "@worldspeak/test-support",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@worldspeak/catalog": "workspace:*",
+    "@worldspeak/communication": "workspace:*",
+    "@worldspeak/contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vitest": "5.0.5"
+  }
+}

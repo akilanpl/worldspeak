@@ -1,0 +1,16 @@
+{
+  "version": "templates.v1",
+  "reviewStatus": "review-pending",
+  "note": "Seed sentence 'I want water.' per architecture; Tamil forms are development fixtures.",
+  "templates": [
+    { "id": "request-object.want", "kind": "request-object", "polarity": "want", "act": null, "objectSlot": "required", "text": "I want {object}." },
+    { "id": "request-object.do-not-want", "kind": "request-object", "polarity": "do-not-want", "act": null, "objectSlot": "required", "text": "I do not want {object}." },
+    { "id": "ask-location.object", "kind": "ask-location", "polarity": null, "act": null, "objectSlot": "required", "text": "Where is {object}?" },
+    { "id": "request-help.object", "kind": "request-help", "polarity": null, "act": null, "objectSlot": "required", "text": "Please help me with {object}." },
+    { "id": "request-help.generic", "kind": "request-help", "polarity": null, "act": null, "objectSlot": "none", "text": "Please help me." },
+    { "id": "social.yes", "kind": "social", "polarity": null, "act": "yes", "objectSlot": "none", "text": "Yes." },
+    { "id": "social.no", "kind": "social", "polarity": null, "act": "no", "objectSlot": "none", "text": "No." },
+    { "id": "social.thank-you", "kind": "social", "polarity": null, "act": "thank-you", "objectSlot": "none", "text": "Thank you." },
+    { "id": "social.please-wait", "kind": "social", "polarity": null, "act": "please-wait", "objectSlot": "none", "text": "Please wait." }
+  ]
+}

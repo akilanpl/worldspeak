@@ -1,0 +1,21 @@
+{
+  "version": "objects.v1",
+  "reviewStatus": "review-pending",
+  "note": "Tamil slot forms are development fixtures, not native-reviewed translations.",
+  "objects": [
+    { "id": "water", "en": "water", "ta": "தண்ணீர்" },
+    { "id": "food", "en": "food", "ta": "உணவு" },
+    { "id": "toilet", "en": "toilet", "ta": "கழிப்பறை" },
+    { "id": "rest", "en": "rest", "ta": "ஓய்வு" },
+    { "id": "medicine", "en": "medicine", "ta": "மருந்து" },
+    { "id": "chair", "en": "chair", "ta": "நாற்காலி" },
+    { "id": "phone", "en": "phone", "ta": "தொலைபேசி" },
+    { "id": "light", "en": "light", "ta": "வெளிச்சம்" },
+    { "id": "fan", "en": "fan", "ta": "மின்விசிறி" },
+    { "id": "blanket", "en": "blanket", "ta": "போர்வை" },
+    { "id": "music", "en": "music", "ta": "இசை" },
+    { "id": "family", "en": "family", "ta": "குடும்பம்" },
+    { "id": "doctor", "en": "doctor", "ta": "மருத்துவர்" },
+    { "id": "pain", "en": "pain", "ta": "வலி" }
+  ]
+}

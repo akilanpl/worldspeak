@@ -1,0 +1,10 @@
+{
+  "name": "WorldSpeak",
+  "short_name": "WorldSpeak",
+  "description": "Local offline bilingual communication board",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6f1e7",
+  "theme_color": "#0f766e",
+  "icons": []
+}
