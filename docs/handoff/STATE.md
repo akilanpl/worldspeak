@@ -1,3 +1,5 @@
+> Current release status: non-paid Phase 3 consolidation and exact hosted migration 007 were subsequently authorized. See `../hosted-readiness.md` and `../evidence/hosted-inference.json`. Phase 2 manual gaps below remain open; this older phase record is not a prohibition on the later authorized work. No paid inference is authorized.
+
 # STATE — Phase 2 hosted foundation
 
 Date: 27 October 2026 (IST). Phase 2 is not fully accepted; Phase 3 has not started.

@@ -1,3 +1,5 @@
+> Current release status: non-paid Phase 3 consolidation and exact hosted migration 007 were subsequently authorized. See `../hosted-readiness.md` and `../evidence/hosted-inference.json`. Phase 2 manual gaps below remain open; this older phase record is not a prohibition on the later authorized work. No paid inference is authorized.
+
 # NEXT — finish Phase 2 acceptance
 
 Do not begin Phase 3.

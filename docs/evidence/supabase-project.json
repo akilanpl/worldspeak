@@ -43,11 +43,17 @@
       "path": "supabase/migrations/20261027024901_worldspeak_006_atomic_favorites.sql",
       "version": "20261027024901",
       "sha256": "180f71d617408750b9385552cad4b57d06acfe7d4bc2b58ff44f6ed591048c74"
+    },
+    {
+      "version": "20261027060440",
+      "name": "worldspeak_007_inference_core",
+      "path": "supabase/migrations/20261027060440_worldspeak_007_inference_core.sql",
+      "sha256": "1e8420ca5316ea2f1df898dca447d5b8410acdc2a7b45897fe5e4c95b76e6be2"
     }
   ],
   "types": {
     "path": "packages/db/src/database.types.ts",
-    "sha256": "01bc51b8f58ffbf32456fc9973375f042a0e035beb13f029c67db64fff82c7c4"
+    "sha256": "580168b513d325a81f74a42fb027df64e321d909d8ce14c333769c48b01be357"
   },
   "note": "Canonical filenames match the hosted apply_migration versions. Original local names retained here for provenance; public Git history was not rewritten."
 }

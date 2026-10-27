@@ -1,0 +1,143 @@
+{
+  "date": "2026-10-27",
+  "projectRef": "cafkyowssdemzivhzxbb",
+  "status": "hosted-core-and-local-cleanup-supervision-verified",
+  "migration": {
+    "version": "20261027060440",
+    "name": "worldspeak_007_inference_core",
+    "path": "supabase/migrations/20261027060440_worldspeak_007_inference_core.sql",
+    "sha256": "1e8420ca5316ea2f1df898dca447d5b8410acdc2a7b45897fe5e4c95b76e6be2",
+    "approvedSourceCommit": "e1290de9546a0a9a7ab37ff267a37874ca31f31e",
+    "approvedSourceCiRun": 40456974054,
+    "applied": true,
+    "earlierMigrationsUnchanged": true
+  },
+  "hostedTypes": {
+    "generated": true,
+    "path": "packages/db/src/database.types.ts",
+    "overlayRemoved": true
+  },
+  "hostedChecks": {
+    "assertionsPassed": 13,
+    "method": "Two disposable hosted Auth sessions using real JWT-backed Data API and Storage; a directly inserted, already-settled canceled synthetic row tested job RLS without submission, reservation, dispatch or model calls.",
+    "groups": [
+      "owner media read",
+      "foreign media hidden",
+      "direct ownership mutation denied",
+      "lease-token column denied",
+      "anonymous media access denied",
+      "owner synthetic terminal status",
+      "foreign job status hidden",
+      "raw client Storage download denied",
+      "foreign Storage deletion denied",
+      "foreign consent revoke denied",
+      "owner consent revoke accepted",
+      "revoked media hidden",
+      "Auth deletion cascades metadata"
+    ],
+    "fixtureUsersRemaining": 0,
+    "fixtureMediaRemaining": 0,
+    "fixtureJobsRemaining": 0,
+    "bucketObjectsRemaining": 0
+  },
+  "cleanup": {
+    "fixtureCount": 2,
+    "freshAuthenticatedCacheBustedReadsAbsent": 2,
+    "independentStorageListingsAbsent": 2,
+    "expiredLeasesRecovered": 2,
+    "activeLeasesOverridden": false,
+    "completionAcknowledgements": 2,
+    "finalRecords": [
+      {
+        "fixture": "A",
+        "status": "done",
+        "attempts": 0,
+        "leaseCleared": true
+      },
+      {
+        "fixture": "B",
+        "status": "done",
+        "attempts": 0,
+        "leaseCleared": true
+      }
+    ],
+    "outstandingDueOrFailedRecords": 0,
+    "dailyRecheckTombstonesRetained": 2,
+    "initialVerificationStopped": true,
+    "recovery": "Human explicitly authorized only these two fixtures. First removal initially returned bytes on immediate download; fresh cache-busted read/listing subsequently showed absence. Only the still-present second object was removed on recovery. Both records completed through current lease tokens. No storage.objects SQL deletion.",
+    "supervision": "Human registered local macOS LaunchAgent gui/501/com.worldspeak.cleanup without sudo after sandbox bootstrap error 5. Independently observed 7 recurring idle runs, last exit 0, empty error log; StartInterval=5 seconds, one cleanup item per run. Local Mac session supervision only; not an always-on hosted deployment.",
+    "supervisionObservedRuns": 7,
+    "supervisionLastExitCode": 0,
+    "supervisionIntervalSeconds": 5,
+    "supervisionErrorLogBytes": 0
+  },
+  "worker": {
+    "login": "worldspeak_inference_login",
+    "membershipOnly": [
+      "worldspeak_inference_worker"
+    ],
+    "inherit": true,
+    "superuser": false,
+    "createdb": false,
+    "createrole": false,
+    "replication": false,
+    "bypassrls": false,
+    "budgetTableAccess": false,
+    "profileTableAccess": false,
+    "canAuthorizeFirstSmoke": false,
+    "canClaimCleanup": true,
+    "connectionVerified": true,
+    "tlsCertificateVerified": true,
+    "credentialFileIgnored": true,
+    "credentialFileMode": "600",
+    "password": "generated locally; omitted",
+    "supervisorEntryPoint": "apps/worker/src/cleanup.ts"
+  },
+  "generation": {
+    "budgetLimitsReservedAndSpentMicroUsdTotal": 0,
+    "remainingPermits": 0,
+    "smokeAuthorizations": 0,
+    "metaRequests": 0,
+    "enabled": false
+  },
+  "advisors": {
+    "securityErrors": 0,
+    "securityWarnings": [
+      {
+        "count": 6,
+        "name": "authenticated_security_definer_function_executable",
+        "disposition": "Reviewed fixed-search_path owner-derived narrow RPC boundaries; authenticated execute is intentional.",
+        "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable"
+      },
+      {
+        "count": 1,
+        "name": "auth_leaked_password_protection",
+        "disposition": "Disabled on Free plan; feature requires Pro or above. No upgrade authorized.",
+        "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection"
+      }
+    ],
+    "securityInfo": [
+      {
+        "count": 5,
+        "name": "rls_enabled_no_policy",
+        "disposition": "Private deny-all metadata tables without client grants; only narrow private definer functions.",
+        "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy"
+      }
+    ],
+    "performanceInfo": [
+      {
+        "count": 7,
+        "name": "unused_index",
+        "disposition": "New/low-traffic database; retain reviewed workload indexes.",
+        "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index"
+      }
+    ]
+  },
+  "limitations": [
+    "No production application hosting deployed",
+    "No genuine Spark/SAM generation verified",
+    "Phase 2 inbox/manual UX/OAuth-only deletion/native Tamil/physical-device/participant rules gaps remain",
+    "Cleanup depends on this Mac being awake, logged in, online and retaining the release worktree, dependencies and protected files; no independent hosted uptime or alerting guarantee."
+  ],
+  "securityIncident": "A metadata inspection accidentally emitted disposable fixture passwords into local tool output. Both accounts were deleted and their Auth/data cascades verified. No project key, worker credential, real-user credential or token was emitted. Fixture credential file removed."
+}

@@ -1,3 +1,3 @@
 export * from "./types";
 
-export type { InferenceDatabase } from "./inference-rpc";
+export type { Database as InferenceDatabase } from "./database.types";
