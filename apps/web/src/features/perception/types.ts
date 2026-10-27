@@ -13,6 +13,14 @@ export interface NormalizedBox {
 
 export type ObjectOrigin = "fixture" | "model";
 
+export interface RasterMask {
+  /** Decoded binary row-major SAM raster, never a polygon approximation. */
+  pixels: Uint8Array;
+  width: number;
+  height: number;
+  bounds: NormalizedBox;
+}
+
 export interface PerceivedObject {
   /** Stable within one detection set; never reused across requests. */
   id: string;
@@ -25,6 +33,8 @@ export interface PerceivedObject {
   mask: { x: number; y: number }[] | null;
   /** Null unless supplied by actual model data — never synthesized. */
   confidence: number | null;
+  /** Validated associated SAM raster; omitted for scenes and old fixtures. */
+  rasterMask?: RasterMask;
   origin: ObjectOrigin;
 }
 
