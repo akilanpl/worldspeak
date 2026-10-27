@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"],
+    "paths": {
+      "@worldspeak/contracts": ["../../packages/contracts/src/index.ts"],
+      "@worldspeak/catalog": ["../../packages/catalog/src/index.ts"],
+      "@worldspeak/communication": ["../../packages/communication/src/index.ts"]
+    },
+    "typeRoots": ["../../packages/inference/node_modules/@types"]
+  },
+  "include": ["./**/*.ts", "./**/*.mts"]
+}

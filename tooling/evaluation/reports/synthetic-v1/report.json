@@ -1,0 +1,491 @@
+{
+  "reportVersion": "worldspeak-evaluation-report.v1",
+  "datasetVersion": "worldspeak-eval.v1",
+  "evaluatorSha256": "be84d34bb491dbdf6b32a27c8b3a719c379c902e20eed54f6de5d0f35b686c73",
+  "contractsSha256": "6083cad524c4705fd901da561bed03fdc2c6d9a7123c5b08444a81e8a592783b",
+  "lockfileSha256": "d17e09e557fbaac0fe921be2edbf834c09d8f7b122e7efd92414ad42c4688765",
+  "datasetSha256": "4c8ca6325be30fa2714f9d9d16e9abec76ebf25d3f6a319458f68a1761fabc40",
+  "wireSha256": "dceafc67a4e75234fe6a73b4a15fb1c4fd96e486dbc10721bae37c3f91072e89",
+  "candidateSha256": "a1e5c45d3d7d961eb3ababa302fc7776324fa4a0df34dc1ce1f3b574ce7384ae",
+  "candidateName": "synthetic-imperfect-baseline",
+  "expectedProvenanceSource": "fixture",
+  "evidence": "Synthetic fixture replay; no model performance claim",
+  "metrics": {
+    "detections": [
+      {
+        "threshold": 0.25,
+        "tp": 3,
+        "fp": 1,
+        "fn": 1,
+        "precision": 0.75,
+        "recall": 0.75,
+        "meanMatchedBoxIou": 0.9047619047619048,
+        "perScene": [
+          {
+            "id": "two-objects",
+            "tp": 2,
+            "fp": 1,
+            "fn": 0,
+            "matches": [
+              {
+                "e": 0,
+                "a": 0,
+                "iou": 1
+              },
+              {
+                "e": 1,
+                "a": 1,
+                "iou": 1
+              }
+            ]
+          },
+          {
+            "id": "partial-overlap",
+            "tp": 1,
+            "fp": 0,
+            "fn": 1,
+            "matches": [
+              {
+                "e": 0,
+                "a": 0,
+                "iou": 0.7142857142857143
+              }
+            ]
+          },
+          {
+            "id": "empty-scene",
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "matches": []
+          }
+        ]
+      },
+      {
+        "threshold": 0.5,
+        "tp": 3,
+        "fp": 1,
+        "fn": 1,
+        "precision": 0.75,
+        "recall": 0.75,
+        "meanMatchedBoxIou": 0.9047619047619048,
+        "perScene": [
+          {
+            "id": "two-objects",
+            "tp": 2,
+            "fp": 1,
+            "fn": 0,
+            "matches": [
+              {
+                "e": 0,
+                "a": 0,
+                "iou": 1
+              },
+              {
+                "e": 1,
+                "a": 1,
+                "iou": 1
+              }
+            ]
+          },
+          {
+            "id": "partial-overlap",
+            "tp": 1,
+            "fp": 0,
+            "fn": 1,
+            "matches": [
+              {
+                "e": 0,
+                "a": 0,
+                "iou": 0.7142857142857143
+              }
+            ]
+          },
+          {
+            "id": "empty-scene",
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "matches": []
+          }
+        ]
+      },
+      {
+        "threshold": 0.75,
+        "tp": 2,
+        "fp": 2,
+        "fn": 2,
+        "precision": 0.5,
+        "recall": 0.5,
+        "meanMatchedBoxIou": 1,
+        "perScene": [
+          {
+            "id": "two-objects",
+            "tp": 2,
+            "fp": 1,
+            "fn": 0,
+            "matches": [
+              {
+                "e": 0,
+                "a": 0,
+                "iou": 1
+              },
+              {
+                "e": 1,
+                "a": 1,
+                "iou": 1
+              }
+            ]
+          },
+          {
+            "id": "partial-overlap",
+            "tp": 0,
+            "fp": 1,
+            "fn": 2,
+            "matches": []
+          },
+          {
+            "id": "empty-scene",
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "matches": []
+          }
+        ]
+      }
+    ],
+    "perLabel": [
+      {
+        "label": "blue rectangle",
+        "tp": 1,
+        "fp": 1,
+        "fn": 0,
+        "precision": 0.5,
+        "recall": 1
+      },
+      {
+        "label": "green rectangle",
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "precision": null,
+        "recall": 0
+      },
+      {
+        "label": "red rectangle",
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1
+      }
+    ],
+    "masks": {
+      "meanIou": 0.6666666666666666,
+      "cases": [
+        {
+          "id": "partial-mask",
+          "iou": 0.3333333333333333
+        },
+        {
+          "id": "empty-mask",
+          "iou": 1
+        }
+      ]
+    },
+    "temporal": {
+      "pointRecall": 0.8571428571428571,
+      "pointPrecision": 1,
+      "continuity": 0.75,
+      "identitySwitches": 0,
+      "cases": [
+        {
+          "id": "moving-chair",
+          "expectedPoints": 3,
+          "predictedPoints": 2,
+          "matchedPoints": 2,
+          "adjacentPairs": 2,
+          "preservedPairs": 1,
+          "identitySwitches": 0,
+          "pointRecall": 0.6666666666666666,
+          "pointPrecision": 1,
+          "continuity": 0.5,
+          "meanBoxIou": 1
+        },
+        {
+          "id": "two-identities",
+          "expectedPoints": 4,
+          "predictedPoints": 4,
+          "matchedPoints": 4,
+          "adjacentPairs": 2,
+          "preservedPairs": 2,
+          "identitySwitches": 0,
+          "pointRecall": 1,
+          "pointPrecision": 1,
+          "continuity": 1,
+          "meanBoxIou": 1
+        }
+      ]
+    },
+    "provenanceMismatches": []
+  },
+  "contracts": {
+    "cases": [
+      {
+        "id": "valid-scene",
+        "kind": "scene",
+        "expectedAccept": true,
+        "accepted": true,
+        "passed": true
+      },
+      {
+        "id": "empty-scene",
+        "kind": "scene",
+        "expectedAccept": true,
+        "accepted": true,
+        "passed": true
+      },
+      {
+        "id": "invalid-json",
+        "kind": "scene",
+        "expectedAccept": false,
+        "accepted": false,
+        "passed": true
+      },
+      {
+        "id": "prompt-injection-field",
+        "kind": "scene",
+        "expectedAccept": false,
+        "accepted": false,
+        "passed": true
+      },
+      {
+        "id": "reversed-box",
+        "kind": "scene",
+        "expectedAccept": false,
+        "accepted": false,
+        "passed": true
+      },
+      {
+        "id": "outside-image",
+        "kind": "scene",
+        "expectedAccept": false,
+        "accepted": false,
+        "passed": true
+      },
+      {
+        "id": "unbounded-confidence",
+        "kind": "scene",
+        "expectedAccept": false,
+        "accepted": false,
+        "passed": true
+      },
+      {
+        "id": "blank-label",
+        "kind": "scene",
+        "expectedAccept": false,
+        "accepted": false,
+        "passed": true
+      },
+      {
+        "id": "excess-detections",
+        "kind": "scene",
+        "expectedAccept": false,
+        "accepted": false,
+        "passed": true
+      },
+      {
+        "id": "wrong-model",
+        "kind": "scene",
+        "expectedAccept": false,
+        "accepted": false,
+        "passed": true
+      },
+      {
+        "id": "missing-usage",
+        "kind": "scene",
+        "expectedAccept": false,
+        "accepted": false,
+        "passed": true
+      },
+      {
+        "id": "decoded-sam-mask",
+        "kind": "segment",
+        "expectedAccept": true,
+        "accepted": true,
+        "passed": true
+      },
+      {
+        "id": "empty-sam",
+        "kind": "segment",
+        "expectedAccept": true,
+        "accepted": true,
+        "passed": true
+      },
+      {
+        "id": "wrong-source-dimensions",
+        "kind": "segment",
+        "expectedAccept": false,
+        "accepted": false,
+        "passed": true
+      },
+      {
+        "id": "oversized-mask",
+        "kind": "segment",
+        "expectedAccept": false,
+        "accepted": false,
+        "passed": true
+      },
+      {
+        "id": "wrong-frame",
+        "kind": "segment",
+        "expectedAccept": false,
+        "accepted": false,
+        "passed": true
+      },
+      {
+        "id": "malformed-mask",
+        "kind": "segment",
+        "expectedAccept": false,
+        "accepted": false,
+        "passed": true
+      },
+      {
+        "id": "untrusted-text",
+        "kind": "segment",
+        "expectedAccept": false,
+        "accepted": false,
+        "passed": true
+      },
+      {
+        "id": "ordered-gap",
+        "kind": "video",
+        "expectedAccept": true,
+        "accepted": true,
+        "passed": true
+      },
+      {
+        "id": "empty-video",
+        "kind": "video",
+        "expectedAccept": true,
+        "accepted": true,
+        "passed": true
+      },
+      {
+        "id": "duplicate-frame",
+        "kind": "video",
+        "expectedAccept": false,
+        "accepted": false,
+        "passed": true
+      },
+      {
+        "id": "out-of-range-frame",
+        "kind": "video",
+        "expectedAccept": false,
+        "accepted": false,
+        "passed": true
+      },
+      {
+        "id": "oversized-video-mask",
+        "kind": "video",
+        "expectedAccept": false,
+        "accepted": false,
+        "passed": true
+      },
+      {
+        "id": "valid-binary",
+        "kind": "raster",
+        "expectedAccept": true,
+        "accepted": true,
+        "passed": true
+      },
+      {
+        "id": "nonbinary-pixels",
+        "kind": "raster",
+        "expectedAccept": false,
+        "accepted": false,
+        "passed": true
+      },
+      {
+        "id": "short-raster",
+        "kind": "raster",
+        "expectedAccept": false,
+        "accepted": false,
+        "passed": true
+      },
+      {
+        "id": "noncanonical-base64",
+        "kind": "raster",
+        "expectedAccept": false,
+        "accepted": false,
+        "passed": true
+      },
+      {
+        "id": "url-instead-of-pixels",
+        "kind": "raster",
+        "expectedAccept": false,
+        "accepted": false,
+        "passed": true
+      }
+    ],
+    "invalidOutputs": 21,
+    "rejectedInvalid": 21,
+    "invalidRejectionRate": 1,
+    "validOutputs": 7,
+    "acceptedValid": 7,
+    "validAcceptanceRate": 1
+  },
+  "communication": {
+    "checks": [
+      {
+        "id": "exact-user-text-and-whitespace",
+        "passed": true
+      },
+      {
+        "id": "exact-tamil-user-text",
+        "passed": true
+      },
+      {
+        "id": "locale-mismatch-rejects",
+        "passed": true
+      },
+      {
+        "id": "unknown-catalog-rejects",
+        "passed": true
+      },
+      {
+        "id": "polarity-is-structural",
+        "passed": true
+      },
+      {
+        "id": "fresh-permit-current",
+        "passed": true
+      },
+      {
+        "id": "revision-invalidates-permit",
+        "passed": true
+      },
+      {
+        "id": "text-tampering-invalidates-permit",
+        "passed": true
+      },
+      {
+        "id": "locale-change-invalidates-permit",
+        "passed": true
+      },
+      {
+        "id": "result-contract-rejects-inferred-intent",
+        "passed": true
+      },
+      {
+        "id": "strict-dataset-records",
+        "passed": true
+      }
+    ],
+    "passed": 11,
+    "total": 11,
+    "passRate": 1
+  },
+  "passed": true,
+  "failures": []
+}
