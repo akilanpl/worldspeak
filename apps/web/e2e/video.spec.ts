@@ -61,6 +61,12 @@ test("actual local WebM frame → manual region → exact words → composer req
   const uploads: string[] = [];
   page.on("request", request => {if (request.method() !== "GET" || /\/api\//.test(request.url())) uploads.push(request.url());});
   await page.addInitScript({path:fileURLToPath(new URL("./stub-speech.js",import.meta.url))});
+  await page.addInitScript(() => {
+    const revoked: string[] = [];
+    Object.defineProperty(window,"__revokedVideoUrls",{value:revoked});
+    const revoke = URL.revokeObjectURL.bind(URL);
+    URL.revokeObjectURL = url => {revoked.push(url); revoke(url);};
+  });
   await page.goto("/video");
   await page.getByRole("button",{name:"Use local video"}).click();
   await page.getByLabel("Upload clip",{exact:true}).setInputFiles(localClip);
@@ -73,6 +79,11 @@ test("actual local WebM frame → manual region → exact words → composer req
   await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.currentTime)).toBeCloseTo(.5,2);
   await page.getByRole("button",{name:"Select current frame"}).click();
   await expect(page.getByRole("heading",{name:"Selected frame at 0.500 seconds"})).toBeVisible();
+  // Actual decode evidence: the yellow object is present in the captured pixels.
+  const pixel = await page.locator("canvas").evaluate((canvas: HTMLCanvasElement) => Array.from(canvas.getContext("2d")!.getImageData(80,45,1,1).data));
+  expect(pixel[0]).toBeGreaterThan(180); expect(pixel[1]).toBeGreaterThan(150); expect(pixel[2]).toBeLessThan(80);
+  const axe = await new AxeBuilder({page}).analyze();
+  expect(axe.violations.filter(v => v.impact === "serious" || v.impact === "critical")).toEqual([]);
   await page.getByLabel("Left",{exact:true}).fill("25");
   await page.getByLabel("Top",{exact:true}).fill("22");
   await page.getByLabel("Right",{exact:true}).fill("62");
@@ -85,6 +96,7 @@ test("actual local WebM frame → manual region → exact words → composer req
   await expect(page.getByText("Manual region confirmed.",{exact:true})).toBeVisible();
   await page.getByRole("button",{name:"Confirm object and choose intent"}).click();
   await page.getByRole("button",{name:/approve for composer/i}).click();
+  expect(await page.evaluate(() => (window as unknown as {__revokedVideoUrls:string[]}).__revokedVideoUrls.length)).toBe(1);
   await page.getByRole("link",{name:"Open in composer"}).click();
   await expect(page.getByTestId("handoff-provenance-notice")).toContainText("manual human selection");
   expect(await page.evaluate(() => (window as unknown as {__speakCalls: {text:string}[]}).__speakCalls)).toEqual([]);
@@ -96,7 +108,7 @@ test("actual local WebM frame → manual region → exact words → composer req
 test("invalid local video can be retried with real media", async ({page}) => {
   await page.goto("/video");await page.getByRole("button",{name:"Use local video"}).click();
   await page.getByLabel("Upload clip",{exact:true}).setInputFiles({name:"broken.webm",mimeType:"video/webm",buffer:Buffer.from("not a video")});
-  await expect(page.getByRole("alert")).toContainText("Could not read");
+  await expect(page.getByTestId("video-capture-error")).toContainText("Could not read");
   await page.getByLabel("Upload clip",{exact:true}).setInputFiles(localClip);
   await expect(page.getByRole("heading",{name:"Clip preview"})).toBeVisible();
   await page.getByRole("button",{name:"Retake"}).click();

@@ -240,7 +240,7 @@ export default function VideoCapturePanel({ locale, onClip, fixtureMode, onFixtu
           </div>
           {busy && <button type="button" className="btn btn-secondary" onClick={clearAll}>Cancel clip loading</button>}
           {error && (
-            <p className="notice" role="alert">
+            <p className="notice" role="alert" data-testid="video-capture-error">
               {messages[error]}
             </p>
           )}
