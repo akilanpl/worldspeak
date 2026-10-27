@@ -30,9 +30,9 @@ Show (screen capture of code/evidence, or simple slides): budget reservation flo
 
 ### 2:05–2:40 — Status honesty: SAM and limits (35s)
 
-> "Real SAM 3.1 segmentation is implemented but unverified — no live SAM call has been authorized yet, and pixel-mask rendering is still boxes-only. That is our next approved step, capped at $0.0025 for one still image."
+> "Segmentation display is implemented: our renderer paints validated pixel masks with stable object association, tested with synthetic fixtures down to exact canvas pixels. But no live SAM 3.1 call has been authorized yet — every mask pixel you just saw is synthetic. One real still-image call, capped at $0.0025, remains a separately gated decision."
 
-Show: synthetic SAM parser test geometry; SAM-only acceptance proposal header; limitations slide.
+Show: rendered synthetic pixel mask on canvas (captioned SYNTHETIC FIXTURE — NOT A REAL SAM RESULT) alongside its box; SAM-only acceptance proposal header; limitations slide.
 
 ### 2:40–3:00 — Close (20s)
 
