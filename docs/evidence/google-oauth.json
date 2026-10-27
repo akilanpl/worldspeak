@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-27",
+  "browser": "Brave",
+  "provider": "google",
+  "project": "cafkyowssdemzivhzxbb",
+  "observed": {
+    "scopes": [
+      "email",
+      "profile"
+    ],
+    "firstAttempt": "bad_oauth_state after delayed completion; not counted as success",
+    "freshAttempt": "application callback completed to protected History",
+    "hostedAggregate": {
+      "googleIdentities": 1,
+      "googleSessions": 1,
+      "provisionedGoogleProfiles": 1
+    },
+    "authenticatedUi": [
+      "exact synthetic user-text preview",
+      "Save: Saved to history",
+      "Favorite: Saved to favorites",
+      "History rendered both saved synthetic sentences"
+    ],
+    "foreignConversationRead": {
+      "fixtureExisted": true,
+      "endpoint": "GET /api/v1/conversations/:id/messages",
+      "result": "NOT_FOUND / conversations.not_found",
+      "requestId": "1fa30de8-6841-4ff7-87f2-428317c7e977"
+    },
+    "excludedProbe": "GET /api/v1/messages/:id returned 405; not isolation evidence",
+    "signOut": {
+      "ui": "returned to guest essential board",
+      "hostedGoogleSessionsAfter": 0,
+      "identityRetained": true,
+      "protectedHistory": "redirected to /sign-in?next=/history"
+    }
+  },
+  "cleanup": {
+    "disposablePrivacyAccountRemoved": true,
+    "syntheticStorageObjectsRemaining": 0,
+    "syntheticMarkerMessagesRemaining": 0,
+    "syntheticConversationsRemaining": 0,
+    "realGoogleIdentityRetained": true,
+    "method": "fixture admin deletion; exact-ID and marker-scoped SQL for test messages and empty test conversations; verified with aggregate SQL"
+  },
+  "limits": [
+    "No tokens, account identifiers or credential-bearing URLs retained",
+    "Remaining manual search/replay/delete/preferences UX is not claimed",
+    "No automatic speech was requested; audible/device speech still requires human verification"
+  ]
+}

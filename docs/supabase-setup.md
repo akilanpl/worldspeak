@@ -28,14 +28,14 @@ The local verification Site URL is `http://127.0.0.1:3101`. Callback entries pre
 
 The three exact saved entries and Site URL were independently verified in Brave after the human completed configuration. Use exact URLs, no wildcard. Add production URLs only after a hosting origin is selected.
 
-## Google OAuth — exact remaining actions
+## Google OAuth — configuration and verification
 
 1. In a WorldSpeak Google Cloud project, complete the OAuth consent screen and add the chosen Google test user if the application is in Testing.
 2. Create a Web application OAuth client. Authorized redirect URI: `https://cafkyowssdemzivhzxbb.supabase.co/auth/v1/callback`. Authorized local origin: `http://127.0.0.1:3101`.
 3. Enter client ID and secret directly into this Supabase project's Google provider form and enable it. Keep nonce checks enabled and missing-email access disabled. No secrets in chat or Git.
 4. Finish a real Google login through the application, verify PKCE callback/session, then sign out and confirm protected routes deny access. Record outcomes, never credential-bearing URLs or tokens.
 
-Google was initially disabled; the human subsequently configured its client/provider. A real application Google redirect has begun; session/callback success is not inferred from configuration alone. [Supabase Google guide](https://supabase.com/docs/guides/auth/social-sign-in/auth-google).
+Google was initially disabled; the human subsequently configured its client/provider. A fresh real application callback succeeded in Brave, independently corroborated by one hosted Google identity/session/provisioned profile and signed-in Save/Favorite/History. A foreign existing conversation returned NOT_FOUND. An earlier delayed flow expired and was not counted. See docs/evidence/google-oauth.json; remaining manual replay/search checks are open. [Supabase Google guide](https://supabase.com/docs/guides/auth/social-sign-in/auth-google).
 
 ## Erasure
 

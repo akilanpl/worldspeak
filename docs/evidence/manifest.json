@@ -37,10 +37,17 @@
       "executedAssertions": 0,
       "blocked": "Chromium macOS MachPortRendezvousServer permission denied; nine browser launches failed before test assertions"
     },
-    "remoteCI": "pending release push",
+    "remoteCI": {
+      "commit": "146a4f52427fe787e0177d260fd6fe2d1bc0c6af",
+      "conclusion": "success",
+      "url": "https://github.com/akilanpl/worldspeak/actions/runs/40443225544",
+      "browserTestsPassed": 9,
+      "unitTestsPassed": 43,
+      "localDatabaseScenariosPassed": 12
+    },
     "secretScan": {
       "exit": 0,
-      "scope": "all 136 unique indexed blobs without content exclusions; 141 historical baseline blobs separately clean"
+      "scope": "208 unique historical blobs through implementation commit; final release scan recorded in Git build log"
     },
     "schemaSnapshot": {
       "exit": 0,
@@ -52,10 +59,9 @@
   },
   "notRun": [
     "Successful public email registration and inbox-delivered confirmation/recovery",
-    "Google OAuth complete interactive flow",
-    "Signed-in real browser save/replay/sign-out (headless launch blocked locally)",
     "Physical-device speech and independent native Tamil review",
-    "Expired signed JWT after actual lifetime elapse"
+    "Expired signed JWT after actual lifetime elapse",
+    "Remaining manual signed-in search/replay/delete/preferences UX; Google save/favorite/history and foreign read were exercised"
   ],
   "providerCalls": {
     "metaModelApi": 0
@@ -65,5 +71,6 @@
     "syntheticStorageObjectsRemaining": 0,
     "syntheticConversationsRemaining": 0
   },
-  "productionDeployment": "none; no approved application hosting target supplied"
+  "productionDeployment": "none; no approved application hosting target supplied",
+  "googleOAuthEvidence": "google-oauth.json"
 }

@@ -20,4 +20,4 @@ Performance notices for unused indexes are informational on the new small databa
 
 Auth has native service rate limits; JSON and search bounds protect Phase 2 app inputs. No paid inference endpoint exists. An application-wide abuse/rate-limit system is a Phase 3 prerequisite before opening costly model routes, not a claim of this phase.
 
-Limitations: public email delivery, Google OAuth, genuine elapsed-time access-token expiry, live signed-in browser UX, native Tamil review and audible/device checks are not inferred from lower-level tests. No medical advice, model integration, deployment or fine-tuning was added.
+Limitations: public email delivery, genuine elapsed-time access-token expiry, remaining hosted manual UX, native Tamil review and audible/device checks are not inferred from lower-level tests. Real Google login/session plus Save/Favorite/History and foreign-conversation read isolation were independently verified in Brave and hosted aggregates. No medical advice, model integration, deployment or fine-tuning was added.

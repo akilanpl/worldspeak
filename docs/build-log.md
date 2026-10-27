@@ -71,3 +71,10 @@ All times IST. Author: Muse Code implementation engineer.
 - Local E2E attempted: Chromium failed its macOS Mach port bootstrap before any of nine assertions. Historical Muse 9/9 is retained as baseline evidence only. Current browser verification is delegated to the repository's existing CI workflow, not a new agent or paid service.
 - Browser: email provider/confirmation inspected in Brave; local Site URL entered; Google credentials empty. Exact callback allowlist prepared, but persistence not yet independently verified. Human Google/controlled-inbox/device/rules steps remain.
 - No Meta application model calls, Phase 3 implementation, GPU, paid service or production hosting. Current handoff deliberately keeps Phase 2 acceptance incomplete.
+
+## 2026-10-27 — release CI and real Google follow-up
+
+- Implementation commit 146a4f5 passed GitHub CI: 43 unit tests, 12 DB scenario groups, 9 browser tests, lint/types/build/schema/secret gates. Run: https://github.com/akilanpl/worldspeak/actions/runs/40443225544 . Local browser bootstrap remains blocked.
+- Human configured Google; saved callback allowlist/Site URL independently checked in Brave. First delayed flow expired; fresh flow completed to History with a real hosted identity/session/profile. Signed-in exact synthetic Save/Favorite and History passed; foreign existing conversation read returned NOT_FOUND. No tokens/account details retained.
+- Removed the disposable cross-user account, exact synthetic marker messages and their empty conversations. Hosted aggregate verified zero synthetic users/storage objects/marker messages/test conversations; real Google identity retained. Remaining manual UX and inbox/native/device/rules gates remain explicit; Phase 3 not started.
+- Google sign-out then returned to the guest board; hosted session count fell to zero with identity retained. Visiting History redirected to /sign-in?next=/history. No speech was triggered.
