@@ -83,3 +83,7 @@ No API calls, no paid inference, no new speech engine.
   history/favorites endpoints (guest flow stays local-only).
 - Real-device checks still open: camera grants, Tamil shaping at large
   text scales, airplane-mode journey, audible Speak verification.
+
+## Release privacy correction
+
+Navigation now carries opaque tab-local keys only. Blocked sessionStorage falls back to bounded, expiring in-memory storage and Next client navigation; it never writes payloads into URL/query/history or a server. Reload/new-tab without storage fails closed with an explicit unavailable-draft notice. Incoming inline payload links are no longer resolved by the composer. E2E uses a dedicated configurable loopback port and refuses to reuse another developer's server.

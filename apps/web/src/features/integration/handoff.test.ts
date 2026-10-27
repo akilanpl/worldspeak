@@ -1,9 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   decodeHandoff,
   encodeHandoff,
   handoffToComposition,
   snapshotToPayload,
+  handoffHref,
+  storeHandoff,
+  readStoredHandoff,
   type HandoffPayload,
 } from "./handoff";
 
@@ -113,5 +116,50 @@ describe("handoffToComposition", () => {
       () => "id-y",
     );
     expect(comp.intent).toEqual({ kind: "request-help", object: null });
+  });
+});
+
+describe("private handoff transport", () => {
+  it("uses opaque keys when browser storage throws; user words stay memory-only", () => {
+    const payload = payloadFor({
+      kind: "user-text",
+      text: "Private தமிழ் WS-RELEASE-01",
+      locale: "en",
+    });
+    const write = vi
+      .spyOn(Storage.prototype, "setItem")
+      .mockImplementation(() => {
+        throw Error("blocked");
+      });
+    const read = vi
+      .spyOn(Storage.prototype, "getItem")
+      .mockImplementation(() => {
+        throw Error("blocked");
+      });
+    try {
+      const href = handoffHref(payload);
+      expect(href).toMatch(/^\/\?handoff=ws-handoff-/);
+      expect(href).not.toContain("Private");
+      expect(readStoredHandoff(href.split("=")[1])).toEqual(payload);
+    } finally {
+      write.mockRestore();
+      read.mockRestore();
+    }
+  });
+  it("does not accept inline payloads and expires draft keys", () => {
+    const payload = payloadFor({
+      kind: "user-text",
+      text: "private",
+      locale: "en",
+    });
+    expect(readStoredHandoff(encodeHandoff(payload))).toBeNull();
+    const key = storeHandoff(payload)!;
+    const now = Date.now();
+    const date = vi.spyOn(Date, "now").mockReturnValue(now + 600001);
+    try {
+      expect(readStoredHandoff(key)).toBeNull();
+    } finally {
+      date.mockRestore();
+    }
   });
 });

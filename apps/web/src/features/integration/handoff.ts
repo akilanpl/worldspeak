@@ -1,10 +1,15 @@
 import { CATALOG_VERSION, getObject } from "@worldspeak/catalog";
-import { parseIntent, type Composition, type Intent, type Locale } from "@worldspeak/contracts";
+import {
+  parseIntent,
+  type Composition,
+  type Intent,
+  type Locale,
+} from "@worldspeak/contracts";
 
 /**
  * Typed perception/video → composer handoff.
  *
- * An approved intent travels as a URL-safe payload (`?handoff=`), decoded
+ * An approved intent stays tab-local behind an opaque `?handoff=` key, resolved
  * client-side so guest offline use never needs a server roundtrip. Decoding
  * is total: anything malformed, versioned wrong, or structurally invalid
  * yields null and the composer starts empty with a notice. Speech is never
@@ -45,7 +50,8 @@ function isHandoffMeta(value: object): value is HandoffMeta {
     typeof r["objectLabel"] === "string" &&
     (r["objectLabel"] as string).length > 0 &&
     (r["objectLabel"] as string).length <= 120 &&
-    (typeof r["objectCatalogId"] === "string" || r["objectCatalogId"] === null) &&
+    (typeof r["objectCatalogId"] === "string" ||
+      r["objectCatalogId"] === null) &&
     (r["provenance"] === "fixture" || r["provenance"] === "model")
   );
 }
@@ -105,7 +111,9 @@ function validatePayload(parsed: unknown): HandoffPayload | null {
 }
 
 /** Total decode: valid payload or null (composer starts empty + notice). */
-export function decodeHandoff(raw: string | null | undefined): HandoffPayload | null {
+export function decodeHandoff(
+  raw: string | null | undefined,
+): HandoffPayload | null {
   if (!raw) return null;
   try {
     let padded = raw.replace(/-/g, "+").replace(/_/g, "/");
@@ -118,45 +126,81 @@ export function decodeHandoff(raw: string | null | undefined): HandoffPayload | 
   }
 }
 
-function newKey(): string {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) return `ws-handoff-${crypto.randomUUID()}`;
-  return `ws-handoff-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e9).toString(36)}`;
+const PREFIX = "ws-handoff-";
+const TTL = 10 * 60 * 1000;
+const MAX_HANDOFFS = 16;
+const memory = new Map<string, { raw: string; expiresAt: number }>();
+
+function validKey(key: string): boolean {
+  return /^ws-handoff-[a-f0-9-]{36}$/.test(key);
 }
 
-/**
- * Privacy-preserving transport: the payload lives in sessionStorage under a
- * random key, so user-entered communication text (own-words intents) never
- * lands in browser history. sessionStorage is tab-scoped and vanishes with
- * the tab; guest offline operation needs no network. Returns null when
- * storage is unavailable — callers then fall back to the inline payload.
+/** Tab-local transport only. Never serialize approved text into a URL.
+ * The bounded in-memory fallback survives client navigation while Storage is
+ * denied. Reload/new-tab loses that fallback and fails closed with a notice.
  */
 export function storeHandoff(payload: HandoffPayload): string | null {
+  if (
+    !validatePayload(payload) ||
+    typeof crypto === "undefined" ||
+    !crypto.randomUUID
+  )
+    return null;
+  const key = `${PREFIX}${crypto.randomUUID()}`;
+  const expiresAt = Date.now() + TTL;
+  const raw = JSON.stringify({ expiresAt, payload });
+  if (raw.length > 8192) return null;
+  for (const [old, record] of memory)
+    if (record.expiresAt <= Date.now()) memory.delete(old);
+  while (memory.size >= MAX_HANDOFFS)
+    memory.delete(memory.keys().next().value!);
+  memory.set(key, { raw, expiresAt });
   try {
-    if (typeof sessionStorage === "undefined") return null;
-    const key = newKey();
-    sessionStorage.setItem(key, JSON.stringify(payload));
-    return key;
+    const keys = Array.from({ length: sessionStorage.length }, (_, i) =>
+      sessionStorage.key(i),
+    ).filter((k): k is string => Boolean(k?.startsWith(PREFIX)));
+    while (keys.length >= MAX_HANDOFFS)
+      sessionStorage.removeItem(keys.shift()!);
+    sessionStorage.setItem(key, raw);
+  } catch {
+    /* Memory only; no network, URL or localStorage fallback. */
+  }
+  return key;
+}
+
+export function readStoredHandoff(
+  key: string | null | undefined,
+): HandoffPayload | null {
+  if (!key || !validKey(key)) return null;
+  let raw: string | null = null;
+  try {
+    raw = sessionStorage.getItem(key);
+  } catch {
+    /* Memory fallback below. */
+  }
+  raw ??= memory.get(key)?.raw ?? null;
+  if (!raw || raw.length > 8192) return null;
+  try {
+    const record = JSON.parse(raw) as {
+      expiresAt?: unknown;
+      payload?: unknown;
+    };
+    if (
+      typeof record.expiresAt !== "number" ||
+      record.expiresAt <= Date.now() ||
+      record.expiresAt > Date.now() + TTL
+    )
+      return null;
+    return validatePayload(record.payload);
   } catch {
     return null;
   }
 }
 
-/** Read back a stored handoff; validated exactly like the inline form. */
-export function readStoredHandoff(key: string | null | undefined): HandoffPayload | null {
-  try {
-    if (!key || typeof sessionStorage === "undefined") return null;
-    const raw = sessionStorage.getItem(key);
-    if (!raw) return null;
-    return validatePayload(JSON.parse(raw));
-  } catch {
-    return null;
-  }
-}
-
-/** Best-effort link target: stored key when possible, inline payload otherwise. */
+/** Opaque key only, including when persistence is blocked. */
 export function handoffHref(payload: HandoffPayload): string {
   const key = storeHandoff(payload);
-  return key ? `/?handoff=${key}` : `/?handoff=${encodeHandoff(payload)}`;
+  return key ? `/?handoff=${key}` : "/?handoff=unavailable";
 }
 
 /**
@@ -169,7 +213,10 @@ export function handoffHref(payload: HandoffPayload): string {
  * Unknown catalog IDs degrade to exact user text (the approved label is
  * preserved visibly) instead of failing render.
  */
-export function handoffToComposition(payload: HandoffPayload, newId: () => string): Composition {
+export function handoffToComposition(
+  payload: HandoffPayload,
+  newId: () => string,
+): Composition {
   const fallbackText = payload.objectLabel.slice(0, 280) || "…";
   let intent: Intent;
   try {
@@ -187,15 +234,21 @@ export function handoffToComposition(payload: HandoffPayload, newId: () => strin
   };
 }
 
-function degradeUnknownCatalog(intent: Intent, fallbackText: string, locale: HandoffPayload["locale"]): Intent {
-  const known = (id: string | null) => id === null || getObject(id) !== undefined;
+function degradeUnknownCatalog(
+  intent: Intent,
+  fallbackText: string,
+  locale: HandoffPayload["locale"],
+): Intent {
+  const known = (id: string | null) =>
+    id === null || getObject(id) !== undefined;
   switch (intent.kind) {
     case "request-object":
     case "ask-location":
       if (known(intent.object.catalogId)) return intent;
       return { kind: "user-text", text: fallbackText, locale };
     case "request-help":
-      if (intent.object === null || known(intent.object.catalogId)) return intent;
+      if (intent.object === null || known(intent.object.catalogId))
+        return intent;
       return { kind: "request-help", object: null };
     case "social":
     case "user-text":

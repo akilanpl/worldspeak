@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import type { Composition } from "@worldspeak/contracts";
 import Workspace from "@/features/composer/Workspace";
 import type { SpeechGateway, VoiceInfo } from "@/lib/speech";
 import {
-  decodeHandoff,
   handoffToComposition,
   readStoredHandoff,
   type HandoffPayload,
@@ -38,7 +37,7 @@ interface EntryState {
  * failures degrade to an empty board with a notice — never a crash, and
  * never speech: Workspace only speaks on an explicit Speak click.
  */
-export default function ComposerEntry({
+function ComposerDraft({
   serverInitial,
   handoffKey,
   gatewayFactory,
@@ -58,7 +57,7 @@ export default function ComposerEntry({
   const [entry] = useState<EntryState>(() => {
     if (serverInitial) return { initial: serverInitial, notice: null, invalid: false };
     const raw = handoffKey ?? null;
-    const payload = readStoredHandoff(raw) ?? decodeHandoff(raw);
+    const payload = readStoredHandoff(raw);
     if (raw !== null && !payload) {
       return { initial: undefined, notice: null, invalid: true };
     }
@@ -73,7 +72,7 @@ export default function ComposerEntry({
     <>
       {entry.invalid && (
         <p className="notice" role="alert" data-testid="handoff-invalid-notice">
-          That camera/video link was invalid or tampered with — starting with an empty board.
+          That camera/video draft is unavailable or expired. It was not put in the URL. Return to the previous screen or enter your words here.
         </p>
       )}
       {entry.notice && (
@@ -84,4 +83,12 @@ export default function ComposerEntry({
       <Workspace initial={entry.initial} {...(gatewayFactory ? { gatewayFactory } : {})} />
     </>
   );
+}
+
+const subscribeClient = () => () => {};
+/** Resolve private drafts only after hydration; server HTML never reads Storage. */
+export default function ComposerEntry(props: Parameters<typeof ComposerDraft>[0]) {
+  const client = useSyncExternalStore(subscribeClient, () => true, () => false);
+  if (!client) return <p role="status">Loading communication board…</p>;
+  return <ComposerDraft {...props} />;
 }
