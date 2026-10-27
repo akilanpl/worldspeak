@@ -19,7 +19,8 @@
     "check:secrets": "node scripts/check-secrets.mjs",
     "dev": "pnpm --filter @worldspeak/web dev",
     "test:hosted": "node scripts/test-hosted.mjs",
-    "check:schema": "node scripts/check-schema-drift.mjs"
+    "check:schema": "node scripts/check-schema-drift.mjs",
+    "check:deployment": "node scripts/deployment-config.mjs"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
