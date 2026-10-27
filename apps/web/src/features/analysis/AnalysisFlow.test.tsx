@@ -22,7 +22,7 @@ function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
 }
 
-function successFetch() {
+function successFetch(operation: "scene" | "segment" = "scene") {
   return vi.fn(async (url: string) => {
     if (url === "/api/v1/media") return jsonResponse({ ok: true, data: { assetId: ASSET } }, 201);
     if (url === "/api/v1/jobs")
@@ -31,7 +31,7 @@ function successFetch() {
       ok: true,
       data: {
         id: JOB,
-        operation: "scene",
+        operation,
         status: "succeeded",
         cancelRequested: false,
         result: {
@@ -47,7 +47,7 @@ function successFetch() {
           tracks: [],
           provenance: {
             source: "model",
-            model: "muse-spark-1.3",
+            model: operation === "scene" ? "muse-spark-1.3" : "sam-3.1",
             adapterVersion: "meta-v1",
             responseId: "resp-1",
             inputSha256: "a".repeat(64),
@@ -116,4 +116,24 @@ describe("AnalysisFlow", () => {
     expect(screen.getByRole("alert")).toHaveTextContent(/confirmed noun/);
     expect(vi.mocked(fetch)).not.toHaveBeenCalled();
   });
+});
+
+it("SAM consent admits exactly one confirmed concept; outputs need separate confirmation", async () => {
+  const mock = successFetch("segment");
+  vi.stubGlobal("fetch", mock);
+  const confirmed = vi.fn();
+  render(<AnalysisFlow locale="en" image={image} operation="segment" concept="chair"
+    onDetections={confirmed} onBack={() => {}} />);
+  expect(mock).not.toHaveBeenCalled();
+  expect(screen.getByTestId("consent-send")).toBeDisabled();
+  fireEvent.click(screen.getByRole("checkbox"));
+  expect(mock).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByTestId("consent-send"));
+  const use = await screen.findByRole("button", { name: /use these objects/i });
+  const calls = vi.mocked(fetch).mock.calls;
+  expect(calls).toHaveLength(3);
+  expect(JSON.parse(calls[1]![1]!.body as string)).toMatchObject({ operation: "segment", concept: "chair", assetId: ASSET });
+  expect(confirmed).not.toHaveBeenCalled();
+  fireEvent.click(use);
+  expect(confirmed).toHaveBeenCalledWith(expect.any(Array), "sam-3.1");
 });

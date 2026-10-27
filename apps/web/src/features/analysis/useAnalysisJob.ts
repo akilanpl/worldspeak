@@ -188,7 +188,8 @@ export function useAnalysisJob(): AnalysisApi {
       }
       if (view.status === "succeeded") {
         const result = InferenceResultSchema.safeParse(view.result);
-        if (!result.success || result.data.provenance.source !== "model") {
+        if (!result.success || result.data.provenance.source !== "model" ||
+            result.data.provenance.model !== (operation === "scene" ? "muse-spark-1.3" : "sam-3.1")) {
           set({
             name: "failed",
             code: "invalid result",

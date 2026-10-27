@@ -38,8 +38,8 @@ let passed = 0;
 const box = { x1: 0.247, y1: 0.139, x2: 0.746, y2: 0.868 };
 const result: InferenceResult = InferenceResultSchema.parse({
   detections: [
-    { label: 'chair "demo" \\ தமிழ்', catalogId: null, box, mask: null, confidence: 0.99 },
-    { label: "synthetic cup", catalogId: "water", box: { x1: 0.01, y1: 0.02, x2: 0.1, y2: 0.2 },
+    { label: "chair", catalogId: null, box, mask: null, confidence: 0.99 },
+    { label: 'synthetic "cup" தமிழ்', catalogId: "water", box: { x1: 0.01, y1: 0.02, x2: 0.1, y2: 0.2 },
       mask: [{ x: 0.01, y: 0.02 }, { x: 0.1, y: 0.02 }, { x: 0.1, y: 0.2 }], confidence: null },
   ],
   tracks: [],
