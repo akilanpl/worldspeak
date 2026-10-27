@@ -343,3 +343,21 @@ it("rejects a valid SAM result on a scene job rather than misreporting provenanc
   api().submit(bytes, "image/png", "scene");
   await vi.waitFor(() => expect(api().outcome).toMatchObject({ name: "failed", code: "invalid result" }));
 });
+
+it("rejects malformed SAM raster before exposing selectable objects, without retries", async () => {
+  const model = modelResult();
+  const result = { ...model, detections: model.detections.map(d => ({ ...d, objectId: "7" })),
+    provenance: { ...model.provenance, model: "sam-3.1" },
+    segmentationMasks: [{ objectId: "7", width: 2, height: 2,
+      bounds: model.detections[0]!.box, rasterBase64: "not-base64" }] };
+  const http = vi.fn(async (url: string, init?: RequestInit) => {
+    if (init?.method === "DELETE") return jsonResponse({ ok: true });
+    if (url === "/api/v1/media") return jsonResponse({ data: { assetId: ASSET } });
+    if (url === "/api/v1/jobs") return jsonResponse({ data: { jobId: JOB } });
+    return jsonResponse(jobView("succeeded", { operation: "segment", result }));
+  });
+  vi.stubGlobal("fetch", http);
+  const api = renderHook(); api().submit(bytes, "image/png", "segment", "chair");
+  await vi.waitFor(() => expect(api().outcome).toMatchObject({ name: "failed", code: "invalid segmentation" }));
+  expect(http).toHaveBeenCalledTimes(3);
+});
