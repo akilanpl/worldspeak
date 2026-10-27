@@ -152,6 +152,13 @@ try {
   assert.equal((await t`select count(*)::int as n from world_inference.credit_events where job_id=${id} and event='settle' and amount_micro=2500`)[0]!.n,1);
   await assert.rejects(t.savepoint(q=>issue(q)),/ALREADY_ISSUED/);
  });
+ await scenario("actual overrun is recorded honestly without clamping or new headroom",async t=>{
+  await issue(t);const asset=await media(t),id=await admit(t,asset),l=await claim(t);assert.ok(l);assert.ok(await dispatch(t,l));
+  assert.equal((await worker(t,q=>q`select world_inference.finish_sam_test(${id},${l.lease_token},'failed',3000,null,'SYNTHETIC_OVERRUN') as v`))[0]!.v,true);
+  const money=(await t`select spent_micro,reserved_micro,limit_micro from world_inference.budgets where account='global'`)[0]!;
+  assert.equal(String(money.spent_micro),"7402");assert.equal(String(money.reserved_micro),"0");assert.equal(String(money.limit_micro),"0");
+  assert.equal((await t`select amount_micro::text as amount from world_inference.credit_events where job_id=${id} and event='settle'`)[0]!.amount,"3000");
+ });
  await scenario("expired ticket automatically deactivates admission without touching history",async t=>{
   await t`insert into world_inference.sam_test_authorizations(approval_ref,owner_id,model,operation,concept,input_sha256,cap_micro,pricing_ref,issued_at,expires_at)
    values('synthetic-expired-ticket',${owner},'sam-3.1','segment','chair',${sha},2500,'meta-standard-sam-image-2500-v1',now()-interval '2 minutes',now()-interval '1 minute')`;
@@ -182,7 +189,8 @@ try {
  const lease={id:actualLease.id,lease_token:actualLease.leaseToken};
  const sends=await Promise.all(Array.from({length:5},()=>sql.begin(t=>dispatch(t,lease))));assert.equal(sends.filter(Boolean).length,1);
  const receipts=await sql`select count(*)::int as n from world_inference.sam_test_events where event='dispatched'`;assert.equal(receipts[0]!.n,1);
- const result=InferenceResultSchema.parse({detections:[{label:"chair",catalogId:null,confidence:0.99,box:{x1:.247,y1:.139,x2:.746,y2:.868},mask:null}],tracks:[],segmentationMasks:[],
+ const result=InferenceResultSchema.parse({detections:[{objectId:"synthetic-chair-mask",label:"chair",catalogId:null,confidence:0.99,box:{x1:.247,y1:.139,x2:.746,y2:.868},mask:null}],tracks:[],
+  segmentationMasks:[{objectId:"synthetic-chair-mask",bounds:{x1:.247,y1:.139,x2:.746,y2:.868},width:2,height:2,rasterBase64:"AAEBAA=="}],
   provenance:{source:"model",model:"sam-3.1",adapterVersion:"meta-v1",responseId:"synthetic-sam-driver-round-trip",inputSha256:sha,inputTokens:null,outputTokens:null,costMicroUsd:2500}});
  assert.equal(await store.store.dispatch(actualLease),false); // Already consumed by the concurrent dispatch winner.
  // These are reconstructed model-transport fixtures, not genuine provider IDs.
@@ -195,6 +203,9 @@ try {
  await sql.begin(async t=>{
   const view=JobViewSchema.parse((await user(t,owner,q=>q`select public.inference_job_status(${id}) as v`))[0]!.v);
   assert.deepEqual(view.result,result);assert.equal(view.status,"succeeded");assert.equal(view.chargedMicroUsd,2500);
+  const detection=view.result!.detections[0]!, mask=view.result!.segmentationMasks[0]!;
+  assert.equal(detection.objectId,mask.objectId);assert.deepEqual(mask.bounds,detection.box);
+  assert.equal(mask.width*mask.height,4);assert.deepEqual([...Buffer.from(mask.rasterBase64,"base64")],[0,1,1,0]);
   assert.equal((await user(t,foreign,q=>q`select public.inference_job_status(${id}) as v`))[0]!.v,null);
   assert.equal((await worker(t,q=>q`select world_inference.finish_sam_test(${id},${lease.lease_token},'failed',2500,null,'DUPLICATE') as v`))[0]!.v,false);
   assert.equal(String((await t`select spent_micro from world_inference.budgets where account='global'`)[0]!.spent_micro),"6902");
