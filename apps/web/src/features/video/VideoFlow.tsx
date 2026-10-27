@@ -10,6 +10,7 @@ import VideoTrackPlayer from "./VideoTrackPlayer";
 import { getVideoFixture, VIDEO_FIXTURES } from "./fixtures";
 import type { VideoClip, VideoStep } from "./types";
 import type { PerceivedObject } from "../perception/types";
+import { encodeHandoff, snapshotToPayload } from "../integration/handoff";
 
 /**
  * Short-clip capture → review → track selection → intent → approved handoff.
@@ -27,6 +28,7 @@ export default function VideoFlow() {
   const [seekTo, setSeekTo] = useState<{ t: number; seq: number } | null>(null);
   const [seekSeq, setSeekSeq] = useState(0);
   const [approved, setApproved] = useState<ApprovedSnapshot | null>(null);
+  const [approvedHref, setApprovedHref] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   // Clock value frozen when the user continues to intent — render reads
   // state, never the live clock ref.
@@ -234,6 +236,20 @@ export default function VideoFlow() {
           object={intentObject}
           onBack={() => setStep("tracks")}
           onApprove={(snapshot) => {
+            if (selectedTrack) {
+              const payload = snapshotToPayload(snapshot, {
+                source: "video",
+                objectLabel:
+                  snapshot.locale === "ta" && selectedTrack.labelTa
+                    ? selectedTrack.labelTa
+                    : selectedTrack.labelEn,
+                objectCatalogId: selectedTrack.catalogId,
+                provenance: selectedTrack.origin,
+              });
+              setApprovedHref(`/?handoff=${encodeHandoff(payload)}`);
+            } else {
+              setApprovedHref(null);
+            }
             setApproved(snapshot);
             setStep("capture");
             setClip(null);
@@ -243,10 +259,29 @@ export default function VideoFlow() {
       )}
 
       {approved && step === "capture" && (
-        <p className="notice" role="status" data-testid="video-approve-notice">
-          {ta ? "அமைப்புக்கு அனுப்பத் தயார். இங்கு பேச்சு இல்லை." : "Approved for the composer — no speech here."}{" "}
-          {approved.intent.kind} · {approved.locale}
-        </p>
+        <div className="notice" role="status" data-testid="video-approve-notice">
+          <p>
+            {ta ? "அமைப்புக்கு அனுப்பத் தயார். இங்கு பேச்சு இல்லை." : "Approved for the composer — no speech here."}{" "}
+            {approved.intent.kind} · {approved.locale}
+          </p>
+          <div className="btn-row">
+            {approvedHref && (
+              <a className="btn" href={approvedHref} style={{ textDecoration: "none" }}>
+                {ta ? "அமைப்பில் திற" : "Open in composer"}
+              </a>
+            )}
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => {
+                setApproved(null);
+                setApprovedHref(null);
+              }}
+            >
+              {ta ? "மீண்டும் தொடங்கு" : "Start over"}
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

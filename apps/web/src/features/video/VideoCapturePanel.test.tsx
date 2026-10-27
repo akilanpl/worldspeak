@@ -92,6 +92,17 @@ describe("VideoCapturePanel", () => {
     expect(onClip).not.toHaveBeenCalled();
   });
 
+  it("revokes the object URL when the panel unmounts mid-preview", async () => {
+    const { revoke } = stubUrls();
+    fakeProbeVideo(5);
+    const { onClip } = renderCapture();
+    const input = screen.getByLabelText(/upload clip/i) as HTMLInputElement;
+    fireEvent.change(input, { target: { files: [new File(["x"], "ok.mp4", { type: "video/mp4" })] } });
+    await vi.waitFor(() => expect(onClip).toHaveBeenCalledTimes(1));
+    cleanup();
+    expect(revoke).toHaveBeenCalledWith("blob:mock");
+  });
+
   it("previews a valid upload and revokes its URL on remove", async () => {
     const { revoke } = stubUrls();
     fakeProbeVideo(5);

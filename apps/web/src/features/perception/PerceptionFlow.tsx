@@ -9,6 +9,7 @@ import { FIXTURE_SCENES } from "./fixtures";
 import { pstr } from "./strings";
 import type { CapturedImage, PerceptionStep, PerceivedObject } from "./types";
 import { getObject } from "@worldspeak/catalog";
+import { encodeHandoff, snapshotToPayload } from "../integration/handoff";
 
 /**
  * Camera-to-communication frontend flow (fixture-driven until the Phase 3
@@ -25,6 +26,7 @@ export default function PerceptionFlow() {
   const [notice, setNotice] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [approved, setApproved] = useState<ApprovedSnapshot | null>(null);
+  const [approvedHref, setApprovedHref] = useState<string | null>(null);
   const headingRef = useRef<HTMLHeadingElement | null>(null);
 
   // Move focus to the current step heading on change (keyboard users).
@@ -177,6 +179,18 @@ export default function PerceptionFlow() {
           object={selected}
           onBack={() => setStep("objects")}
           onApprove={(snapshot) => {
+            if (selected) {
+              const payload = snapshotToPayload(snapshot, {
+                source: "perception",
+                objectLabel:
+                  snapshot.locale === "ta" && selected.labelTa ? selected.labelTa : selected.labelEn,
+                objectCatalogId: selected.catalogId,
+                provenance: selected.origin,
+              });
+              setApprovedHref(`/?handoff=${encodeHandoff(payload)}`);
+            } else {
+              setApprovedHref(null);
+            }
             setApproved(snapshot);
             setStep("capture");
             setImage(null);
@@ -187,10 +201,29 @@ export default function PerceptionFlow() {
       )}
 
       {approved && step === "capture" && (
-        <p className="notice" role="status" data-testid="approve-notice">
-          {locale === "ta" ? "அமைப்புக்கு அனுப்பத் தயார். இங்கு பேச்சு இல்லை." : "Approved for the composer — no speech here."}{" "}
-          {approved.intent.kind} · {approved.locale}
-        </p>
+        <div className="notice" role="status" data-testid="approve-notice">
+          <p>
+            {locale === "ta" ? "அமைப்புக்கு அனுப்பத் தயார். இங்கு பேச்சு இல்லை." : "Approved for the composer — no speech here."}{" "}
+            {approved.intent.kind} · {approved.locale}
+          </p>
+          <div className="btn-row">
+            {approvedHref && (
+              <a className="btn" href={approvedHref} style={{ textDecoration: "none" }}>
+                {locale === "ta" ? "அமைப்பில் திற" : "Open in composer"}
+              </a>
+            )}
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => {
+                setApproved(null);
+                setApprovedHref(null);
+              }}
+            >
+              {locale === "ta" ? "மீண்டும் தொடங்கு" : "Start over"}
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

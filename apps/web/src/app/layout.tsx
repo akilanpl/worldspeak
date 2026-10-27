@@ -28,7 +28,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <p>Point, preview, then speak — your words, your control.</p>
             </div>
             <nav aria-label="Primary">
-              <a href="/">Board</a> · <a href="/offline">Offline</a> · <a href="/history">History</a>{" "}
+              <a href="/">Board</a> · <a href="/perception">Camera</a> · <a href="/video">Video</a>{" "}
+              · <a href="/offline">Offline</a> · <a href="/history">History</a>{" "}
               · <a href="/favorites">Favorites</a> · <a href="/settings">Settings</a> ·{" "}
               <a href="/sign-in">Sign in</a>
             </nav>

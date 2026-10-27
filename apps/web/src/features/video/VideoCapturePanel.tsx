@@ -56,6 +56,9 @@ export default function VideoCapturePanel({ locale, onClip, fixtureMode, onFixtu
   const [live, setLive] = useState(false);
   const [recording, setRecording] = useState(false);
   const [clip, setClip] = useState<VideoClip | null>(null);
+  // Mirror of the live object URL for unmount cleanup (state is stale in the
+  // mount-only effect below, so the ref is the source of truth on exit).
+  const urlRef = useRef<string | null>(null);
   const [error, setError] = useState<VideoCaptureError>(null);
   const [busy, setBusy] = useState(false);
 
@@ -103,6 +106,14 @@ export default function VideoCapturePanel({ locale, onClip, fixtureMode, onFixtu
         /* already stopped */
       }
       stopTracks();
+      if (urlRef.current) {
+        try {
+          URL.revokeObjectURL(urlRef.current);
+        } catch {
+          /* already revoked */
+        }
+        urlRef.current = null;
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- mount/unmount resource cleanup only
   }, []);
@@ -124,6 +135,7 @@ export default function VideoCapturePanel({ locale, onClip, fixtureMode, onFixtu
       revokeClip(prev);
       return null;
     });
+    urlRef.current = null;
     setError(null);
     if (fileRef.current) fileRef.current.value = "";
     onClip(null);
@@ -232,6 +244,7 @@ export default function VideoCapturePanel({ locale, onClip, fixtureMode, onFixtu
         name,
       };
       setClip(next);
+      urlRef.current = next.url;
       onClip(next);
       try {
         URL.revokeObjectURL(probe.src);
@@ -281,6 +294,7 @@ export default function VideoCapturePanel({ locale, onClip, fixtureMode, onFixtu
         name: file.name,
       };
       setClip(next);
+      urlRef.current = next.url;
       onClip(next);
     } catch {
       setError("load-failed");
