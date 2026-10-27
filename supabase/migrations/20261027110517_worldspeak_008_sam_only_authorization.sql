@@ -74,8 +74,7 @@ begin
  if u is null then raise exception 'UNAUTHENTICATED'; end if;
  perform world_inference.lock_budget();
  select * into t from world_inference.sam_test_authorizations where owner_id=u for update;
- if not found or t.expires_at<=now() or p_operation is distinct from t.operation or p_concept is distinct from t.concept or p_key is null
- or exists(select 1 from world_inference.sam_test_events where authorization_id=t.id and event in('revoked','closed')) then raise exception 'SAM_TEST_NOT_AUTHORIZED'; end if;
+ if not found or p_operation is distinct from t.operation or p_concept is distinct from t.concept or p_key is null then raise exception 'SAM_TEST_NOT_AUTHORIZED'; end if;
  h:=encode(pg_catalog.sha256(convert_to(jsonb_build_array(p_asset,p_operation,p_concept,'meta-v1')::text,'UTF8')),'hex');
  select j0.* into j from public.inference_jobs j0 join world_inference.sam_test_events e on e.job_id=j0.id and e.event='admitted' and e.authorization_id=t.id
  where j0.owner_id=u and j0.operation=p_operation and j0.idempotency_key=p_key;
@@ -83,6 +82,7 @@ begin
   if j.input_hash<>h then raise exception 'IDEMPOTENCY_CONFLICT'; end if;
   return j.id;
  end if;
+ if t.expires_at<=now() or exists(select 1 from world_inference.sam_test_events where authorization_id=t.id and event in('revoked','closed')) then raise exception 'SAM_TEST_NOT_AUTHORIZED'; end if;
  if exists(select 1 from world_inference.sam_test_events where authorization_id=t.id and event='admitted') then raise exception 'SAM_TEST_ALREADY_ADMITTED'; end if;
  select * into a from public.inference_media where id=p_asset and owner_id=u and state='ready' and expires_at>now() and sha256=t.input_sha256 and width=512 and height=512 and bytes=25949;
  if not found then raise exception 'SAM_TEST_MEDIA_MISMATCH'; end if;

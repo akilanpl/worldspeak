@@ -201,6 +201,7 @@ try {
   assert.equal(String((await t`select reserved_micro from world_inference.budgets where account='global'`)[0]!.reserved_micro),"0");
   await t`select world_inference.deactivate_sam_test()`;
  });
+ assert.equal(await sql.begin(t=>admit(t,asset,key)),id); // Same-key read stays stable after closure/deactivation.
  assert.deepEqual(await sql.begin(t=>snapshot(t)),committedHistory);
  passed++;console.log("PASS sam-authorization: concurrent same-key admissions, competing jobs, leases and dispatch settle exactly once");
  // Production cleanup command against a bounded local Storage HTTP double.

@@ -2,7 +2,7 @@
 
 27 October 2026 (IST). Migration 008 is implemented and tested only in disposable local PostgreSQL. No hosted migration, ticket issuance, budget change, marker enablement, media transmission or Meta request occurred. Nothing in this document authorizes execution.
 
-Migration: `supabase/migrations/20261027110517_worldspeak_008_sam_only_authorization.sql`. SHA-256: `3e89d225fb867ca3bbb45443e718f52a9700598f0f5d75394acce9a59cb1f17c`. The pending inventory explicitly says applied:false; hosted database types and approved migration 007 evidence remain unchanged. CLI created the migration with `supabase migration new worldspeak_008_sam_only_authorization` (CLI 2.75.0; local/global configuration was not modified). Local catalog/permission tests supply verification; no hosted Supabase advisor was run for this pending schema.
+Migration: `supabase/migrations/20261027110517_worldspeak_008_sam_only_authorization.sql`. SHA-256: `a1246064dca1907225f2df17f98f748652966dd15b66a7a02cceb615d408d271`. The pending inventory explicitly says applied:false; hosted database types and approved migration 007 evidence remain unchanged. CLI created the migration with `supabase migration new worldspeak_008_sam_only_authorization` (CLI 2.75.0; local/global configuration was not modified). Local catalog/permission tests supply verification; no hosted Supabase advisor was run for this pending schema.
 
 ## Scope and state machine
 
@@ -38,7 +38,7 @@ Production cleanup runs against a bounded local Storage HTTP double and an actua
 
 ## Separate approvals required — do not execute these templates now
 
-First request: “May I apply only reviewed migration 008 with SHA-256 3e89d225fb867ca3bbb45443e718f52a9700598f0f5d75394acce9a59cb1f17c to cafkyowssdemzivhzxbb, then perform non-paid privilege/schema checks? This creates empty authorization tables/functions only. No ticket issuance, live marker, spending limit, Meta request or billable infrastructure is authorized.” Regenerate actual hosted types/evidence only after successful separately approved application; stop on unexpected schema/error.
+First request: “May I apply only reviewed migration 008 with SHA-256 a1246064dca1907225f2df17f98f748652966dd15b66a7a02cceb615d408d271 to cafkyowssdemzivhzxbb, then perform non-paid privilege/schema checks? This creates empty authorization tables/functions only. No ticket issuance, live marker, spending limit, Meta request or billable infrastructure is authorized.” Regenerate actual hosted types/evidence only after successful separately approved application; stop on unexpected schema/error.
 
 Second request, only after hosted migration/security checks and fresh balance/entitlement/pricing/image/terms verification: “May I issue one independent SAM-only approval for the exact synthetic chair SHA, designated owner, model sam-3.1, concept chair, no preflight, one generation, zero retries and maximum planned $0.0025? This enables only the new ticket and marker; the consumed first-smoke record and old permits remain unchanged. Cleanup and billing reconciliation follow immediately.” An approval for migration alone is not approval for inference.
 
