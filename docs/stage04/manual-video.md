@@ -1,7 +1,7 @@
 # Local video frame communication
 
 The `/video` route retains synthetic demo timelines and adds a separate local
-MP4/WebM path. Toggle off “Use synthetic fixtures”, upload a clip (50 MiB,
+MP4/WebM path. Choose “Use local video”, upload a clip (50 MiB,
 30 seconds maximum) or record up to 10 seconds with camera video only. The
 capture panel transfers a valid object URL to VideoFlow; the parent revokes it
 on retake, approval, replacement or route exit. Metadata probes have a 10-second

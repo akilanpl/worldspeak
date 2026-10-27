@@ -51,3 +51,29 @@ describe("VideoFlow", () => {
     expect(screen.getByRole("button", { name: /use synthetic fixtures/i })).toBeInTheDocument();
   });
 });
+
+it("keeps an accepted clip alive through capture unmount, and releases it on retake and route exit", async () => {
+  const create = vi.fn().mockReturnValueOnce("blob:first").mockReturnValueOnce("blob:second");
+  const revoke = vi.fn(); Object.assign(URL,{createObjectURL:create,revokeObjectURL:revoke});
+  vi.spyOn(HTMLMediaElement.prototype,"load").mockImplementation(() => {});
+  const realCreate=document.createElement.bind(document);
+  vi.spyOn(document,"createElement").mockImplementation(((tag: string) => {
+    const element=realCreate(tag);
+    if (tag === "video") {
+      Object.defineProperties(element,{videoWidth:{value:640},videoHeight:{value:360},duration:{value:2},src:{set:() => queueMicrotask(() => element.dispatchEvent(new Event("loadedmetadata"))),configurable:true}});
+    }
+    return element;
+  }) as typeof document.createElement);
+  const view=render(<VideoFlow/>);
+  fireEvent.click(screen.getByRole("button",{name:"Use local video"}));
+  fireEvent.change(screen.getByLabelText("Upload clip"),{target:{files:[new File(["clip"],"local.webm",{type:"video/webm"})]}});
+  await screen.findByRole("heading",{name:"Clip preview"});
+  expect(revoke).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button",{name:"Retake"}));
+  expect(revoke).toHaveBeenCalledWith("blob:first");
+  fireEvent.change(screen.getByLabelText("Upload clip"),{target:{files:[new File(["clip"],"local.webm",{type:"video/webm"})]}});
+  await screen.findByRole("heading",{name:"Clip preview"});
+  expect(revoke).toHaveBeenCalledTimes(1);
+  view.unmount();
+  expect(revoke).toHaveBeenLastCalledWith("blob:second");
+});

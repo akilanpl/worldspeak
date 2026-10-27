@@ -120,3 +120,13 @@ describe("VideoCapturePanel", () => {
     await vi.waitFor(() => expect(stop).toHaveBeenCalledTimes(1));
   });
 });
+
+it("cancels an unfinished metadata probe, revokes its URL and ignores late metadata", async () => {
+  const {revoke}=stubUrls();
+  vi.spyOn(HTMLMediaElement.prototype,"load").mockImplementation(() => {});
+  const {onClip}=renderCapture();
+  fireEvent.change(screen.getByLabelText("Upload clip"),{target:{files:[new File(["clip"],"local.webm",{type:"video/webm"})]}});
+  fireEvent.click(screen.getByRole("button",{name:"Cancel clip loading"}));
+  await vi.waitFor(() => expect(revoke).toHaveBeenCalledWith("blob:mock"));
+  expect(onClip).toHaveBeenCalledExactlyOnceWith(null);
+});

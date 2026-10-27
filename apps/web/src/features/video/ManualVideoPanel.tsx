@@ -68,7 +68,7 @@ export default function ManualVideoPanel({clip, onContinue}: {clip: VideoClip; o
           else {
             const region = regionFromPoints(corner, point);
             setCorner(null);
-            if (region) {setCoords([region.x1*100, region.y1*100, region.x2*100, region.y2*100]); setRegionConfirmed(true);}
+            if (region) {setError(null);setCoords([region.x1*100, region.y1*100, region.x2*100, region.y2*100]); setRegionConfirmed(true);}
             else setError("Choose two different corners with a visible region between them.");
           }
         }}

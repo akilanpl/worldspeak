@@ -67,6 +67,7 @@ export default function VideoCapturePanel({ locale, onClip, fixtureMode, onFixtu
     if (recorder) {
       recorder.onstop = null;
       recorder.ondataavailable = null;
+      recorder.onerror = null;
       if (recorder.state === "recording") recorder.stop();
     }
     recorderRef.current = null;
@@ -101,9 +102,10 @@ export default function VideoCapturePanel({ locale, onClip, fixtureMode, onFixtu
     }
   }, [live]);
   async function acceptBlob(blob: Blob, mimeType: string, source: VideoClip["source"], name: string | null, recordedSeconds?: number) {
-    const failure = validateVideoFile(blob);
-    if (failure) { setError(failure); return; }
     pending.current?.abort();
+    generation.current++;
+    const failure = validateVideoFile(blob);
+    if (failure) { setBusy(false); setError(failure); return; }
     const controller = new AbortController(); pending.current = controller;
     const request = ++generation.current;
     const url = URL.createObjectURL(blob);
@@ -168,14 +170,15 @@ export default function VideoCapturePanel({ locale, onClip, fixtureMode, onFixtu
           ? "செயற்கை கண்காணிப்பு மாதிரிகள். நேரடி AI இல்லை, பதிவேற்றம் இல்லை, பேச்சு இல்லை."
           : "Local manual video selection or clearly labeled synthetic demos. No live AI, no network uploads, no speech."}
       </p>
-      <div className="btn-row" role="group" aria-label={ta ? "மாதிரிகள்" : "fixtures"}>
+      <div className="btn-row" role="group" aria-label={ta ? "மாதிரிகள்" : "Video source"}>
+        <button type="button" className="btn btn-secondary" aria-pressed={!fixtureMode} onClick={() => {clearAll(); onFixtureModeChange(false);}}>Use local video</button>
         <button
           type="button"
           className="btn btn-secondary"
           aria-pressed={fixtureMode}
           onClick={() => {
             clearAll();
-            onFixtureModeChange(!fixtureMode);
+            onFixtureModeChange(true);
           }}
         >
           {ta ? "மாதிரி காட்சிகள்" : "Use synthetic fixtures"}
@@ -231,9 +234,11 @@ export default function VideoCapturePanel({ locale, onClip, fixtureMode, onFixtu
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file) void handleFile(file);
+                e.currentTarget.value = "";
               }}
             />
           </div>
+          {busy && <button type="button" className="btn btn-secondary" onClick={clearAll}>Cancel clip loading</button>}
           {error && (
             <p className="notice" role="alert">
               {messages[error]}
