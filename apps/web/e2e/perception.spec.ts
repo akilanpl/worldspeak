@@ -93,8 +93,8 @@ test("reconstructed Spark chair → mock status → overlay → intent → Engli
       createdAt: "2026-10-27T00:00:00Z", expiresAt: "2026-10-28T00:00:00Z",
       result: { detections: [{ ...(segment ? { objectId: "7" } : {}), label: "chair", catalogId: null, confidence: 0.99, mask: null,
         box: segment ? { x1: .25, y1: .25, x2: .75, y2: .75 } : { x1: 0.247, y1: 0.139, x2: 0.746, y2: 0.868 } }], tracks: [],
-        segmentationMasks: segment ? [{ objectId: "7", width: 2, height: 2,
-          bounds: { x1: .25, y1: .25, x2: .75, y2: .75 }, rasterBase64: "AAEBAA==" }] : [],
+        segmentationMasks: segment ? [{ objectId: "7", width: 4, height: 2,
+          bounds: { x1: .25, y1: .25, x2: .75, y2: .75 }, rasterBase64: "AAABAQEBAAA=" }] : [],
         provenance: { source: "model", model: segment ? "sam-3.1" : "muse-spark-1.3", adapterVersion: "meta-v1",
           responseId: "synthetic-browser-reconstruction-not-real-receipt", inputSha256: "a".repeat(64),
           inputTokens: 424, outputTokens: 911, costMicroUsd: 4402 } }
@@ -130,9 +130,9 @@ test("reconstructed Spark chair → mock status → overlay → intent → Engli
   await page.getByRole("button", { name: /use these objects/i }).click();
   await expect(page.getByTestId("model-results-notice")).toContainText("sam-3.1");
   const canvas = page.getByTestId("raster-mask");
-  await expect(canvas).toHaveAttribute("width", "2");
-  await expect.poll(() => canvas.evaluate(el => Array.from((el as HTMLCanvasElement).getContext("2d")!.getImageData(0, 0, 2, 2).data)))
-    .toEqual([0,0,0,0, 15,118,110,255, 15,118,110,255, 0,0,0,0]);
+  await expect(canvas).toHaveAttribute("width", "4");
+  await expect.poll(() => canvas.evaluate(el => Array.from((el as HTMLCanvasElement).getContext("2d")!.getImageData(0, 0, 4, 2).data)))
+    .toEqual([0,0,0,0, 0,0,0,0, 15,118,110,255, 15,118,110,255, 15,118,110,255, 15,118,110,255, 0,0,0,0, 0,0,0,0]);
   for (const width of [1200, 390]) {
     await page.setViewportSize({ width, height: 900 });
     await expect.poll(async () => {
