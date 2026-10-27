@@ -94,7 +94,7 @@ world_inference.budgets` immediately before enabling anything.
 ## Hosted requirements before the first real smoke (all still open)
 
 - Apply reviewed migration 007 to the dedicated project
-  `cafkywssdemzizhzxbb` ONLY (never the test shim/reset, never other
+  `cafkyowssdemzivhzxbb` ONLY (never the test shim/reset, never other
   projects); run live advisor/type/RLS/Storage verification; regenerate
   real hosted Database types and replace `packages/db/src/inference-rpc.ts`
   overlay; update the hosted snapshot.
