@@ -3,7 +3,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import type { SpeechGateway, VoiceInfo } from "@/lib/speech";
 import ComposerEntry from "./ComposerEntry";
-import { encodeHandoff, snapshotToPayload } from "./handoff";
+import { storeHandoff, snapshotToPayload } from "./handoff";
 
 let handoffParam: string | null = null;
 
@@ -20,7 +20,7 @@ afterEach(() => {
 });
 
 function videoPhoneHandoff(): string {
-  return encodeHandoff(
+  return storeHandoff(
     snapshotToPayload(
       {
         intent: { kind: "request-object", object: { catalogId: "phone", selectedObjectId: null }, polarity: "want" },
@@ -28,7 +28,7 @@ function videoPhoneHandoff(): string {
       },
       { source: "video", objectLabel: "phone", objectCatalogId: "phone", provenance: "fixture" },
     ),
-  );
+  )!;
 }
 
 function renderEntry(gatewayFactory?: (listVoices: () => VoiceInfo[]) => SpeechGateway) {

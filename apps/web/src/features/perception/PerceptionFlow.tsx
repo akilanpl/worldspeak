@@ -9,7 +9,8 @@ import { FIXTURE_SCENES } from "./fixtures";
 import { pstr } from "./strings";
 import type { CapturedImage, PerceptionStep, PerceivedObject } from "./types";
 import { getObject } from "@worldspeak/catalog";
-import { encodeHandoff, snapshotToPayload } from "../integration/handoff";
+import Link from "next/link";
+import { handoffHref, snapshotToPayload } from "../integration/handoff";
 
 /**
  * Camera-to-communication frontend flow (fixture-driven until the Phase 3
@@ -187,7 +188,7 @@ export default function PerceptionFlow() {
                 objectCatalogId: selected.catalogId,
                 provenance: selected.origin,
               });
-              setApprovedHref(`/?handoff=${encodeHandoff(payload)}`);
+              setApprovedHref(handoffHref(payload));
             } else {
               setApprovedHref(null);
             }
@@ -208,9 +209,9 @@ export default function PerceptionFlow() {
           </p>
           <div className="btn-row">
             {approvedHref && (
-              <a className="btn" href={approvedHref} style={{ textDecoration: "none" }}>
+              <Link prefetch={false} className="btn" href={approvedHref} style={{ textDecoration: "none" }}>
                 {locale === "ta" ? "அமைப்பில் திற" : "Open in composer"}
-              </a>
+              </Link>
             )}
             <button
               type="button"

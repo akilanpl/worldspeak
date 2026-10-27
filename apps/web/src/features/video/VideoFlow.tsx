@@ -10,7 +10,8 @@ import VideoTrackPlayer from "./VideoTrackPlayer";
 import { getVideoFixture, VIDEO_FIXTURES } from "./fixtures";
 import type { VideoClip, VideoStep } from "./types";
 import type { PerceivedObject } from "../perception/types";
-import { encodeHandoff, snapshotToPayload } from "../integration/handoff";
+import Link from "next/link";
+import { handoffHref, snapshotToPayload } from "../integration/handoff";
 
 /**
  * Short-clip capture → review → track selection → intent → approved handoff.
@@ -246,7 +247,7 @@ export default function VideoFlow() {
                 objectCatalogId: selectedTrack.catalogId,
                 provenance: selectedTrack.origin,
               });
-              setApprovedHref(`/?handoff=${encodeHandoff(payload)}`);
+              setApprovedHref(handoffHref(payload));
             } else {
               setApprovedHref(null);
             }
@@ -266,9 +267,9 @@ export default function VideoFlow() {
           </p>
           <div className="btn-row">
             {approvedHref && (
-              <a className="btn" href={approvedHref} style={{ textDecoration: "none" }}>
+              <Link prefetch={false} className="btn" href={approvedHref} style={{ textDecoration: "none" }}>
                 {ta ? "அமைப்பில் திற" : "Open in composer"}
-              </a>
+              </Link>
             )}
             <button
               type="button"

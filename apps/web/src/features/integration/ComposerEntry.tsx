@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import type { Composition } from "@worldspeak/contracts";
 import Workspace from "@/features/composer/Workspace";
 import type { SpeechGateway, VoiceInfo } from "@/lib/speech";
-import { decodeHandoff, handoffToComposition, type HandoffPayload } from "./handoff";
+import { readStoredHandoff, handoffToComposition, type HandoffPayload } from "./handoff";
 
 function newId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
@@ -45,7 +45,7 @@ export default function ComposerEntry({
   const params = useSearchParams();
   const [entry] = useState<EntryState>(() => {
     if (serverInitial) return { initial: serverInitial, notice: null, invalid: false };
-    const payload = decodeHandoff(params.get("handoff"));
+    const payload = readStoredHandoff(params.get("handoff"));
     if (params.get("handoff") !== null && !payload) {
       return { initial: undefined, notice: null, invalid: true };
     }
@@ -60,7 +60,7 @@ export default function ComposerEntry({
     <>
       {entry.invalid && (
         <p className="notice" role="alert" data-testid="handoff-invalid-notice">
-          That camera/video link was invalid or tampered with — starting with an empty board.
+          That camera/video draft is unavailable or expired. It was not put in the URL. Return to the previous screen or enter your words here.
         </p>
       )}
       {entry.notice && (
