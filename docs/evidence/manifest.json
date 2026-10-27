@@ -1,34 +1,40 @@
 {
-  "phase": 1,
-  "updated": "2026-10-27T07:25:00+05:30",
-  "commit": "ef84e9b98ccfb2322e50e2b5cabbe0e9700bc364",
+  "phase": 2,
+  "updated": "2026-10-27T08:00:00+05:30",
+  "commit": "PENDING",
   "commands": [
-    { "cmd": "pnpm install --frozen-lockfile", "exit": 0, "note": "pinned lockfile committed" },
+    { "cmd": "pnpm install --frozen-lockfile", "exit": 0, "note": "added @supabase/ssr 0.12.7, @supabase/supabase-js 2.118.0, zod to web; lockfile committed" },
     { "cmd": "pnpm lint", "exit": 0 },
     { "cmd": "pnpm typecheck", "exit": 0 },
-    { "cmd": "pnpm test", "exit": 0, "note": "34/34 vitest (contracts, catalog, renderer, reducer/approval, speech gateway, component, offline parity)" },
-    { "cmd": "pnpm build", "exit": 0, "note": "offline board cacheVersion v1-e382dba8, 26 tiles; Next static / and /offline" },
-    { "cmd": "pnpm test:e2e", "exit": 0, "note": "6/6 Playwright Chromium: flow, keyboard-only, axe zero serious/critical, prepared-offline with zero /api requests" },
-    { "cmd": "pnpm check:secrets", "exit": 0, "note": "no secrets in tracked files (scanner self-exclusion fix for its own pattern literals)" }
+    { "cmd": "pnpm test", "exit": 0, "note": "40/40 vitest: 34 Phase 1 suites + 6 API validation" },
+    { "cmd": "pnpm test:db", "exit": 0, "note": "migrations 001-004 from empty state; 10/10 RLS isolation scenarios PASS on local Postgres 15" },
+    { "cmd": "pnpm build", "exit": 0, "note": "all API routes + auth/private pages; proxy registered" },
+    { "cmd": "pnpm test:e2e", "exit": 0, "note": "9/9 Playwright Chromium: Phase 1 suites + guest redirect-free + not-configured honesty" },
+    { "cmd": "pnpm check:secrets", "exit": 0, "note": "no secrets in tracked files" }
   ],
-  "providerCalls": { "count": 0, "note": "Phase 1 makes no Meta Model API calls by design." },
+  "providerCalls": { "count": 0, "note": "No Meta Model API calls. No Supabase cloud calls; DB tests run against a local scratch Postgres." },
+  "database": {
+    "remoteProject": null,
+    "localMigrations": ["202610270001_core.sql", "202610270002_ownership_rls.sql", "202610270003_storage.sql", "202610270004_search.sql"],
+    "rlsTests": "10/10 PASS (two users + anonymous; rows and storage; spoofed owners; FK isolation; idempotency; cascade)",
+    "typesNote": "packages/db hand-written mirrors of 001; `supabase gen types` replacement is a cloud-gate task"
+  },
   "verified": [
-    "every valid bilingual catalog composition renders; unknown/missing slots reject; negation preserved; user text exact",
-    "zero speak calls on load/tile/intent/locale/voice/restore/online-offline/voice-enumeration paths (unit + e2e stubs)",
-    "one Speak gesture speaks exactly the current preview once; stale/duplicate refused; Stop/visibility/unmount cancel",
-    "Tamil voice missing never falls back to English (unit + gateway + board logic)",
-    "keyboard-only completion; native focusable controls; axe zero serious/critical on the slice",
-    "prepared offline board opens with network disabled, composes a sentence, issues zero backend requests"
+    "Tamil corrections render through the deterministic engine; review-pending preserved (parity test green)",
+    "migrations apply from empty state; anonymous denied; cross-user read/update/delete blocked; spoofed owners rejected",
+    "validation schemas reject unknown keys/out-of-range; cursors round-trip; LIKE escaping; error mapping without oracles",
+    "guest board: no redirect, no /api calls, Save/Favorite disabled with hint",
+    "auth-gated pages render honest not-configured states (no fake sessions)"
   ],
-  "mocked": ["speechSynthesis (FakeSpeechSynthesis / Playwright stub — no audible output asserted)"],
+  "mocked": ["speechSynthesis (fakes/stubs)", "Supabase platform surface in local DB tests (auth.users/auth.uid()/storage shim — policy logic identical)"],
   "notRun": [
-    "audible English/Tamil speech and Stop on named desktop/phone devices",
-    "native Tamil review (all Tamil text review-pending)",
-    "real-device text-resize / Tamil-shaping / airplane-mode check"
+    "authenticated live flows: sign-up, Google OAuth, save/favorites/search/delete/replay against real GoTrue + hosted DB (cloud gate)",
+    "native Tamil review (all Tamil text review-pending, including Phase 2 corrections)",
+    "audible speech and real-device checks"
   ],
   "risks": [
-    "Tamil wording is review-pending; fixtures are not release-quality translations.",
-    "Speech start event is not sound proof; audibility needs human device checks.",
-    "E2E locally required PLAYWRIGHT_BROWSERS_PATH=/tmp/ms-playwright plus one escalated shell (sandbox blocks the default browser cache path and Mach IPC)."
+    "Hand-written DB types may drift from the live schema; regeneration at the cloud gate is mandatory.",
+    "E2E/DB locally needed PLAYWRIGHT_BROWSERS_PATH=/tmp/ms-playwright and one escalated shell (sandbox limits).",
+    "Storage policies verified at SQL level only; no app upload path exercises them yet."
   ]
 }

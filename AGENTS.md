@@ -3,14 +3,19 @@
 Read this file, `docs/handoff/STATE.md`, `NEXT.md`, `BLOCKERS.md`, and the
 architecture freeze before editing. Inspect `git status` before edits.
 
-## Scope (Phase 1 only)
+## Scope (Phase 2: local Supabase foundation + frozen Phase 1 slice)
 
-- Local, offline, accessible communication slice: essential tile → explicit
-  intent/language → exact-text preview → fresh Speak action → Stop, plus a
-  static offline board. No Supabase, model, media-capture, deployment, or
-  training work in this slice.
+- Phase 1 slice unchanged: essential tile → explicit intent/language →
+  exact-text preview → fresh Speak action → Stop, static offline board.
+  Communication engine and speech-approval invariants are frozen; Tamil data
+  fixes keep `review-pending` status.
+- Phase 2 adds: local SQL migrations + RLS, email/Google auth code paths,
+  profiles/preferences, saved history/favorites/search/delete, guest access
+  without sign-in. No cloud changes: prepare locally, stop at the
+  provisioning gate. No model, media-capture, deployment, or training.
 - Edit only this `worldspeak/` root. Do not modify siblings or global CLI
-  configuration. Never use `outputs/` as the repository.
+  configuration. Never use `outputs/` as the repository. Never touch an
+  existing unrelated Supabase project.
 
 ## Invariants (must never break)
 

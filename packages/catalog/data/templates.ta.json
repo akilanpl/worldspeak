@@ -1,12 +1,12 @@
 {
   "version": "templates.v1",
   "reviewStatus": "review-pending",
-  "note": "Seed sentence 'எனக்குத் தண்ணீர் வேண்டும்.' per architecture; all Tamil forms await native review.",
+  "note": "Phase 2 correction: request-help.object now uses the dative (X-க்கு உதவுங்கள்); the previous accusative-less form was ungrammatical. All Tamil forms still await native review.",
   "templates": [
     { "id": "request-object.want", "kind": "request-object", "polarity": "want", "act": null, "objectSlot": "required", "text": "எனக்கு {object} வேண்டும்." },
     { "id": "request-object.do-not-want", "kind": "request-object", "polarity": "do-not-want", "act": null, "objectSlot": "required", "text": "எனக்கு {object} வேண்டாம்." },
     { "id": "ask-location.object", "kind": "ask-location", "polarity": null, "act": null, "objectSlot": "required", "text": "{object} எங்கே?" },
-    { "id": "request-help.object", "kind": "request-help", "polarity": null, "act": null, "objectSlot": "required", "text": "தயவுசெய்து {object} உதவி செய்யுங்கள்." },
+    { "id": "request-help.object", "kind": "request-help", "polarity": null, "act": null, "objectSlot": "required", "text": "தயவுசெய்து {object}க்கு உதவுங்கள்." },
     { "id": "request-help.generic", "kind": "request-help", "polarity": null, "act": null, "objectSlot": "none", "text": "தயவுசெய்து எனக்கு உதவுங்கள்." },
     { "id": "social.yes", "kind": "social", "polarity": null, "act": "yes", "objectSlot": "none", "text": "ஆம்." },
     { "id": "social.no", "kind": "social", "polarity": null, "act": "no", "objectSlot": "none", "text": "இல்லை." },

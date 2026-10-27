@@ -1,0 +1,12 @@
+# WorldSpeak Supabase configuration (Phase 2: local migrations only).
+# No remote project is linked. Do NOT run `supabase link`, `supabase db push`,
+# or any remote command without an explicitly supplied WorldSpeak project ref.
+# Auth, storage, and Studio are configured at the cloud provisioning gate by
+# the human; this file pins local conventions only.
+
+[project]
+name = "worldspeak"
+
+[db.migrations]
+enabled = true
+schema_paths = ["./migrations"]

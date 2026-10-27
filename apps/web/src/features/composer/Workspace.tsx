@@ -10,6 +10,8 @@ import {
 import { CATALOG_VERSION, ESSENTIAL_TILES } from "@worldspeak/catalog";
 import { BrowserSpeaker, SpeechGateway, pickVoice, type VoiceInfo } from "@/lib/speech";
 import { uiString, type UiLang } from "@/lib/ui-strings";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { createClient } from "@/lib/supabase/client";
 
 export interface Prefs {
   textScale: "default" | "large" | "xlarge";
@@ -52,6 +54,8 @@ function newId(): string {
 export interface WorkspaceProps {
   /** Test seam: inject a gateway backed by a fake synthesizer. */
   gatewayFactory?: (listVoices: () => VoiceInfo[]) => SpeechGateway;
+  /** Replay entry: an approved composition to start from (never auto-spoken). */
+  initial?: Composition | undefined;
 }
 
 /**
@@ -59,8 +63,9 @@ export interface WorkspaceProps {
  * No prop, effect, timer, or background event invokes speech — only the
  * Speak button's click handler calls `gateway.speakApproved`.
  */
-export default function Workspace({ gatewayFactory }: WorkspaceProps) {
-  const [comp, setComp] = useState<Composition>(() => createEmptyComposition(PLACEHOLDER_ID));
+export default function Workspace({ gatewayFactory, initial }: WorkspaceProps) {
+  const [comp, setComp] = useState<Composition>(() => initial ?? createEmptyComposition(PLACEHOLDER_ID));
+  const [account, setAccount] = useState<"unknown" | "guest" | "ready">("unknown");
   const [selectedTile, setSelectedTile] = useState<string | null>(null);
   const [prefs, setPrefs] = useState<Prefs>(DEFAULT_PREFS);
   const [voices, setVoices] = useState<VoiceInfo[]>([]);
@@ -83,6 +88,14 @@ export default function Workspace({ gatewayFactory }: WorkspaceProps) {
     refresh();
     synth?.addEventListener("voiceschanged", refresh);
     const listVoices = () => listVoicesRef.current();
+    if (isSupabaseConfigured()) {
+      createClient()
+        .auth.getSession()
+        .then(({ data }) => setAccount(data.session ? "ready" : "guest"))
+        .catch(() => setAccount("guest"));
+    } else {
+      setAccount("guest");
+    }
     gatewayRef.current = gatewayFactory
       ? gatewayFactory(listVoices)
       : new SpeechGateway(
@@ -178,6 +191,61 @@ export default function Workspace({ gatewayFactory }: WorkspaceProps) {
   }, [comp.locale, prefs.speechRate, prefs.voiceName, voices]);
 
   const matchedVoice = prefs.voiceName ? voices.find((v) => v.name === prefs.voiceName) ?? null : pickVoice(voices, comp.locale);
+
+  /** Explicit saves only: speaking never depends on these, and they never auto-run. */
+  const onSave = useCallback(
+    async (kind: "history" | "favorite") => {
+      if (!preview.ok) {
+        setNotice(t("stalePreview"));
+        return;
+      }
+      const snapshot = {
+        kind: "communication" as const,
+        text: preview.utterance.exactText,
+        locale: preview.utterance.locale,
+        intent: comp.intent,
+        origin: (preview.utterance.source === "template" ? "template" : "user_text") as "template" | "user_text",
+        revision: preview.utterance.revision,
+        text_hash: preview.utterance.textHash,
+        template_version: preview.utterance.templateVersion,
+        client_event_id: newId(),
+      };
+      try {
+        if (kind === "favorite") {
+          const res = await fetch("/api/v1/favorites", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              snapshot,
+              conversation_title: snapshot.text.slice(0, 60),
+              language: snapshot.locale,
+            }),
+          });
+          setNotice(res.ok ? "Saved to favorites." : "Favorite failed.");
+          return;
+        }
+        const conv = await fetch("/api/v1/conversations", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ title: snapshot.text.slice(0, 60), language: snapshot.locale }),
+        });
+        if (!conv.ok) {
+          setNotice("Save failed.");
+          return;
+        }
+        const convBody = (await conv.json()) as { data: { id: string } };
+        const msg = await fetch(`/api/v1/conversations/${convBody.data.id}/messages`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(snapshot),
+        });
+        setNotice(msg.ok ? "Saved to history." : "Save failed.");
+      } catch {
+        setNotice("Save failed (offline or not signed in).");
+      }
+    },
+    [comp.intent, preview, t],
+  );
 
   return (
     <div className="workspace">
@@ -299,6 +367,29 @@ export default function Workspace({ gatewayFactory }: WorkspaceProps) {
             {t("stop")}
           </button>
         </div>
+        <div className="btn-row">
+          <button
+            type="button"
+            className="btn btn-secondary"
+            disabled={!preview.ok || account !== "ready"}
+            onClick={() => void onSave("history")}
+          >
+            Save
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            disabled={!preview.ok || account !== "ready"}
+            onClick={() => void onSave("favorite")}
+          >
+            Favorite
+          </button>
+        </div>
+        {account === "guest" && (
+          <p className="status">
+            <a href="/sign-in">Sign in</a> to save history and favorites. The board works fully without it.
+          </p>
+        )}
         {notice && (
           <p className="notice" role="status">{notice}</p>
         )}

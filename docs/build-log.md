@@ -33,3 +33,29 @@ All times IST. Author: Muse Code implementation engineer.
   instead of self-hosted files (fully offline, no download needed).
 - Limitations: Tamil unreviewed; audible speech + real-device checks not run;
   no auth/cloud/model/capture/training (by design, later phases).
+
+## 2026-10-27 — Phase 2: local Supabase foundation
+
+- Corrected two clearly erroneous Tamil strings (request-help.object dative;
+  stale-preview politeness); `review-pending` preserved everywhere.
+- Added local migrations 001 core (profiles, preferences, consent,
+  conversations, messages, favorites + provisioning trigger), 002
+  ownership/RLS (revoked anon, narrow grants, forced RLS, immutable owner),
+  003 private storage buckets/policies, 004 trigram search indexes.
+- Added `pnpm test:db` harness (ephemeral local Postgres or PGHOST service):
+  shim + migrations from empty state, 10/10 two-user + anonymous isolation
+  scenarios PASS. No remote project touched.
+- Implemented Supabase Auth code paths (email/password, Google PKCE,
+  callback with local-only redirect, recovery), profiles/preferences/history/
+  favorites/search/delete/account API routes with contract error envelopes,
+  owner-only server derivation, and idempotent message/favorite writes.
+- Added private history/favorites/settings pages, replay-into-composer
+  (`?load=`, no auto-speak), Save/Favorite on the board (disabled for
+  guests), and honest not-configured states. Guest board unchanged and
+  redirect-free.
+- Gate results: lint 0; typecheck 0; vitest 40/40; test:db 10/10 scenarios;
+  build 0 (all routes); e2e 9/9 Chromium; secrets 0. Authenticated live
+  flows implemented but not run (cloud gate). Local Postgres needed one
+  escalated shell (sandbox shm) — recorded, not hidden.
+- Deviations: `@worldspeak/db` types hand-written pending `gen types`;
+  storage policies RLS-tested at SQL level with no app uploads yet.

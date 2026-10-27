@@ -1,0 +1,3 @@
+-- WorldSpeak seed: intentionally empty in Phase 2.
+-- No demo users, content, or fixtures are seeded into any database.
+-- Development fixtures live in code/tests only, never in migrations/seed.

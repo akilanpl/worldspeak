@@ -41,7 +41,7 @@ const STRINGS = {
   openOffline: { en: "Open offline board", ta: "ஆஃப்லைன் பலகையைத் திற" },
   spoken: { en: "Speaking the exact preview.", ta: "முன்னோட்டம் பேசப்படுகிறது." },
   stopped: { en: "Speech stopped.", ta: "பேச்சு நிறுத்தப்பட்டது." },
-  stalePreview: { en: "Preview changed — review it, then press Speak again.", ta: "முன்னோட்டம் மாறியது — மீண்டும் பேசுக." },
+  stalePreview: { en: "Preview changed — review it, then press Speak again.", ta: "முன்னோட்டம் மாறியது — மீண்டும் பேசுங்கள்." },
   futureTitle: { en: "Coming in later phases", ta: "பின்னர் வரும்" },
   futureBody: {
     en: "Sign-in, saved history, camera, and assisted wording are not part of this local slice. The essential board below works fully offline.",

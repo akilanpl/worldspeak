@@ -15,6 +15,7 @@
     "build": "node scripts/build-offline.mjs && pnpm --filter @worldspeak/web build",
     "pretest": "node scripts/build-offline.mjs",
     "pretypecheck": "node scripts/build-offline.mjs",
+    "test:db": "bash scripts/test-db.sh",
     "check:secrets": "node scripts/check-secrets.mjs",
     "dev": "pnpm --filter @worldspeak/web dev"
   },
