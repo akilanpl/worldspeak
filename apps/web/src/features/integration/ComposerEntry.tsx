@@ -1,11 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
 import type { Composition } from "@worldspeak/contracts";
 import Workspace from "@/features/composer/Workspace";
 import type { SpeechGateway, VoiceInfo } from "@/lib/speech";
-import { decodeHandoff, handoffToComposition, type HandoffPayload } from "./handoff";
+import {
+  decodeHandoff,
+  handoffToComposition,
+  readStoredHandoff,
+  type HandoffPayload,
+} from "./handoff";
 
 function newId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
@@ -36,17 +40,26 @@ interface EntryState {
  */
 export default function ComposerEntry({
   serverInitial,
+  handoffKey,
   gatewayFactory,
 }: {
   serverInitial?: Composition | undefined;
+  /**
+   * Session-storage handoff key from `?handoff=`. The parent keys this
+   * component by the key, so navigating between handoffs remounts with
+   * fresh state and no full reload. Legacy inline payloads still decode.
+   */
+  handoffKey?: string | null | undefined;
   /** Test seam: inject a gateway backed by a fake synthesizer. */
   gatewayFactory?: ((listVoices: () => VoiceInfo[]) => SpeechGateway) | undefined;
 }) {
-  const params = useSearchParams();
+  // Resolved once per mount; the parent remounts per handoff key so each
+  // navigation starts from a fresh validated payload — never merged state.
   const [entry] = useState<EntryState>(() => {
     if (serverInitial) return { initial: serverInitial, notice: null, invalid: false };
-    const payload = decodeHandoff(params.get("handoff"));
-    if (params.get("handoff") !== null && !payload) {
+    const raw = handoffKey ?? null;
+    const payload = readStoredHandoff(raw) ?? decodeHandoff(raw);
+    if (raw !== null && !payload) {
       return { initial: undefined, notice: null, invalid: true };
     }
     if (!payload) return { initial: undefined, notice: null, invalid: false };

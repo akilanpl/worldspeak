@@ -9,3 +9,7 @@ Do not begin Phase 3.
 5. Check actual participant rules; record current release CI, secret audit and any unresolved warnings.
 
 Acceptance remains incomplete until these gates have evidence. After acceptance, use `PHASE-3.md` as the next bounded task; it is a plan only.
+
+## 27 October 2026 — bounded Phase 3 authorization
+
+The human explicitly authorized non-paid inference-core engineering on isolated `feat/meta-inference-core` despite the Phase 2 manual gaps above. This supersedes the earlier no-Phase-3 instruction only for this bounded task. Phase 2 is still not accepted. No paid call or hosted migration is authorized by this note. See `docs/meta-inference-handoff.md` and the prepared, unapproved two-call smoke protocol.

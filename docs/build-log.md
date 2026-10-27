@@ -78,3 +78,10 @@ All times IST. Author: Muse Code implementation engineer.
 - Human configured Google; saved callback allowlist/Site URL independently checked in Brave. First delayed flow expired; fresh flow completed to History with a real hosted identity/session/profile. Signed-in exact synthetic Save/Favorite and History passed; foreign existing conversation read returned NOT_FOUND. No tokens/account details retained.
 - Removed the disposable cross-user account, exact synthetic marker messages and their empty conversations. Hosted aggregate verified zero synthetic users/storage objects/marker messages/test conversations; real Google identity retained. Remaining manual UX and inbox/native/device/rules gates remain explicit; Phase 3 not started.
 - Google sign-out then returned to the guest board; hosted session count fell to zero with identity retained. Visiting History redirected to /sign-in?next=/history. No speech was triggered.
+
+## 2026-10-27 — isolated non-paid inference core
+
+- Created `feat/meta-inference-core` from verified latest main 80dcee4 in dedicated sibling worktree. Muse branches/worktrees unchanged.
+- Added forward migration 007 for owner-scoped jobs/media, private global/user micro-USD budgets and receipts, one-shot dispatch permits, lease fencing, uncertain holds/reconciliation and independent cleanup surviving Auth deletion. Tested locally only; not applied to hosted Supabase.
+- Added authenticated still upload/job APIs, normalization/metadata stripping, server-only Standard Spark and SAM Responses adapters, official SAM parser and strict geometry/output/usage validation. Video normalization is pure and synthetic-tested; no real video inference claimed. No speech/communication-engine changes.
+- Added non-paid provider, API, image and failure/concurrency tests; final commands/counts recorded in inference-core evidence. Prepared explicit $0.05, two-generation smoke proposal; no paid Meta calls. All Phase 2 manual gates remain visible.

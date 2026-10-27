@@ -1,3 +1,4 @@
+import type { Detection, ModelTrack } from "@worldspeak/contracts";
 import { isValidTrack } from "../video/tracks";
 import type { ObjectTrack } from "../video/types";
 import { isNormalizedBox, type NormalizedBox, type PerceivedObject } from "../perception/types";
@@ -13,21 +14,7 @@ import { isNormalizedBox, type NormalizedBox, type PerceivedObject } from "../pe
  * catalogId so the handoff degrades them to exact user text.
  */
 
-export interface ModelObjectDetection {
-  label: string;
-  catalogId: string | null;
-  box: unknown;
-  mask: unknown;
-  confidence: number | null;
-}
-
-export interface ModelTrack {
-  trackId: string;
-  label: string;
-  catalogId: string | null;
-  points: unknown;
-  confidence: number | null;
-}
+export type { Detection, ModelTrack };
 
 function isLabel(value: unknown): value is string {
   return typeof value === "string" && value.length > 0 && value.length <= 120;
@@ -54,10 +41,7 @@ function isMask(value: unknown): value is { x: number; y: number }[] | null {
 }
 
 /** Still-image detection → PerceivedObject; null when the payload is invalid. */
-export function toPerceivedObject(
-  detection: ModelObjectDetection,
-  id: string,
-): PerceivedObject | null {
+export function toPerceivedObject(detection: Detection, id: string): PerceivedObject | null {
   if (typeof detection !== "object" || detection === null) return null;
   if (!isLabel(detection.label)) return null;
   if (detection.catalogId !== null && typeof detection.catalogId !== "string") return null;
@@ -116,7 +100,7 @@ export function adaptDetectionList(
   const accepted: PerceivedObject[] = [];
   let rejected = 0;
   for (const d of detections) {
-    const obj = toPerceivedObject(d as ModelObjectDetection, makeId());
+    const obj = toPerceivedObject(d as Detection, makeId());
     if (obj) accepted.push(obj);
     else rejected += 1;
   }

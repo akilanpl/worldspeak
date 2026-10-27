@@ -54,6 +54,61 @@ test("tampered handoff links degrade to an empty board, never a crash", async ({
   await expect(page.getByText("I want water.", { exact: true })).toHaveCount(0);
 });
 
+test("handoff keys keep user text out of browser history", async ({ page }) => {
+  await page.goto("/perception");
+  await page.getByRole("button", { name: /^continue$/i }).first().click();
+  await page.getByRole("button", { name: /water.*fixture/i }).click();
+  await page.getByRole("button", { name: /^continue$/i }).click();
+  await page.getByRole("button", { name: /approve for composer/i }).click();
+  await page.getByRole("link", { name: /open in composer/i }).click();
+  await expect(page).toHaveURL(/\?handoff=/);
+  // Key transport: the URL carries an opaque key, never the approved sentence.
+  const url = page.url();
+  expect(url).toMatch(/handoff=ws-handoff-/);
+  expect(url).not.toContain("water");
+  await expect(page.getByText("I want water.", { exact: true })).toBeVisible();
+});
+
+test("navigating between handoffs swaps state without a reload", async ({ page }) => {
+  // Mark the tab once: any full reload wipes this marker.
+  await page.goto("/perception");
+  await page.evaluate(() => {
+    (window as unknown as { __stayAlive: number }).__stayAlive = 1;
+  });
+  await page.getByRole("button", { name: /^continue$/i }).first().click();
+  await page.getByRole("button", { name: /water.*fixture/i }).click();
+  await page.getByRole("button", { name: /^continue$/i }).click();
+  await page.getByRole("button", { name: /approve for composer/i }).click();
+  await page.getByRole("link", { name: /open in composer/i }).click();
+  await expect(page.getByText("I want water.", { exact: true })).toBeVisible();
+  // Second, different handoff through the real journey (chair, same table scene).
+  // The chair's overlay center sits under the overlapping phone region, so the
+  // accessible list — the designed disambiguation path — selects it here.
+  await page.getByRole("link", { name: /^camera$/i }).click();
+  await page.getByRole("button", { name: /^continue$/i }).first().click();
+  await page.getByRole("list", { name: /objects found/i }).getByRole("button", { name: "chair", exact: true }).click();
+  await page.getByRole("button", { name: /^continue$/i }).click();
+  await page.getByRole("button", { name: /approve for composer/i }).click();
+  await page.getByRole("link", { name: /open in composer/i }).click();
+  await expect(page.getByText("I want chair.", { exact: true })).toBeVisible();
+  await expect(page.getByText("I want water.", { exact: true })).toHaveCount(0);
+  const marker = await page.evaluate(() => (window as unknown as { __stayAlive: number }).__stayAlive);
+  expect(marker).toBe(1);
+});
+
+test("guests uploading real photos never see Meta analysis", async ({ page }) => {
+  const png = Buffer.from(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+    "base64",
+  );
+  await page.goto("/perception");
+  await page.getByRole("button", { name: /use synthetic fixtures/i }).click();
+  await page.getByLabel(/upload image/i).setInputFiles({ name: "t.png", mimeType: "image/png", buffer: png });
+  await expect(page.getByRole("heading", { name: /preview/i })).toBeVisible();
+  expect(page.getByRole("button", { name: /analyze with meta/i })).toHaveCount(0);
+  await expect(page.getByText(/sign in to analyze real photos/i)).toBeVisible();
+});
+
 test("unknown catalog objects degrade to exact user text", async ({ page }) => {
   const payload = {
     version: 1,

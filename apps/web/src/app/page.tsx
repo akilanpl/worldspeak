@@ -50,9 +50,9 @@ async function loadInitial(messageId: string | undefined): Promise<Composition |
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ load?: string }>;
+  searchParams: Promise<{ load?: string; handoff?: string }>;
 }) {
-  const { load } = await searchParams;
+  const { load, handoff } = await searchParams;
   const initial = await loadInitial(load);
   return (
     <>
@@ -76,7 +76,11 @@ export default async function HomePage({
         </p>
       </section>
       <Suspense>
-        <ComposerEntry serverInitial={initial} />
+        <ComposerEntry
+          key={handoff ?? "board"}
+          serverInitial={initial}
+          handoffKey={handoff ?? null}
+        />
       </Suspense>
     </>
   );

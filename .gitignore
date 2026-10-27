@@ -17,3 +17,6 @@ apps/web/src/generated/
 
 # Local package-manager store; never source.
 .pnpm-store/
+
+# Supabase CLI local version/cache metadata
+supabase/.temp/

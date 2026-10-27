@@ -1,0 +1,15 @@
+{
+  "applied": false,
+  "targetProject": "cafkyowssdemzivhzxbb",
+  "status": "forward migration verified locally; hosted apply/codegen/advisors remain integration gates",
+  "artifacts": [
+    {
+      "path": "supabase/migrations/20261027040029_worldspeak_007_inference_core.sql",
+      "sha256": "3bb40963759f6aa7beb88ab0c84bf50f8a8296a9e3d79ad2b87ba598fbbdd50a"
+    },
+    {
+      "path": "packages/db/src/inference-rpc.ts",
+      "sha256": "4f719b6055feed4d7cf23708030300186183ee623a334ab8eb395ec03d094929"
+    }
+  ]
+}

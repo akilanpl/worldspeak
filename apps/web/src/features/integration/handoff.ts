@@ -78,15 +78,12 @@ export function encodeHandoff(payload: HandoffPayload): string {
   return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-/** Total decode: valid payload or null (composer starts empty + notice). */
-export function decodeHandoff(raw: string | null | undefined): HandoffPayload | null {
-  if (!raw) return null;
+/**
+ * Total structural validation shared by both transports. Anything invalid
+ * yields null and the composer starts empty + notice.
+ */
+function validatePayload(parsed: unknown): HandoffPayload | null {
   try {
-    let padded = raw.replace(/-/g, "+").replace(/_/g, "/");
-    while (padded.length % 4 !== 0) padded += "=";
-    const bin = atob(padded);
-    const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
-    const parsed: unknown = JSON.parse(new TextDecoder().decode(bytes));
     if (typeof parsed !== "object" || parsed === null) return null;
     const o = parsed as Record<string, unknown>;
     if (o["version"] !== 1) return null;
@@ -105,6 +102,61 @@ export function decodeHandoff(raw: string | null | undefined): HandoffPayload | 
   } catch {
     return null;
   }
+}
+
+/** Total decode: valid payload or null (composer starts empty + notice). */
+export function decodeHandoff(raw: string | null | undefined): HandoffPayload | null {
+  if (!raw) return null;
+  try {
+    let padded = raw.replace(/-/g, "+").replace(/_/g, "/");
+    while (padded.length % 4 !== 0) padded += "=";
+    const bin = atob(padded);
+    const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+    return validatePayload(JSON.parse(new TextDecoder().decode(bytes)));
+  } catch {
+    return null;
+  }
+}
+
+function newKey(): string {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) return `ws-handoff-${crypto.randomUUID()}`;
+  return `ws-handoff-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e9).toString(36)}`;
+}
+
+/**
+ * Privacy-preserving transport: the payload lives in sessionStorage under a
+ * random key, so user-entered communication text (own-words intents) never
+ * lands in browser history. sessionStorage is tab-scoped and vanishes with
+ * the tab; guest offline operation needs no network. Returns null when
+ * storage is unavailable — callers then fall back to the inline payload.
+ */
+export function storeHandoff(payload: HandoffPayload): string | null {
+  try {
+    if (typeof sessionStorage === "undefined") return null;
+    const key = newKey();
+    sessionStorage.setItem(key, JSON.stringify(payload));
+    return key;
+  } catch {
+    return null;
+  }
+}
+
+/** Read back a stored handoff; validated exactly like the inline form. */
+export function readStoredHandoff(key: string | null | undefined): HandoffPayload | null {
+  try {
+    if (!key || typeof sessionStorage === "undefined") return null;
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return null;
+    return validatePayload(JSON.parse(raw));
+  } catch {
+    return null;
+  }
+}
+
+/** Best-effort link target: stored key when possible, inline payload otherwise. */
+export function handoffHref(payload: HandoffPayload): string {
+  const key = storeHandoff(payload);
+  return key ? `/?handoff=${key}` : `/?handoff=${encodeHandoff(payload)}`;
 }
 
 /**

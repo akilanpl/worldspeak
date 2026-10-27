@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-27",
+  "branch": "feat/meta-inference-core",
+  "base": "80dcee4daa8235a8a69d8c92a4b385c5409fa778",
+  "scope": "non-paid isolated backend implementation; Phase 2 manual acceptance gaps preserved",
+  "checks": [
+    {
+      "check": "lockfile",
+      "exit": 0
+    },
+    {
+      "check": "lint",
+      "exit": 0
+    },
+    {
+      "check": "typescript",
+      "exit": 0
+    },
+    {
+      "check": "unit",
+      "exit": 0
+    },
+    {
+      "check": "database",
+      "exit": 0
+    },
+    {
+      "check": "schema",
+      "exit": 0
+    },
+    {
+      "check": "build",
+      "exit": 0
+    }
+  ],
+  "unitTestsPassed": 80,
+  "phase2LocalRlsScenarioGroupsPassed": 12,
+  "inferenceLocalDatabaseScenarioGroupsPassed": 15,
+  "testDatabase": "worldspeak_phase2_inference_20261027 (local scratch only)",
+  "providerEvidence": "Synthetic official-wire fixtures and mock transports only; no recorded real inference",
+  "paidMetaGenerationCalls": 0,
+  "hostedMigrationApplied": false,
+  "hostedModelIntegrationVerified": false,
+  "speechGatewayAndCommunicationEngine": "unchanged",
+  "ci": "feature-branch CI enabled; result must be inspected separately",
+  "pending": [
+    "hosted migration/advisors/type generation and new bucket tests",
+    "UI integration/end-to-end adapter checks",
+    "least-privilege worker credentials and cleanup supervision",
+    "explicit approval for proposed two-call smoke, maximum $0.05",
+    "all existing Phase 2 manual acceptance gaps"
+  ]
+}

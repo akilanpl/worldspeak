@@ -50,6 +50,7 @@ export interface CapturedImage {
 export type PerceptionStep =
   | "capture"
   | "review"
+  | "analysis"
   | "objects"
   | "intent";
 

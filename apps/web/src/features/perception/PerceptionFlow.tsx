@@ -7,9 +7,13 @@ import IntentPanel, { type ApprovedSnapshot } from "./IntentPanel";
 import SelectionPanel from "./SelectionPanel";
 import { FIXTURE_SCENES } from "./fixtures";
 import { pstr } from "./strings";
+import Link from "next/link";
 import type { CapturedImage, PerceptionStep, PerceivedObject } from "./types";
 import { getObject } from "@worldspeak/catalog";
-import { encodeHandoff, snapshotToPayload } from "../integration/handoff";
+import { handoffHref, snapshotToPayload } from "../integration/handoff";
+import AnalysisFlow from "../analysis/AnalysisFlow";
+import { getAnalysisEligibility, type AnalysisEligibility } from "../analysis/session";
+import type { Operation } from "@worldspeak/contracts";
 
 /**
  * Camera-to-communication frontend flow (fixture-driven until the Phase 3
@@ -27,6 +31,15 @@ export default function PerceptionFlow() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [approved, setApproved] = useState<ApprovedSnapshot | null>(null);
   const [approvedHref, setApprovedHref] = useState<string | null>(null);
+  const [eligibility, setEligibility] = useState<AnalysisEligibility>("unknown");
+  const [analysisOp, setAnalysisOp] = useState<{ operation: Operation; concept: string | null } | null>(null);
+  const [modelLabel, setModelLabel] = useState<string | null>(null);
+
+  // Signed-in owners may analyze real photos; guests stay on local fixtures.
+  // One-time async eligibility sync; all later updates are event-driven.
+  useEffect(() => {
+    void getAnalysisEligibility().then(setEligibility);
+  }, []);
   const headingRef = useRef<HTMLHeadingElement | null>(null);
 
   // Move focus to the current step heading on change (keyboard users).
@@ -41,6 +54,7 @@ export default function PerceptionFlow() {
   function startDetection() {
     setNotice(null);
     setSelectedId(null);
+    setModelLabel(null);
     if (fixtureMode) {
       const scene = FIXTURE_SCENES.find((s) => s.id === sceneId);
       setObjects(scene ? scene.objects.map((o) => ({ ...o })) : []);
@@ -141,6 +155,7 @@ export default function PerceptionFlow() {
               className="btn btn-secondary"
               onClick={() => {
                 setImage(null);
+                setModelLabel(null);
                 setStep("capture");
               }}
             >
@@ -149,7 +164,26 @@ export default function PerceptionFlow() {
             <button type="button" className="btn" onClick={startDetection}>
               {pstr("continueAction", locale)}
             </button>
+            {eligibility === "ready" && (
+              <button
+                type="button"
+                className="btn"
+                onClick={() => {
+                  setAnalysisOp({ operation: "scene", concept: null });
+                  setStep("analysis");
+                }}
+              >
+                {locale === "ta" ? "Meta மூலம் பகுப்பாய்" : "Analyze with Meta"}
+              </button>
+            )}
           </div>
+          {eligibility === "guest" && (
+            <p className="status" role="status">
+              {locale === "ta"
+                ? "உண்மைப் புகைப்பட பகுப்பாய்வுக்கு உள்நுழைக. மாதிரிகள் ஆஃப்லைனில் வேலை செய்யும்."
+                : "Sign in to analyze real photos with Meta. Fixtures keep working offline."}
+            </p>
+          )}
           {notice && (
             <p className="notice" role="status">
               {notice}
@@ -158,18 +192,58 @@ export default function PerceptionFlow() {
         </section>
       )}
 
-      {step === "objects" && (
-        <SelectionPanel
+      {step === "analysis" && image && analysisOp && (
+        <AnalysisFlow
           locale={locale}
           image={image}
-          fixtureAspect={image ? null : scene ? { w: scene.aspectW, h: scene.aspectH } : null}
-          objects={objects}
-          selectedId={selectedId}
-          onSelect={setSelectedId}
-          onCorrectLabel={correctLabel}
-          onBack={() => setStep(image ? "review" : "capture")}
-          onContinue={() => setStep("intent")}
+          operation={analysisOp.operation}
+          concept={analysisOp.concept}
+          onDetections={(detected, model) => {
+            setObjects(detected);
+            setSelectedId(null);
+            setModelLabel(model);
+            setNotice(null);
+            setStep("objects");
+          }}
+          onBack={() => setStep("review")}
         />
+      )}
+
+      {step === "objects" && (
+        <>
+          {modelLabel && (
+            <p className="notice" role="status" data-testid="model-results-notice">
+              {locale === "ta"
+                ? `மாதிரி முடிவுகள் (${modelLabel}) — இவை மாதிரி அல்ல.`
+                : `Model results (${modelLabel}) — never fixtures.`}
+            </p>
+          )}
+          <SelectionPanel
+            locale={locale}
+            image={image}
+            fixtureAspect={image ? null : scene ? { w: scene.aspectW, h: scene.aspectH } : null}
+            objects={objects}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+            onCorrectLabel={correctLabel}
+            onBack={() => setStep(image ? "review" : "capture")}
+            onContinue={() => setStep("intent")}
+          />
+          {modelLabel && image && selected && (
+            <div className="btn-row">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => {
+                  setAnalysisOp({ operation: "segment", concept: selected.labelEn });
+                  setStep("analysis");
+                }}
+              >
+                {locale === "ta" ? "SAM மூலம் செம்மைப்படுத்து" : "Refine with SAM segmentation"}
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       {step === "intent" && selected && (
@@ -187,7 +261,7 @@ export default function PerceptionFlow() {
                 objectCatalogId: selected.catalogId,
                 provenance: selected.origin,
               });
-              setApprovedHref(`/?handoff=${encodeHandoff(payload)}`);
+              setApprovedHref(handoffHref(payload));
             } else {
               setApprovedHref(null);
             }
@@ -196,6 +270,8 @@ export default function PerceptionFlow() {
             setImage(null);
             setObjects([]);
             setSelectedId(null);
+            setModelLabel(null);
+            setAnalysisOp(null);
           }}
         />
       )}
@@ -208,9 +284,9 @@ export default function PerceptionFlow() {
           </p>
           <div className="btn-row">
             {approvedHref && (
-              <a className="btn" href={approvedHref} style={{ textDecoration: "none" }}>
+              <Link className="btn" href={approvedHref} prefetch={false} style={{ textDecoration: "none" }}>
                 {locale === "ta" ? "அமைப்பில் திற" : "Open in composer"}
-              </a>
+              </Link>
             )}
             <button
               type="button"

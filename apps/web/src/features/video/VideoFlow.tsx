@@ -8,9 +8,10 @@ import TrackList from "./TrackList";
 import VideoCapturePanel from "./VideoCapturePanel";
 import VideoTrackPlayer from "./VideoTrackPlayer";
 import { getVideoFixture, VIDEO_FIXTURES } from "./fixtures";
+import Link from "next/link";
 import type { VideoClip, VideoStep } from "./types";
 import type { PerceivedObject } from "../perception/types";
-import { encodeHandoff, snapshotToPayload } from "../integration/handoff";
+import { handoffHref, snapshotToPayload } from "../integration/handoff";
 
 /**
  * Short-clip capture → review → track selection → intent → approved handoff.
@@ -61,8 +62,8 @@ export default function VideoFlow() {
     setStep("tracks");
     setNotice(
       ta
-        ? "இந்தக் கிளிப்பிற்கான கண்காணிப்பு இன்னும் இல்லை. மாதிரிகளை முயற்சிக்கவும்."
-        : "Tracking for real clips arrives with the Phase 3 backend. Try synthetic fixtures meanwhile — nothing is uploaded.",
+        ? "வீடியோ கண்காணிப்பு முடக்கப்பட்டுள்ளது: மாதிரி இன்னும் நிலைப்படங்களை மட்டுமே ஆதரிக்கிறது. கேமரா பக்கத்தில் நிலைப்படத்தைப் பகுப்பாயலாம்."
+        : "Video tracking is disabled in this slice: the model backend supports still images only. Analyze a still on the Camera page instead — nothing is uploaded.",
     );
   }
 
@@ -246,7 +247,7 @@ export default function VideoFlow() {
                 objectCatalogId: selectedTrack.catalogId,
                 provenance: selectedTrack.origin,
               });
-              setApprovedHref(`/?handoff=${encodeHandoff(payload)}`);
+              setApprovedHref(handoffHref(payload));
             } else {
               setApprovedHref(null);
             }
@@ -266,9 +267,9 @@ export default function VideoFlow() {
           </p>
           <div className="btn-row">
             {approvedHref && (
-              <a className="btn" href={approvedHref} style={{ textDecoration: "none" }}>
+              <Link className="btn" href={approvedHref} prefetch={false} style={{ textDecoration: "none" }}>
                 {ta ? "அமைப்பில் திற" : "Open in composer"}
-              </a>
+              </Link>
             )}
             <button
               type="button"
