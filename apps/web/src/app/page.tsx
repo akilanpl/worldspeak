@@ -1,7 +1,8 @@
+import { Suspense } from "react";
 import type { Composition } from "@worldspeak/contracts";
 import { parseIntent } from "@worldspeak/contracts";
 import { CATALOG_VERSION } from "@worldspeak/catalog";
-import Workspace from "@/features/composer/Workspace";
+import ComposerEntry from "@/features/integration/ComposerEntry";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
@@ -56,18 +57,27 @@ export default async function HomePage({
   return (
     <>
       <section className="panel" aria-labelledby="future-h" style={{ marginBottom: "1rem" }}>
-        <h2 id="future-h">Coming in later phases</h2>
+        <h2 id="future-h">Choose how to start</h2>
         <p className="status">
-          Camera, assisted wording, pictograms, and the training experiment are not part of this slice.
-          Sign in to keep history and favorites; the essential board below works fully offline after one online visit.
+          Point at the board, identify an object with the camera, or track one in a short clip —
+          every path ends at the same preview, and nothing speaks until you press Speak.
+          The essential board below works fully offline after one online visit.
         </p>
         <p>
           <a className="btn btn-secondary" href="/offline" style={{ textDecoration: "none", display: "inline-block" }}>
             Open offline board
+          </a>{" "}
+          <a className="btn btn-secondary" href="/perception" style={{ textDecoration: "none", display: "inline-block" }}>
+            Identify with camera
+          </a>{" "}
+          <a className="btn btn-secondary" href="/video" style={{ textDecoration: "none", display: "inline-block" }}>
+            Track in a clip
           </a>
         </p>
       </section>
-      <Workspace initial={initial} />
+      <Suspense>
+        <ComposerEntry serverInitial={initial} />
+      </Suspense>
     </>
   );
 }
