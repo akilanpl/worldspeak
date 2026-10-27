@@ -95,3 +95,18 @@ describe("ComposerEntry", () => {
     expect(await screen.findByTestId("handoff-invalid-notice")).toBeInTheDocument();
   });
 });
+
+ it.each(["en", "ta"] as const)("labels a manual pictogram truthfully for %s without automatic speech", async (locale) => {
+   const speak = vi.fn();
+   const key = storeHandoff(snapshotToPayload({intent: {kind: "user-text", text: "My exact words", locale}, locale}, {source: "pictogram", objectLabel: "My own cup", objectCatalogId: null, provenance: "manual"}));
+   renderEntry(key, () => ({speakApproved: speak, stop: () => {}, testVoice: () => false}) as unknown as SpeechGateway);
+   const notice = await screen.findByTestId("handoff-provenance-notice");
+   for (const language of ["en", "ta"]) {
+     const text = notice.querySelector(`[lang="${language}"]`)?.textContent;
+     expect(text).toContain("personalized pictogram");
+     expect(text).toContain("manual human selection");
+     expect(text).not.toMatch(/video|வீடியோ/);
+   }
+   expect(screen.getByText("My exact words", {exact: true})).toBeInTheDocument();
+   expect(speak).not.toHaveBeenCalled();
+ });
