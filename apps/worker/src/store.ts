@@ -111,9 +111,10 @@ export function makeStore(config: {
       );
     },
     async finish(l, outcome, cost, result: InferenceResult | null, error) {
+      // The driver serializes JSONB parameters; do not pre-stringify the object.
       return (
         (await scalar(
-          sql`select world_inference.finish(${l.id},${l.leaseToken},${outcome},${cost},${result ? JSON.stringify(result) : null}::jsonb,${error}) as value`,
+          sql`select world_inference.finish(${l.id},${l.leaseToken},${outcome},${cost},${result === null ? null : sql.json(result)}::jsonb,${error}) as value`,
         )) === true
       );
     },

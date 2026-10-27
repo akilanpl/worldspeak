@@ -7,7 +7,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "once": "tsx src/main.ts",
     "cleanup": "tsx src/cleanup.ts",
-    "test:db": "tsx tests/smoke-authorization.ts && tsx tests/database.ts"
+    "test:db": "tsx tests/smoke-authorization.ts && tsx tests/database.ts && tsx tests/result-persistence.ts"
   },
   "dependencies": {
     "@worldspeak/contracts": "workspace:*",
