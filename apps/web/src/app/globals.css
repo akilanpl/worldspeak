@@ -82,14 +82,16 @@ body {
 .workspace {
   display: grid;
   gap: 1rem;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
 }
+/* Enlarged text/selects must not force fr tracks beyond the viewport. */
+.workspace > * { min-width: 0; }
 @media (min-width: 48rem) {
-  .workspace { grid-template-columns: 1fr 1fr; }
+  .workspace { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .composer { grid-column: span 2; }
 }
 @media (min-width: 75rem) {
-  .workspace { grid-template-columns: 1.2fr 1fr 1fr; }
+  .workspace { grid-template-columns: minmax(0, 1.2fr) repeat(2, minmax(0, 1fr)); }
   .composer { grid-column: auto; }
 }
 

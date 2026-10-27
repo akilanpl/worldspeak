@@ -37,6 +37,7 @@ jobs:
           cache: pnpm
       - run: sudo apt-get update && sudo apt-get install -y postgresql-client
       - run: pnpm install --frozen-lockfile
+      - run: NEXT_PUBLIC_APP_URL=http://127.0.0.1:3101 pnpm check:deployment --mode demo
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
