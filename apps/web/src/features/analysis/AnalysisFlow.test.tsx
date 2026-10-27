@@ -37,6 +37,7 @@ function successFetch(operation: "scene" | "segment" = "scene") {
         result: {
           detections: [
             {
+              ...(operation === "segment" ? { objectId: "7" } : {}),
               label: "chair",
               catalogId: "chair",
               box: { x1: 0.1, y1: 0.2, x2: 0.4, y2: 0.8 },
@@ -55,7 +56,8 @@ function successFetch(operation: "scene" | "segment" = "scene") {
             outputTokens: 5,
             costMicroUsd: 30,
           },
-          segmentationMasks: [],
+          segmentationMasks: operation === "segment" ? [{ objectId: "7", width: 2, height: 2,
+            bounds: { x1: .1, y1: .2, x2: .4, y2: .8 }, rasterBase64: "AAEBAA==" }] : [],
         },
         errorCode: null,
         reservedMicroUsd: 25,
@@ -136,4 +138,5 @@ it("SAM consent admits exactly one confirmed concept; outputs need separate conf
   expect(confirmed).not.toHaveBeenCalled();
   fireEvent.click(use);
   expect(confirmed).toHaveBeenCalledWith(expect.any(Array), "sam-3.1");
+  expect([...confirmed.mock.calls[0]![0][0].rasterMask.pixels]).toEqual([0, 1, 1, 0]);
 });

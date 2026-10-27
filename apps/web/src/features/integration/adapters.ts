@@ -1,3 +1,4 @@
+import { decodeRasterMask, MAX_MASKS, MAX_TOTAL_MASK_PIXELS } from "../perception/rasterMask";
 import type { Detection, ModelTrack } from "@worldspeak/contracts";
 import { isValidTrack } from "../video/tracks";
 import type { ObjectTrack } from "../video/types";
@@ -117,4 +118,37 @@ export function adaptTrackList(tracks: unknown): AdaptedBatch<ObjectTrack> {
     else rejected += 1;
   }
   return { accepted, rejected };
+}
+
+/** SAM masks join only by the provider's stable record ID, never label/order/box.
+ * Fail the complete mask batch closed on ambiguity or malformed data. Scene
+ * detections keep the existing adapter and optional objectId compatibility.
+ */
+export function adaptSegmentationList(
+  detections: unknown,
+  masks: unknown,
+  makeId: () => string,
+): AdaptedBatch<PerceivedObject> {
+  const invalid = () => ({ accepted: [], rejected: 1 });
+  if (!Array.isArray(detections) || !Array.isArray(masks) ||
+      detections.length > MAX_MASKS || masks.length !== detections.length) return invalid();
+  const byId = new Map<string, unknown>();
+  for (const mask of masks) {
+    if (!mask || typeof mask !== "object" || typeof mask.objectId !== "string" ||
+        !mask.objectId || mask.objectId.length > 160 || byId.has(mask.objectId)) return invalid();
+    byId.set(mask.objectId, mask);
+  }
+  const seen = new Set<string>();
+  const accepted: PerceivedObject[] = [];
+  let pixels = 0;
+  for (const detection of detections) {
+    const object = toPerceivedObject(detection as Detection, makeId());
+    if (!object || !detection || typeof detection.objectId !== "string" ||
+        !detection.objectId || detection.objectId.length > 160 || seen.has(detection.objectId) || !byId.has(detection.objectId)) return invalid();
+    seen.add(detection.objectId);
+    const mask = decodeRasterMask(byId.get(detection.objectId));
+    if (!mask || (pixels += mask.pixels.length) > MAX_TOTAL_MASK_PIXELS) return invalid();
+    accepted.push({ ...object, rasterMask: mask });
+  }
+  return { accepted, rejected: 0 };
 }

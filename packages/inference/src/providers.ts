@@ -287,6 +287,7 @@ export async function parseProviderResponse(
     )
       throw Error("Invalid object count");
     const detections = boxes.map((b) => ({
+      objectId: b.objectId,
       label: input.concept!,
       catalogId: null,
       confidence: b.confidence ?? null,
