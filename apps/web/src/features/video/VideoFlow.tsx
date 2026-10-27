@@ -41,7 +41,10 @@ export default function VideoFlow() {
   const rootRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const target = rootRef.current?.querySelector<HTMLElement>("[data-step-heading]") ?? headingRef.current;
+    // The retained frozen-frame panel is hidden while intent is active.
+    // Focus must follow the visible step, not the first marker in DOM order.
+    const target = Array.from(rootRef.current?.querySelectorAll<HTMLElement>("[data-step-heading]") ?? [])
+      .find(heading => !heading.closest("[hidden]")) ?? headingRef.current;
     target?.focus({ preventScroll: true });
   }, [step, locale]);
 

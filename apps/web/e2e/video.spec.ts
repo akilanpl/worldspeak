@@ -93,8 +93,10 @@ test("actual local WebM frame → manual region → exact words → composer req
   await page.getByRole("button",{name:"Confirm region",exact:true}).click();
   await page.getByLabel("My object or exact words").fill("My yellow cup");
   await page.getByRole("button",{name:"Confirm object and choose intent"}).click();
+  await expect(page.getByRole("heading",{name:"See and choose (prototype)"})).toBeFocused();
   await expect(page.getByText("My yellow cup",{exact:true}).last()).toBeVisible();
   await page.getByRole("button",{name:"Back",exact:true}).click();
+  await expect(page.getByRole("heading",{name:"Choose a frame and object"})).toBeFocused();
   await expect(page.getByText("Manual region confirmed.",{exact:true})).toBeVisible();
   await page.getByRole("button",{name:"Confirm object and choose intent"}).click();
   await page.getByRole("button",{name:/approve for composer/i}).click();

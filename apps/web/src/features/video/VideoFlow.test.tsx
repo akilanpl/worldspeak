@@ -77,3 +77,38 @@ it("keeps an accepted clip alive through capture unmount, and releases it on ret
   view.unmount();
   expect(revoke).toHaveBeenLastCalledWith("blob:second");
 });
+
+it("focuses the visible intent heading while retaining the hidden frozen frame", async () => {
+  Object.assign(URL,{createObjectURL:vi.fn(() => "blob:focus-clip"),revokeObjectURL:vi.fn()});
+  vi.spyOn(HTMLMediaElement.prototype,"load").mockImplementation(() => {});
+  vi.spyOn(HTMLMediaElement.prototype,"pause").mockImplementation(() => {});
+  vi.spyOn(HTMLCanvasElement.prototype,"getContext").mockReturnValue({drawImage:vi.fn()} as unknown as CanvasRenderingContext2D);
+  vi.spyOn(HTMLCanvasElement.prototype,"toDataURL").mockReturnValue("data:image/jpeg;base64,frame");
+  const create=document.createElement.bind(document);
+  vi.spyOn(document,"createElement").mockImplementation(((tag: string) => {
+    const el=create(tag);
+    if (tag === "video") Object.defineProperties(el,{
+      videoWidth:{value:640},videoHeight:{value:360},duration:{value:2},readyState:{value:2},currentTime:{value:.5,writable:true},
+      src:{set:() => queueMicrotask(() => el.dispatchEvent(new Event("loadedmetadata"))),configurable:true},
+    });
+    return el;
+  }) as typeof document.createElement);
+  render(<VideoFlow/>);
+  fireEvent.click(screen.getByRole("button",{name:"Use local video"}));
+  fireEvent.change(screen.getByLabelText("Upload clip"),{target:{files:[new File(["clip"],"local.webm",{type:"video/webm"})]}});
+  await screen.findByRole("heading",{name:"Clip preview"});
+  fireEvent.click(screen.getByRole("button",{name:"Continue",exact:true}));
+  expect(screen.getByRole("heading",{name:"Choose a frame and object"})).toHaveFocus();
+  fireEvent.loadedData(screen.getByLabelText("Local video playback"));
+  fireEvent.click(screen.getByRole("button",{name:"Select current frame"}));
+  fireEvent.click(screen.getByRole("button",{name:"Confirm region",exact:true}));
+  fireEvent.change(screen.getByLabelText("My object or exact words"),{target:{value:"My exact words"}});
+  fireEvent.click(screen.getByRole("button",{name:"Confirm object and choose intent"}));
+  expect(screen.getByRole("heading",{name:"See and choose (prototype)"})).toHaveFocus();
+  fireEvent.click(screen.getByRole("button",{name:"தமிழ்",exact:true}));
+  expect(screen.getByRole("heading",{name:"பார்த்துத் தேர்வு (முன்மாதிரி)"})).toHaveFocus();
+  fireEvent.click(screen.getByRole("button",{name:"English",exact:true}));
+  fireEvent.click(screen.getByRole("button",{name:"Back",exact:true}));
+  expect(screen.getByRole("heading",{name:"Choose a frame and object"})).toHaveFocus();
+  expect(screen.getByText("Manual region confirmed.")).toBeInTheDocument();
+});
