@@ -27,7 +27,7 @@ Nonspeaking users, caregivers, and bilingual (English/Tamil) households — star
 
 - Offline-capable guest board: 26 bilingual tiles, exact preview, speech-gated composer.
 - Private accounts: Supabase Auth (email/password plus verified Google OAuth), owner-only RLS data, private history/favorites/search/replay/deletion.
-- Meta inference core (on Sol's integration branches): durable jobs, atomic integer-microUSD budget reservations, leases, consent-scoped transient uploads, and a server-only Spark/SAM provider adapter. One real Spark 1.3 generation succeeded historically (sanitized chair, confidence 0.99); the JSONB persistence defect that blocked its application is repaired and regression-tested.
+- Meta inference core (merged into main via the inference-core release, PR #6 JSONB fix, and PR #7 Spark/SAM validation): durable jobs, atomic integer-microUSD budget reservations, leases, consent-scoped transient uploads, and a server-only Spark/SAM provider adapter. One real Spark 1.3 generation succeeded historically (sanitized chair, confidence 0.99); the JSONB persistence defect that blocked its application is repaired and regression-tested.
 
 ## Built with Meta
 

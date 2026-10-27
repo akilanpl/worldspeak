@@ -5,7 +5,7 @@
 ## Blockers (must resolve before submission)
 
 1. **Final participant guide unchecked.** Public pages still pointed at pre-event rules on 27 Oct. Without the guide, repository publicity, video limits, asset originality, AI-disclosure, and judging weights cannot be confirmed. *Action:* human opens the accepted-participant guide and diffs it against `docs/rules-verification.md`; update the submission docs the same day.
-2. **Submission target branch undefined.** This package lives on `docs/meta-hackathon-submission` (based on `main`, which has no inference code). The demo and evidence only make sense against the release that contains the inference core. *Action:* Sol designates the release branch/commit; rebase this docs package onto it before the PR merges.
+2. **Submission target confirmed on main.** This package is now synchronized with `main`, which contains the merged inference core, the PR #6 JSONB fix, and PR #7's reconstructed Spark workflow validation. *Action:* Sol confirms whether this docs package should merge to `main` directly or follow a separate release branch; no rebase away from main is needed.
 3. **No live SAM evidence.** A segmentation story with zero SAM calls is the weakest judging point. *Action:* approve or decline the one-still SAM proposal (`docs/sam-only-acceptance-proposal.md`, exactly 2,500 micro-USD cap) as a bounded human decision; if declined, the demo script already covers the honest fallback — do not weaken the honesty lines to compensate.
 4. **Remaining Phase 2 manual gates** (inbox delivery, signed-in replay/search/delete/preferences, native Tamil, devices). Any submission screenshot implying these must be labeled or cut. *Action:* keep the demo on the mock-auth journey; do not substitute guessed screens.
 

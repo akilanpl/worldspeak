@@ -4,7 +4,7 @@
 
 ## Verified facts (safe to claim)
 
-- [x] One real Standard Muse Spark 1.3 generation succeeded: sanitized chair, confidence 0.99, box (0.247, 0.139)–(0.746, 0.868); ledger 4402 micro-USD ($0.00440175). Source: `docs/ai-workflow-validation.md` (Sol's branch).
+- [x] One real Standard Muse Spark 1.3 generation succeeded: sanitized chair, confidence 0.99, box (0.247, 0.139)–(0.746, 0.868); ledger 4402 micro-USD ($0.00440175). Source: `docs/ai-workflow-validation.md` (main, via PR #7).
 - [x] The historical Spark result failed application persistence (JSONB double-encoding); repaired via `sql.json(object)` in PR #6 with real-driver regression tests. Historical receipt preserved unchanged.
 - [x] Provider request shape targets `https://api.meta.ai/v1` with `muse-spark-1.3` / `sam-3.1` model IDs corroborated live on https://dev.meta.ai/docs/pricing-rate-limits (27 Oct 2026).
 - [x] SAM per-still price $0.0025 (official $2.50/1k) corroborated live on the same pricing page.

@@ -2,7 +2,7 @@
 
 ## One paragraph
 
-WorldSpeak is a Next.js App Router + React/strict-TypeScript application on Supabase (Postgres with owner-only RLS, Auth, private Storage), organized as a pnpm monorepo (`apps/web`, `apps/worker`, `packages/*`). Perception (Meta inference) is isolated behind a server-only provider adapter and a durable job pipeline; user intent flows through a pure deterministic communication engine into an exact bilingual preview; speech fires only under a fresh user authorization. Phase 1–2 (board, accounts, private data) are built and partially verified; the Meta inference core exists on Sol's integration branches with one historical real Spark result.
+WorldSpeak is a Next.js App Router + React/strict-TypeScript application on Supabase (Postgres with owner-only RLS, Auth, private Storage), organized as a pnpm monorepo (`apps/web`, `apps/worker`, `packages/*`). Perception (Meta inference) is isolated behind a server-only provider adapter and a durable job pipeline; user intent flows through a pure deterministic communication engine into an exact bilingual preview; speech fires only under a fresh user authorization. Phase 1–2 (board, accounts, private data) are built and partially verified; the Meta inference core is merged into main (PR #6 JSONB fix, PR #7 Spark/SAM validation) with one historical real Spark result.
 
 ## Layers
 

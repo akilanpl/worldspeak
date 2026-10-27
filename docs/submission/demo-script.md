@@ -12,9 +12,9 @@ Show: guest board with 26 bilingual tiles; switch English/Tamil once.
 
 ### 0:20–0:55 — See: Meta scene understanding (35s)
 
-> "This is a reconstructed recording of our one real Muse Spark 1.3 result: a sanitized chair, confidence 0.99. The historical call succeeded; saving it exposed a JSONB encoding defect we have since repaired and regression-tested."
+> "Our one real Muse Spark 1.3 call succeeded — sanitized chair, confidence 0.99 — but saving it exposed a JSONB encoding defect we have since repaired and regression-tested. What you are about to see is not footage of that original call. It is a mock replay of its sanitized geometry with synthetic IDs, and it is captioned as such throughout."
 
-Show (mock Chromium run, captioned RECONSTRUCTED MOCK): upload synthetic test PNG → Analyze → unchecked consent, zero requests → approve/send → Spark-labeled chair box appears → explicitly select it. State that geometry/confidence are assertions replayed from the sanitized historical receipt, not a new measurement.
+Show (mock Chromium run, captioned RECONSTRUCTED MOCK — NOT ORIGINAL FOOTAGE): upload synthetic test PNG → Analyze → unchecked consent, zero requests → approve/send → Spark-labeled chair box appears → explicitly select it. State that geometry/confidence are assertions replayed from the sanitized historical receipt, not a new measurement, and that the response ID on screen is synthetic.
 
 ### 0:55–1:30 — Confirm and mean: catalog + deterministic preview (35s)
 
@@ -44,7 +44,7 @@ Show: title card with repository URL https://github.com/akilanpl/worldspeak and 
 
 - [ ] 1920×1080 capture, system audio + voiceover mic tested; captions burned in for Tamil segments.
 - [ ] RECONSTRUCTED MOCK watermark on every fixture-driven screen; honesty lines spoken verbatim.
-- [ ] Mock-auth Chromium journey runs green locally first (`WORLDSPEAK_MOCK_AUTH_E2E=1` per `docs/ai-workflow-validation.md`); fallback: stills of the same captioned screens.
+- [ ] Mock-auth Chromium journey runs green locally first (`WORLDSPEAK_MOCK_AUTH_E2E=1`, filtered to `--grep "reconstructed Spark chair"`, run separately from the closed-cloud-gate guest suite per `docs/ai-workflow-validation.md` on main); fallback: stills of the same captioned screens.
 - [ ] No API keys, tokens, user data, or real Google identity visible; use synthetic fixtures only.
 - [ ] Consent/budget slides reference exact figures: 4402 micro-USD historical Spark ledger; 2,500 micro-USD proposed SAM cap.
 - [ ] Tamil segments labeled review-pending; no claim of native-speaker approval or audible quality.
