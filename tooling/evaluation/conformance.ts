@@ -16,6 +16,7 @@ import {
 } from "../../packages/communication/src/index";
 import { record } from "./evaluate";
 import wire from "./fixtures/wire.v1.json";
+import baseline from "./fixtures/baseline.v1.json";
 
 export async function conformance() {
   const outcomes: {
@@ -217,8 +218,11 @@ export function communicationInvariants() {
   check(
     "result-contract-rejects-inferred-intent",
     () =>
-      !InferenceResultSchema.safeParse({ detections: [], intent: "want" })
-        .success,
+      InferenceResultSchema.safeParse(baseline.scenes[0]!.result).success &&
+      !InferenceResultSchema.safeParse({
+        ...baseline.scenes[0]!.result,
+        intent: "want",
+      }).success,
   );
   check("strict-dataset-records", () => {
     try {

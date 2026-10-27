@@ -140,6 +140,7 @@ it("validates dataset/candidate identity, bounded masks and immutable versions",
 it("rejects oversized JSON before parsing and invalid JSON without leaking state", () => {
   const dir = mkdtempSync(join(tmpdir(), "worldspeak-eval-input-"));
   try {
+    expect(() => loadJson(dir)).toThrow("regular file");
     const path = join(dir, "input.json");
     writeFileSync(path, "{}");
     truncateSync(path, 10 * 1024 * 1024 + 1);

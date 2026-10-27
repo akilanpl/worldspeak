@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { readFileSync, statSync } from "node:fs";
+import { closeSync, constants, fstatSync, openSync, readSync } from "node:fs";
 import {
   DetectionSchema,
   InferenceResultSchema,
@@ -47,7 +47,12 @@ export function record(
   if (!value || typeof value !== "object" || Array.isArray(value))
     throw Error("Expected object");
   const r = value as Record<string, unknown>;
-  if (Object.keys(r).sort().join("|") !== [...keys].sort().join("|"))
+  const actualKeys = Object.keys(r).sort(),
+    expectedKeys = [...keys].sort();
+  if (
+    actualKeys.length !== expectedKeys.length ||
+    actualKeys.some((key, index) => key !== expectedKeys[index])
+  )
     throw Error(`Unexpected keys: expected ${keys.join(",")}`);
   return r;
 }
@@ -227,15 +232,32 @@ export function parseCandidate(value: unknown, dataset: Dataset): Candidate {
   };
 }
 export function loadJson(path: string): { value: unknown; sha256: string } {
-  if (statSync(path).size > 10 * 1024 * 1024)
-    throw Error("Input exceeds 10 MiB");
-  const data = readFileSync(path);
-  if (data.length > 10 * 1024 * 1024) throw Error("Input exceeds 10 MiB");
-  return {
-    value: JSON.parse(data.toString("utf8")) as unknown,
-    sha256: createHash("sha256").update(data).digest("hex"),
-  };
+  const limit = 10 * 1024 * 1024;
+  const fd = openSync(path, constants.O_RDONLY | constants.O_NONBLOCK);
+  try {
+    const info = fstatSync(fd);
+    if (!info.isFile()) throw Error("Evaluation input must be a regular file");
+    if (info.size > limit) throw Error("Input exceeds 10 MiB");
+    const chunks: Buffer[] = [];
+    let size = 0;
+    while (true) {
+      const chunk = Buffer.alloc(65536),
+        count = readSync(fd, chunk, 0, chunk.length, null);
+      if (count === 0) break;
+      size += count;
+      if (size > limit) throw Error("Input exceeds 10 MiB");
+      chunks.push(chunk.subarray(0, count));
+    }
+    const data = Buffer.concat(chunks, size);
+    return {
+      value: JSON.parse(data.toString("utf8")) as unknown,
+      sha256: createHash("sha256").update(data).digest("hex"),
+    };
+  } finally {
+    closeSync(fd);
+  }
 }
+
 export function evaluate(
   dataset: Dataset,
   candidate: Candidate,

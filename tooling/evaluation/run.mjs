@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, realpathSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 const root = fileURLToPath(new URL("../../", import.meta.url));
@@ -10,7 +10,7 @@ for (let i = 0; i < args.length; i++) {
   const arg = args[i];
   if (arg === "--help") {
     process.stdout.write(
-      "Offline synthetic conformance / candidate evaluation\nnode tooling/evaluation/run.mjs [--predictions PATH] [--out DIRECTORY] [--source fixture|model]\nReports are written after validation; exit 1 means regression or invalid input.\n",
+      "Offline synthetic conformance / candidate evaluation\nnode tooling/evaluation/run.mjs [--predictions PATH] [--out DIRECTORY] [--source fixture|model]\nReports include a failure marker if validation cannot complete; exit 1 means regression or invalid input.\n",
     );
     process.exit(0);
   }
@@ -35,6 +35,26 @@ if (
 const out = resolve(
   options["--out"] ?? resolve(root, "tooling/evaluation/reports/local"),
 );
+const predictions = resolve(
+  options["--predictions"] ??
+    resolve(root, "tooling/evaluation/fixtures/baseline.v1.json"),
+);
+if (
+  ["report.json", "report.md"].some((name) => {
+    const target = resolve(out, name);
+    return (
+      target === predictions ||
+      (existsSync(target) &&
+        existsSync(predictions) &&
+        realpathSync(target) === realpathSync(predictions))
+    );
+  })
+) {
+  process.stderr.write(
+    "Prediction input must differ from output report paths.\n",
+  );
+  process.exit(2);
+}
 // A failed input/load/test must never leave a stale PASS from an earlier run.
 mkdirSync(out, { recursive: true });
 writeFileSync(
@@ -66,10 +86,7 @@ const result = spawnSync(
     stdio: "inherit",
     env: {
       ...process.env,
-      WORLDSPEAK_EVAL_PREDICTIONS: resolve(
-        options["--predictions"] ??
-          resolve(root, "tooling/evaluation/fixtures/baseline.v1.json"),
-      ),
+      WORLDSPEAK_EVAL_PREDICTIONS: predictions,
       WORLDSPEAK_EVAL_OUT: out,
       WORLDSPEAK_EVAL_SOURCE: options["--source"] ?? "fixture",
       WORLDSPEAK_EVAL_RUN: "1",

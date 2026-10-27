@@ -34,7 +34,7 @@ node tooling/evaluation/run.mjs \
 
 Exit 0 means every test, contract check and quality gate passed. Exit 1 means
 invalid input, a regression or failed quality gates. Invalid/duplicate CLI flags
-exit 2. The output directory contains only the two report files; existing files
+exit 2. The runner writes two report files in the output directory; existing files
 with those names are replaced. A failure marker is written before evaluation so
 invalid JSON, missing inputs or a crashed test cannot leave a stale PASS report.
 Detailed validation errors remain in the command diagnostics.
@@ -97,7 +97,7 @@ Copy `baseline.v1.json` as the schema example. Every file must have exactly:
 Missing/extra/duplicate case IDs, unknown fields, wrong versions, malformed
 contracts, duplicate track identities, more than 32 tracks/300 total track points
 per case, invalid/unassociated scene segmentation masks and invalid raster bytes
-reject before scoring. Files are capped at 10 MiB and each section at 100 cases.
+reject before scoring. Only regular files are accepted; reads remain bounded even if a file grows during evaluation. Files are capped at 10 MiB and each section at 100 cases.
 Metric cost is bounded; it does not allocate an image-sized canvas.
 
 To score outputs obtained elsewhere from an **actually authorized model run**,
