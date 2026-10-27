@@ -24,6 +24,8 @@ export default function PictogramBoard() {
   const [locale, setLocale] = useState<Locale>("en");
   const [href, setHref] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  useEffect(() => { headingRef.current?.focus({ preventScroll: true }); }, [selected?.id]);
   useEffect(() => () => {
     pending.current++;
     for (const item of itemsRef.current) URL.revokeObjectURL(item.url);
@@ -32,6 +34,7 @@ export default function PictogramBoard() {
   async function create() {
     if (!file || !meaning.trim() || !description.trim() || busy) return;
     setError(null);
+    setHref(null);
     if (itemsRef.current.length >= MAX_PICTOGRAMS || itemsRef.current.reduce((sum, item) => sum + item.bytes, 0) + file.size > MAX_TOTAL_BYTES) {
       setError("This board holds at most 8 images and 8 MiB. Delete an image first."); return;
     }
@@ -61,7 +64,7 @@ export default function PictogramBoard() {
   }
 
   return <>
-    <h1>Personal pictograms</h1>
+    <h1 ref={headingRef} tabIndex={-1}>Personal pictograms</h1>
     <p>Choose your own image and meaning. Images stay in memory on this page only; leaving or reloading deletes them. Nothing is uploaded or sent to a model.</p>
     <p>PNG, JPEG or WebP, up to 2 MiB and 4 million pixels each. Up to 8 images and 8 MiB total.</p>
     {selected ? <>
