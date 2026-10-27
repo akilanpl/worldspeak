@@ -36,6 +36,7 @@ export function makeStore(config: {
   databaseUrl: string;
   supabaseUrl: string;
   storageKey: string;
+  dispatchMode?: "legacy" | "sam-only";
 }) {
   const connection = workerDatabaseOptions(config.databaseUrl);
   assertWorldSpeakStorageUrl(config.supabaseUrl);
@@ -65,12 +66,22 @@ export function makeStore(config: {
     const rows = await sql.unsafe(WORKER_CAPABILITY_SQL);
     if (rows[0]?.allowed !== true)
       throw Error("A least-privilege inference worker login is required");
+    if (config.dispatchMode === "sam-only") {
+      const checks = await sql`select
+        not has_function_privilege(current_user,'world_inference.authorize_sam_test(uuid,text,text,bigint,text,timestamptz)','execute')
+        and not has_function_privilege(current_user,'world_inference.deactivate_sam_test()','execute')
+        and not has_table_privilege(current_user,'world_inference.sam_test_authorizations','SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER')
+        and not has_table_privilege(current_user,'world_inference.sam_test_events','SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER') as allowed`;
+      if (checks[0]?.allowed !== true) throw Error("A least-privilege SAM worker login is required");
+    }
     verified = true;
   }
   const store: WorkerStore = {
     async claim() {
       await ensureWorker();
-      const raw = await scalar(sql`select world_inference.claim() as value`);
+      const raw = await scalar(config.dispatchMode === "sam-only"
+        ? sql`select world_inference.claim_sam_test() as value`
+        : sql`select world_inference.claim() as value`);
       if (!raw) return null;
       const j = Claim.parse(raw);
       return {
@@ -106,7 +117,9 @@ export function makeStore(config: {
     async dispatch(l) {
       return Boolean(
         await scalar(
-          sql`select world_inference.dispatch(${l.id},${l.leaseToken}) as value`,
+          config.dispatchMode === "sam-only"
+            ? sql`select world_inference.dispatch_sam_test(${l.id},${l.leaseToken}) as value`
+            : sql`select world_inference.dispatch(${l.id},${l.leaseToken}) as value`,
         ),
       );
     },
@@ -114,7 +127,9 @@ export function makeStore(config: {
       // The driver serializes JSONB parameters; do not pre-stringify the object.
       return (
         (await scalar(
-          sql`select world_inference.finish(${l.id},${l.leaseToken},${outcome},${cost},${result === null ? null : sql.json(result)}::jsonb,${error}) as value`,
+          config.dispatchMode === "sam-only"
+            ? sql`select world_inference.finish_sam_test(${l.id},${l.leaseToken},${outcome},${cost},${result === null ? null : sql.json(result)}::jsonb,${error}) as value`
+            : sql`select world_inference.finish(${l.id},${l.leaseToken},${outcome},${cost},${result === null ? null : sql.json(result)}::jsonb,${error}) as value`,
         )) === true
       );
     },
