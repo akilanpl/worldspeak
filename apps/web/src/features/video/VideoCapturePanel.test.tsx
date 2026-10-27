@@ -92,7 +92,7 @@ describe("VideoCapturePanel", () => {
     expect(onClip).not.toHaveBeenCalled();
   });
 
-  it("revokes the object URL when the panel unmounts mid-preview", async () => {
+  it("transfers a valid URL to the parent without revoking it on capture unmount", async () => {
     const { revoke } = stubUrls();
     fakeProbeVideo(5);
     const { onClip } = renderCapture();
@@ -100,19 +100,33 @@ describe("VideoCapturePanel", () => {
     fireEvent.change(input, { target: { files: [new File(["x"], "ok.mp4", { type: "video/mp4" })] } });
     await vi.waitFor(() => expect(onClip).toHaveBeenCalledTimes(1));
     cleanup();
-    expect(revoke).toHaveBeenCalledWith("blob:mock");
+    expect(revoke).not.toHaveBeenCalled();
   });
 
-  it("previews a valid upload and revokes its URL on remove", async () => {
-    const { revoke } = stubUrls();
-    fakeProbeVideo(5);
+  it("revokes rejected overlong clips", async () => {
+    const { revoke } = stubUrls(); fakeProbeVideo(31);
     const { onClip } = renderCapture();
-    const input = screen.getByLabelText(/upload clip/i) as HTMLInputElement;
-    fireEvent.change(input, { target: { files: [new File(["x"], "ok.mp4", { type: "video/mp4" })] } });
-    await vi.waitFor(() => expect(onClip).toHaveBeenCalledTimes(1));
-    expect(onClip.mock.calls[0]?.[0]).toMatchObject({ source: "upload", durationMs: 5000 });
-    fireEvent.click(screen.getByRole("button", { name: /retry \/ remove/i }));
-    expect(onClip).toHaveBeenLastCalledWith(null);
+    fireEvent.change(screen.getByLabelText(/upload clip/i), {target: {files: [new File(["x"], "long.mp4", {type:"video/mp4"})]}});
+    expect(await screen.findByRole("alert")).toHaveTextContent(/too long/i);
     expect(revoke).toHaveBeenCalledWith("blob:mock");
+    expect(onClip).not.toHaveBeenCalled();
   });
+  it("stops a camera permission response that arrives after cancellation", async () => {
+    let resolve!: (stream: MediaStream) => void;
+    const stop = vi.fn();
+    Object.defineProperty(navigator, "mediaDevices", {value:{getUserMedia:vi.fn(() => new Promise<MediaStream>(r => {resolve=r;}))}, configurable:true});
+    renderCapture(); fireEvent.click(screen.getByRole("button", {name:/open camera/i}));
+    cleanup(); resolve({getTracks: () => [{stop}]} as unknown as MediaStream);
+    await vi.waitFor(() => expect(stop).toHaveBeenCalledTimes(1));
+  });
+});
+
+it("cancels an unfinished metadata probe, revokes its URL and ignores late metadata", async () => {
+  const {revoke}=stubUrls();
+  vi.spyOn(HTMLMediaElement.prototype,"load").mockImplementation(() => {});
+  const {onClip}=renderCapture();
+  fireEvent.change(screen.getByLabelText("Upload clip"),{target:{files:[new File(["clip"],"local.webm",{type:"video/webm"})]}});
+  fireEvent.click(screen.getByRole("button",{name:"Cancel clip loading"}));
+  await vi.waitFor(() => expect(revoke).toHaveBeenCalledWith("blob:mock"));
+  expect(onClip).toHaveBeenCalledExactlyOnceWith(null);
 });

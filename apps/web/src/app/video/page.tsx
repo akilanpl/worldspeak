@@ -1,7 +1,7 @@
 import VideoFlow from "@/features/video/VideoFlow";
 
 /**
- * Video interaction prototype: synthetic tracking fixtures only. No live
+ * Local manual frame interaction plus clearly labeled synthetic tracks. No live
  * AI, no uploads, no cloud, no speech. Integration target documented in
  * docs/video-ui-handoff.md.
  */
