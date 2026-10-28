@@ -1,6 +1,6 @@
 # Meta technology integration and evidence matrix
 
-> Audit date: 27 October 2026 (reconciled against main at PR #10 merge `fac6b05`, including PR #9 pixel-mask renderer). Auditor scope: docs-only; provider code inspected read-only as merged in main. No Meta generation calls were made for this audit. "Verified" means corroborated by repository evidence or a live official source cited below.
+> Audit refreshed: 28 October 2026, release main `4e9db78eb225f086533a830b2da66df41622c1a5` (PRs #8–#16 merged). Auditor scope: docs-only; provider code inspected read-only as merged in main. No Meta generation calls were made for this audit. "Verified" means corroborated by repository evidence or a live official source cited below.
 
 ## Official sources checked (live, 27 Oct 2026)
 
@@ -23,9 +23,13 @@
 ## Fixture-only features (never present as live)
 
 - Every automated "Spark/SAM result" shown in component, browser, and database suites uses explicitly synthetic response IDs and reconstructed sanitized geometry (`source:model` appears only under intercepted networking to exercise the production branch; parser/DB fixtures use `source:fixture`). No genuine response ID is invented.
-- Browser speech is stubbed; Tamil wording is `review-pending`; video tracking, mask-polygon rendering, and hosted billing attribution do not exist.
+- Browser speech is stubbed; Tamil wording is `review-pending`; automatic model video tracking, mask-polygon rendering, and hosted billing attribution are not verified. Local uploaded/recorded video supports manual frozen-frame region selection; personalized pictograms remain page-memory only.
 
 ## Audit notes
 
 - Provider hardening is real: media allowlist (PNG ≤512px, ≤1 MiB, SHA-256 verified), concept allowlist regex, usage-cap rejection, wrong-model rejection, dimension-mismatch rejection, no-retry/uncertain-send semantics.
-- The first-smoke authorization (`authorize_first_smoke`) is permanently tombstoned; current operation-keyed permits cannot authorize another live test without the new append-only mechanism designed (not implemented) in the SAM-only proposal.
+- The first-smoke authorization (`authorize_first_smoke`) is permanently tombstoned; current operation-keyed permits cannot authorize another live test without the append-only SAM mechanism implemented in migration 008 and hardened by migration 009. Both are hosted; migration 009 version is `20261027135437`. No SAM ticket has been issued and no generation is authorized. Historical ledger and permits are unchanged.
+
+## Release additions
+
+PR #11 supplies the separate one-shot SAM authorization boundary; PR #14 supplies reproducible synthetic evaluation, not real-model accuracy. PRs #12/#13 implement local pictograms and manual video. Migration 009 closes direct service-role access to the renamed legacy RPC while preserving the supported owner-derived wrapper. None of these establishes real SAM inference, native Tamil approval, or automatic video tracking.

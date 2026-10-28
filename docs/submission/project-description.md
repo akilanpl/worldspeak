@@ -4,11 +4,11 @@
 
 ## One-line pitch
 
-WorldSpeak turns what a nonspeaking person looks at into exact words they approve — a private bilingual (English/Tamil) communication board where Meta AI sees the object, the user confirms the meaning, and speech happens only on an explicit gesture.
+WorldSpeak transforms user-approved visual context and personal communication needs into deterministic English/Tamil sentences, with speech controlled by the user.
 
 ## Problem
 
-Nonspeaking people and their caregivers need a fast, trustworthy way to express needs ("water", "help", "rest") across languages. Generic captioning apps guess intent, speak automatically, and send private images to opaque pipelines. A wrong guess spoken aloud in Tamil or English is worse than silence: it misrepresents the person.
+Nonspeaking people and their caregivers need a fast, trustworthy way to express needs ("water", "help", "rest") across languages. Visual captions alone do not establish what someone wants to communicate. A wrong guess spoken aloud in Tamil or English is worse than silence: it misrepresents the person.
 
 ## Solution
 
@@ -28,6 +28,11 @@ Nonspeaking users, caregivers, and bilingual (English/Tamil) households — star
 - Offline-capable guest board: 26 bilingual tiles, exact preview, speech-gated composer.
 - Private accounts: Supabase Auth (email/password plus verified Google OAuth), owner-only RLS data, private history/favorites/search/replay/deletion.
 - Meta inference core (merged into main via the inference-core release, PR #6 JSONB fix, and PR #7 Spark/SAM validation): durable jobs, atomic integer-microUSD budget reservations, leases, consent-scoped transient uploads, and a server-only Spark/SAM provider adapter. One real Spark 1.3 generation succeeded historically (sanitized chair, confidence 0.99); the JSONB persistence defect that blocked its application is repaired and regression-tested.
+
+- Local uploaded/recorded video with manual frame/region selection; no automatic AI tracking.
+- Personal pictograms with explicit meanings, held only in page memory; no Muse Image call.
+- Synthetic evaluation and SAM pixel-mask rendering; no real-model accuracy claim.
+- Live inference remains disabled for this release.
 
 ## Built with Meta
 

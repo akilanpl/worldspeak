@@ -26,7 +26,7 @@ The consent-gated durable job pipeline (budgets, leases, uncertain-call fencing,
 
 ## "What remains before this is real for users?"
 
-Live SAM verification under the unapproved one-still proposal (mask rendering itself is implemented and fixture-tested; only the live inference and its hosted authorization are missing); hosted billing reconciliation; inbox delivery; remaining manual signed-in UX; native Tamil review and physical-device checks; final participant-rules sign-off. Full list: [limitations-and-validation.md](limitations-and-validation.md).
+Live SAM verification under the unapproved one-still proposal (mask rendering itself is implemented and fixture-tested; the schema authorization mechanism is hosted but issuing a ticket and executing live inference remain separately unapproved); hosted billing reconciliation; inbox delivery; remaining manual signed-in UX; native Tamil review and physical-device checks; final participant-rules sign-off. Full list: [limitations-and-validation.md](limitations-and-validation.md).
 
 ## "Can we reproduce your claims?"
 

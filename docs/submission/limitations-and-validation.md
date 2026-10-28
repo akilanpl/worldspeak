@@ -10,7 +10,7 @@
 - [x] SAM per-still price $0.0025 (official $2.50/1k) corroborated live on the same pricing page.
 - [x] Guest board, auth, RLS isolation, Google OAuth session, hosted inference-core RLS checks (13 groups, zero fixtures/objects remaining). Sources: `docs/evidence/*`, `docs/handoff/STATE.md`.
 - [x] SAM pixel-mask rendering implemented and tested with synthetic fixtures only (stable ID association, bounded decode, exact-pixel browser assertions). Source: `docs/pixel-mask-renderer.md` (main, via PR #9). No live SAM inference is claimed by these tests.
-- [x] Submission scheduling facts below are third-party-reported, not official rules.
+- [x] Public Meta and Cerebral Valley event pages confirm November 4, 2026 at 9 PM ET (November 5 at 07:30 IST); accepted participant rules still need owner review.
 
 ## Explicitly unverified (never claim)
 
