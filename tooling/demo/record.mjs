@@ -55,6 +55,7 @@ async function approveToComposer(text, provenance) {
   await page.getByRole("button", { name: /Approve for composer/i }).click();
   await page.getByRole("link", { name: "Open in composer", exact: true }).click();
   await page.getByText(text, { exact: true }).waitFor();
+  await page.getByText(text, { exact: true }).evaluate(el => el.scrollIntoView({ block: "center" }));
   check((await page.getByTestId("handoff-provenance-notice").innerText()).includes(provenance), "Manual provenance missing");
 }
 const deadline = setTimeout(() => { void browser?.close(); }, 170_000);
@@ -76,10 +77,12 @@ try {
   await caption("WorldSpeak — exact English/Tamil communication, with the person in control. Actual public guest application; no live AI calls.", 10);
   await page.getByRole("button", { name: "Water", exact: true }).click();
   await page.getByText("I want water.", { exact: true }).waitFor();
+  await page.getByText("I want water.", { exact: true }).evaluate(el => el.scrollIntoView({ block: "center" }));
   await caption("1. Choose a need, review the exact words, then deliberately Speak. Recording is silent; CI device voices/audio quality remain unverified.", 10);
   await gestureSpeakStop();
   await page.getByRole("button", { name: "தமிழ்", exact: true }).click();
   await page.getByText("எனக்கு தண்ணீர் வேண்டும்.", { exact: true }).waitFor();
+  await page.getByText("எனக்கு தண்ணீர் வேண்டும்.", { exact: true }).evaluate(el => el.scrollIntoView({ block: "center" }));
   await caption("2. Tamil creates a new preview and requires fresh Speak. Tamil wording/native pronunciation remain review-pending; no silent language substitution.", 10);
   await gestureSpeakStop();
   // Finish the bilingual board shot with an explicitly selected English preview.
@@ -114,6 +117,7 @@ try {
   await page.getByLabel("Image description for accessibility", { exact: true }).fill("Original synthetic shapes, not a personal photograph");
   await page.getByRole("button", { name: "Create pictogram", exact: true }).click();
   await page.getByRole("button", { name: "Use pictogram: Please help me find this.", exact: true }).waitFor();
+  await page.getByRole("img", { name: "Original synthetic shapes, not a personal photograph", exact: true }).evaluate(el => el.scrollIntoView({ block: "center" }));
   await caption("6. Personal pictograms use a local image and the user's meaning. This original MIT-repository synthetic fixture is not Muse Image output.", 9);
   await page.getByRole("button", { name: "Use pictogram: Please help me find this.", exact: true }).click();
   await approveToComposer("Please help me find this.", "personalized pictogram");
@@ -128,6 +132,7 @@ try {
   await page.getByRole("button", { name: "Water", exact: true }).click();
   await page.getByRole("button", { name: "தமிழ்", exact: true }).click();
   await page.getByText("எனக்கு தண்ணீர் வேண்டும்.", { exact: true }).waitFor();
+  await page.getByText("எனக்கு தண்ணீர் வேண்டும்.", { exact: true }).evaluate(el => el.scrollIntoView({ block: "center" }));
   await caption("8. Prepared essential communication after this browser context disconnects. This is browser offline validation, not a physical-phone airplane-mode test.", 10);
   await context.setOffline(false);
   await caption("Meta evidence: one historical real Spark generation succeeded; its original app save failed and was later repaired. SAM masks remain synthetic; no real SAM generation.", 10);
