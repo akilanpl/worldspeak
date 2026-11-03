@@ -101,6 +101,9 @@ try {
   await caption("5. The composer preserves manual provenance and exact words. Approval and speech are separate actions.", 9);
   await gestureSpeakStop();
   await go("/pictograms");
+  // Its mount effect focuses this heading. Wait for actual hydration before
+  // filling SSR inputs; pre-hydration change events do not establish React state.
+  await page.waitForFunction(() => document.activeElement?.tagName === "H1" && document.activeElement?.textContent === "Personal pictograms");
   const image = root + "tooling/evaluation/fixtures/images/two-objects.png";
   const bytes = await readFile(image);
   manifest.pictogramFixtureSha256 = createHash("sha256").update(bytes).digest("hex");
