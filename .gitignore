@@ -20,3 +20,6 @@ apps/web/src/generated/
 
 # Supabase CLI local version/cache metadata
 supabase/.temp/
+
+# Local/CI guest demo recordings, never source.
+demo-artifacts/
