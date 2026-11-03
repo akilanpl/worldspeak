@@ -69,8 +69,8 @@ importers:
         specifier: 0.35.5
         version: 0.35.5(@types/node@26.6.5)
       zod:
-        specifier: 3.23.8
-        version: 3.23.8
+        specifier: 4.6.6
+        version: 4.6.6
     devDependencies:
       '@axe-core/playwright':
         specifier: 4.14.0
@@ -130,8 +130,8 @@ importers:
         specifier: 4.20.6
         version: 4.20.6
       zod:
-        specifier: 3.23.8
-        version: 3.23.8
+        specifier: 4.6.6
+        version: 4.6.6
     devDependencies:
       '@types/node':
         specifier: 26.6.5
@@ -146,8 +146,8 @@ importers:
         specifier: workspace:*
         version: link:../contracts
       zod:
-        specifier: 3.23.8
-        version: 3.23.8
+        specifier: 4.6.6
+        version: 4.6.6
     devDependencies:
       typescript:
         specifier: 5.9.3
@@ -165,8 +165,8 @@ importers:
         specifier: workspace:*
         version: link:../contracts
       zod:
-        specifier: 3.23.8
-        version: 3.23.8
+        specifier: 4.6.6
+        version: 4.6.6
     devDependencies:
       typescript:
         specifier: 5.9.3
@@ -178,8 +178,8 @@ importers:
   packages/contracts:
     dependencies:
       zod:
-        specifier: 3.23.8
-        version: 3.23.8
+        specifier: 4.6.6
+        version: 4.6.6
     devDependencies:
       typescript:
         specifier: 5.9.3
@@ -203,8 +203,8 @@ importers:
         specifier: workspace:*
         version: link:../contracts
       zod:
-        specifier: 3.23.8
-        version: 3.23.8
+        specifier: 4.6.6
+        version: 4.6.6
     devDependencies:
       '@types/node':
         specifier: 26.6.5
@@ -2750,11 +2750,8 @@ packages:
     peerDependencies:
       zod: ^3.25.0 || ^4.0.0
 
-  zod@3.23.8:
-    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
-
-  zod@4.6.7:
-    resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
+  zod@4.6.6:
+    resolution: {integrity: sha512-4UmzQUF5fxvfcYHlbjBmejU+w+hbDnWFx4aS8kBx7nPBHcO2SqPbpAG8snbdg+Xse4pRefR98hgjFgIMCI/UhA==}
 
 snapshots:
 
@@ -4118,8 +4115,8 @@ snapshots:
       '@babel/parser': 7.29.11
       eslint: 10.13.0
       hermes-parser: 0.25.1
-      zod: 4.6.7
-      zod-validation-error: 4.0.2(zod@4.6.7)
+      zod: 4.6.6
+      zod-validation-error: 4.0.2(zod@4.6.6)
     transitivePeerDependencies:
       - supports-color
 
@@ -5365,10 +5362,8 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  zod-validation-error@4.0.2(zod@4.6.7):
+  zod-validation-error@4.0.2(zod@4.6.6):
     dependencies:
-      zod: 4.6.7
+      zod: 4.6.6
 
-  zod@3.23.8: {}
-
-  zod@4.6.7: {}
+  zod@4.6.6: {}
