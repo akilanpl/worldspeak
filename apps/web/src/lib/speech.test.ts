@@ -1,8 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { FakeSpeechSynthesis } from "@worldspeak/test-support";
 import { approveUtterance, reduce } from "@worldspeak/communication";
 import type { Composition } from "@worldspeak/contracts";
-import { SpeechGateway, pickVoice, type Speaker, type VoiceInfo } from "@/lib/speech";
+import { BrowserSpeaker, VoiceUnavailableError, SpeechGateway, pickVoice, type Speaker, type VoiceInfo } from "@/lib/speech";
 import { emptyComposition } from "@worldspeak/test-support";
 
 const EN_VOICE: VoiceInfo = { name: "Test English", lang: "en-US", localService: true, isDefault: true };
@@ -110,5 +110,77 @@ describe("speech gateway", () => {
     });
     expect(result.status).toBe("no-voice");
     expect(fake.calls).toHaveLength(0);
+  });
+});
+
+// Native adapter race: the gateway observed Tamil, but native enumeration changed
+// before dispatch. A default English voice must never receive that sentence.
+describe("native speech voice boundary", () => {
+  afterEach(() => vi.unstubAllGlobals());
+  function native(voices: Pick<SpeechSynthesisVoice, "name" | "lang">[]) {
+    vi.stubGlobal("SpeechSynthesisUtterance", class {
+      constructor(public text: string) {}
+      lang = ""; voice: unknown = null; rate = 1;
+    });
+    const speak = vi.fn();
+    const cancel = vi.fn();
+    const synth = { getVoices: () => voices, speak, cancel } as unknown as SpeechSynthesis;
+    return { speaker: new BrowserSpeaker(synth), speak, cancel };
+  }
+  it.each([{ voices: [] }, { voices: [{ name: "Test Tamil", lang: "en-US" }] }])("refuses missing or relabeled native voice: $voices", ({ voices }) => {
+    const { speaker, speak } = native(voices);
+    expect(() => speaker.speakText({ text: "எனக்கு தண்ணீர் வேண்டும்.", lang: "ta-IN", voiceName: "Test Tamil", rate: 1 })).toThrow(VoiceUnavailableError);
+    expect(speak).not.toHaveBeenCalled();
+  });
+  it("reports a disappeared voice through the existing no-voice result and requires fresh Speak", () => {
+    const { speaker, speak } = native([{ name: "Test English", lang: "en-US" }]);
+    const gateway = new SpeechGateway(speaker, () => [TA_VOICE]);
+    const comp = reduce(waterWant(emptyComposition()), { type: "set-locale", locale: "ta" }, () => "voice-race");
+    const args = { utterance: approveUtterance(comp), current: comp, voiceName: TA_VOICE.name, rate: 1, gestureNonce: "race", nowMs: 1000 };
+    expect(gateway.speakApproved(args)).toMatchObject({ status: "no-voice", reason: expect.stringContaining("press Speak again") });
+    expect(gateway.isSpeaking()).toBe(false);
+    expect(gateway.speakApproved(args).status).toBe("duplicate");
+    expect(gateway.testVoice(TA_VOICE.name, "sample", TA_VOICE.lang, 1)).toBe(false);
+    expect(speak).not.toHaveBeenCalled();
+  });
+  it("dispatches exact text with the resolved native Tamil voice", () => {
+    const voice = { name: "Test Tamil", lang: "ta-IN" };
+    const { speaker, speak } = native([voice]);
+    speaker.speakText({ text: "எனக்கு தண்ணீர் வேண்டும்.", lang: "ta-IN", voiceName: voice.name, rate: 0.75 });
+    expect(speak).toHaveBeenCalledOnce();
+    expect(speak.mock.calls[0]?.[0]).toMatchObject({ text: "எனக்கு தண்ணீர் வேண்டும்.", lang: "ta-IN", voice, rate: 0.75 });
+  });
+});
+
+describe("speech lifecycle fencing", () => {
+  function lifecycle() {
+    const calls: Parameters<Speaker["speakText"]>[0][] = [];
+    const gateway = new SpeechGateway({ speakText: (opts) => { calls.push(opts); }, cancel: () => {} }, () => [EN_VOICE]);
+    const states: string[] = [];
+    gateway.subscribe((state) => states.push(state));
+    const comp = waterWant(emptyComposition());
+    const say = (nonce: string) => gateway.speakApproved({ utterance: approveUtterance(comp), current: comp, voiceName: null, rate: 1, gestureNonce: nonce, nowMs: 1000 });
+    return { gateway, calls, states, say };
+  }
+  it("completes or reports an error once without retrying speech", () => {
+    const { gateway, calls, states, say } = lifecycle();
+    say("first"); expect(gateway.isSpeaking()).toBe(true);
+    calls[0]?.onEnd?.(); expect(gateway.isSpeaking()).toBe(false);
+    calls[0]?.onError?.(); expect(states).toEqual(["speaking", "ended"]);
+    say("second"); calls[1]?.onError?.();
+    expect(gateway.isSpeaking()).toBe(false);
+    expect(states).toEqual(["speaking", "ended", "speaking", "error"]);
+    expect(calls).toHaveLength(2);
+  });
+  it("ignores old terminal callbacks after replacement and Stop", () => {
+    const { gateway, calls, states, say } = lifecycle();
+    say("first"); say("second");
+    calls[0]?.onEnd?.(); calls[0]?.onError?.();
+    expect(gateway.isSpeaking()).toBe(true);
+    expect(states).toEqual(["speaking", "speaking"]);
+    gateway.stop(); calls[1]?.onError?.(); calls[1]?.onEnd?.();
+    expect(gateway.isSpeaking()).toBe(false);
+    expect(states).toEqual(["speaking", "speaking", "stopped"]);
+    expect(calls).toHaveLength(2);
   });
 });

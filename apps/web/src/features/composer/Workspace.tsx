@@ -112,6 +112,12 @@ export default function Workspace({ gatewayFactory, initial }: WorkspaceProps) {
           synth ? new BrowserSpeaker(synth) : { speakText: () => {}, cancel: () => {} },
           listVoices,
         );
+    const unsubscribeSpeech = gatewayRef.current.subscribe((state) => {
+      setNotice(state === "speaking" ? "Speaking the exact preview."
+        : state === "ended" ? "Speech finished."
+        : state === "error" ? "Speech could not complete. Check the voice, then press Speak again."
+        : "Speech stopped.");
+    });
     const onHidden = () => {
       if (document.visibilityState === "hidden") gatewayRef.current?.stop();
     };
@@ -120,6 +126,7 @@ export default function Workspace({ gatewayFactory, initial }: WorkspaceProps) {
     return () => {
       synth?.removeEventListener("voiceschanged", refresh);
       document.removeEventListener("visibilitychange", onHidden);
+      unsubscribeSpeech();
       gatewayRef.current?.stop();
       gatewayRef.current = null;
     };
@@ -190,8 +197,8 @@ export default function Workspace({ gatewayFactory, initial }: WorkspaceProps) {
       gestureNonce: newId(),
       nowMs: Date.now(),
     });
-    if (result.status === "spoken") setNotice(t("spoken"));
-    else if (result.status === "stale" || result.status === "duplicate") setNotice(t("stalePreview"));
+    if (result.status === "spoken") return;
+    if (result.status === "stale" || result.status === "duplicate") setNotice(t("stalePreview"));
     else setNotice(result.reason);
   }, [comp, prefs.voiceName, prefs.speechRate, preview, t]);
 

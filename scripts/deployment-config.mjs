@@ -8,6 +8,44 @@ export const WORLD_SPEAK_PROJECT = "cafkyowssdemzivhzxbb";
 export const WORLD_SPEAK_URL = `https://${WORLD_SPEAK_PROJECT}.supabase.co`;
 const PUBLIC_NAMES = new Set(["NEXT_PUBLIC_APP_URL", "NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY", "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"]);
 const LOOPBACK = new Set(["localhost", "127.0.0.1", "[::1]"]);
+const VERCEL_ROUTING_NAME = "NEXT_PUBLIC_VERCEL_OBSERVABILITY_CLIENT_CONFIG";
+
+/** Reviewed Vercel SDK routing metadata, not an authentication credential.
+ * No SDK is installed: accepting these inert paths does not enable collection.
+ * This is an exact-name/schema exception, never a NEXT_PUBLIC_ prefix exemption.
+ */
+function isPublicVercelRouting(raw) {
+  if (typeof raw !== "string" || Buffer.byteLength(raw, "utf8") > 512) return false;
+  try {
+    const value = JSON.parse(raw);
+    // The observed platform encoding is compact JSON. Require its canonical
+    // spelling too: duplicate keys or escaped key/value spellings must not hide
+    // rejected content that JSON.parse would discard or normalize.
+    if (JSON.stringify(value) !== raw) return false;
+    const fields = {
+      analytics: { scriptSrc: "script.js", viewEndpoint: "view", eventEndpoint: "event", sessionEndpoint: "session" },
+      speedInsights: { scriptSrc: "script.js", endpoint: "vitals" },
+    };
+    const exactKeys = (object, keys) => object !== null && typeof object === "object" && !Array.isArray(object)
+      && Object.keys(object).length === keys.length && keys.every(key => Object.hasOwn(object, key));
+    if (!exactKeys(value, Object.keys(fields))) return false;
+    for (const [group, expected] of Object.entries(fields)) {
+      if (!exactKeys(value[group], Object.keys(expected))) return false;
+      let prefix;
+      for (const [key, suffix] of Object.entries(expected)) {
+        const path = value[group][key];
+        if (typeof path !== "string") return false;
+        const parts = path.split("/");
+        if (parts.length !== 2 || parts[1] !== suffix || parts[0].length !== 16 || !/^[A-Za-z0-9_-]{16}$/.test(parts[0])) return false;
+        // Fail closed on familiar credential forms even inside a routing slot.
+        if (/(?:secret|token|password|bearer|service|apikey|api_key|sk[_-]|sb[_-]|eyJ)/i.test(parts[0])) return false;
+        if (prefix !== undefined && prefix !== parts[0]) return false;
+        prefix = parts[0];
+      }
+    }
+    return true;
+  } catch { return false; }
+}
 
 /** Pure, offline checks. Returns fixed codes only; never echoes env values. */
 export function validateDeploymentConfig(env, mode) {
@@ -16,8 +54,11 @@ export function validateDeploymentConfig(env, mode) {
   let origin = null;
   try { origin = validateOrigin(env.NEXT_PUBLIC_APP_URL, mode); }
   catch { errors.push("APP_ORIGIN_INVALID"); }
-  if (Object.keys(env).some(k => k.startsWith("NEXT_PUBLIC_") && env[k] && !PUBLIC_NAMES.has(k)))
+  if (Object.keys(env).some(k => k.startsWith("NEXT_PUBLIC_") && env[k] && !PUBLIC_NAMES.has(k)
+    && !(k === VERCEL_ROUTING_NAME && isPublicVercelRouting(env[k]))))
     errors.push("UNREVIEWED_PUBLIC_VARIABLE");
+  if (env[VERCEL_ROUTING_NAME] && isPublicVercelRouting(env[VERCEL_ROUTING_NAME]))
+    warnings.push("VERCEL_PUBLIC_ROUTING_METADATA_PRESENT");
   const url = env.NEXT_PUBLIC_SUPABASE_URL;
   const keys = [env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY, env.NEXT_PUBLIC_SUPABASE_ANON_KEY].filter(Boolean);
   if ((url && url !== WORLD_SPEAK_URL) || (env.WORLDSPEAK_EXPECTED_PROJECT_REF && env.WORLDSPEAK_EXPECTED_PROJECT_REF !== WORLD_SPEAK_PROJECT))

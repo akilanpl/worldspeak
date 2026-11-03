@@ -12,6 +12,70 @@ function credentialOrigin(password: string) {
 const publicKey = "sb_publishable_" + "synthetic".repeat(3);
 const production = () => ({ NEXT_PUBLIC_APP_URL: "https://worldspeak.example", NEXT_PUBLIC_SUPABASE_URL: WORLD_SPEAK_URL,
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: publicKey, WORLDSPEAK_INFERENCE_API_ENABLED: "false" });
+const syntheticCredential = ["synthetic", "private"].join("-");
+const routingName = "NEXT_PUBLIC_VERCEL_OBSERVABILITY_CLIENT_CONFIG";
+const routing = () => ({
+  analytics: { scriptSrc: "PublicRouteId001/script.js", viewEndpoint: "PublicRouteId001/view", eventEndpoint: "PublicRouteId001/event", sessionEndpoint: "PublicRouteId001/session" },
+  speedInsights: { scriptSrc: "PublicRouteId002/script.js", endpoint: "PublicRouteId002/vitals" },
+});
+
+describe("exact Vercel public routing compatibility", () => {
+  const validate = (raw: string, patch = {}) => validateDeploymentConfig({ ...production(), [routingName]: raw, ...patch }, "production");
+  it("accepts the observed six-field relative routing schema without enabling SDKs or inference", () => {
+    expect(validate(JSON.stringify(routing()))).toMatchObject({ ok: true, warnings: ["VERCEL_PUBLIC_ROUTING_METADATA_PRESENT", "ACCOUNT_DELETION_SERVER_KEY_ABSENT"] });
+  });
+  it.each([" ", "{}", "null", "[]", "true", "\"encoded string\"", "{", "x".repeat(513)])("rejects malformed or unbounded routing metadata", raw => {
+    expect(validate(raw).errors).toContain("UNREVIEWED_PUBLIC_VARIABLE");
+  });
+  it.each([
+    "https://example.com/script.js", "//example.com/script.js", "/PublicRouteId001/script.js", "PublicRouteId001/script.js?key=x", "PublicRouteId001/script.js#x",
+    "PublicRouteId001%2fscript.js", "PublicRouteId001/../script.js", "PublicRouteId001\\script.js", "PublicRouteId001@script.js",
+    "short/script.js", "sk_synthetic0001/script.js", "sb_synthetic0001/script.js", "eyJsynthetic0001/script.js", "secretRouteId001/script.js",
+  ])("rejects external, encoded, credential-like or noncanonical paths", path => {
+    const value = routing(); value.analytics.scriptSrc = path;
+    expect(validate(JSON.stringify(value)).errors).toContain("UNREVIEWED_PUBLIC_VARIABLE");
+  });
+  it("rejects extra, missing and wrong-type fields and nested secret capabilities", () => {
+    const value = routing();
+    for (const raw of [
+      { ...value, apiKey: syntheticCredential },
+      { analytics: value.analytics },
+      { ...value, analytics: { ...value.analytics, secret: syntheticCredential } },
+      { ...value, analytics: { ...value.analytics, scriptSrc: null } },
+      { ...value, analytics: [] },
+    ]) expect(validate(JSON.stringify(raw)).ok).toBe(false);
+  });
+  it("rejects duplicate keys and escaped or noncanonical encodings", () => {
+    const raw = JSON.stringify(routing());
+    for (const encoded of [raw.replace('"analytics":', '"analytics":{"token":"synthetic-private"},"analytics":'), raw.replace('analytics', '\\u0061nalytics'), JSON.stringify(routing(), null, 1)])
+      expect(validate(encoded).ok).toBe(false);
+  });
+  it("rejects inconsistent group identities, wrong suffixes and cross-group endpoint substitution", () => {
+    for (const path of ["PublicRouteId002/view", "PublicRouteId001/vitals", "PublicRouteId002/vitals"]) {
+      const value = routing(); value.analytics.viewEndpoint = path;
+      expect(validate(JSON.stringify(value)).ok).toBe(false);
+    }
+    const value = routing(); value.speedInsights.endpoint = "PublicRouteId001/vitals";
+    expect(validate(JSON.stringify(value)).ok).toBe(false);
+  });
+  it("rejects newline-terminated IDs even when every group field uses the same ID", () => {
+    const value = routing();
+    for (const key of Object.keys(value.analytics) as (keyof typeof value.analytics)[])
+      value.analytics[key] = value.analytics[key].replace("PublicRouteId001/", "PublicRouteId001\n/");
+    expect(validate(JSON.stringify(value)).ok).toBe(false);
+  });
+  it("does not exempt other public variables or override independent security failures", () => {
+    for (const patch of [{ NEXT_PUBLIC_OTHER: syntheticCredential }, { NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY: syntheticCredential }, { WORLDSPEAK_INFERENCE_API_ENABLED: "true" }, { META_MODEL_API_KEY: syntheticCredential }])
+      expect(validate(JSON.stringify(routing()), patch).ok).toBe(false);
+  });
+  it("never prints injected malformed or secret-like configuration", () => {
+    const marker = "private-platform-value-must-not-be-emitted";
+    const child = spawnSync(process.execPath, ["scripts/deployment-config.mjs", "--mode", "production"], { env: { NODE_ENV: "test", ...production(), [routingName]: marker }, encoding: "utf8" });
+    expect(child.status).toBe(2);
+    expect(child.stdout + child.stderr).not.toContain(marker);
+    expect(child.stdout).toContain("UNREVIEWED_PUBLIC_VARIABLE");
+  });
+});
 
 describe("offline production configuration gate", () => {
   it("accepts exact production project and no worker capabilities, with missing admin key warning", () => {

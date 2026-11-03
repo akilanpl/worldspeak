@@ -49,11 +49,27 @@
       "name": "worldspeak_007_inference_core",
       "path": "supabase/migrations/20261027060440_worldspeak_007_inference_core.sql",
       "sha256": "1e8420ca5316ea2f1df898dca447d5b8410acdc2a7b45897fe5e4c95b76e6be2"
+    },
+    {
+      "version": "20261027121700",
+      "path": "supabase/migrations/20261027110517_worldspeak_008_sam_only_authorization.sql",
+      "sha256": "a1246064dca1907225f2df17f98f748652966dd15b66a7a02cceb615d408d271",
+      "sourceVersion": "20261027110517",
+      "note": "Hosted history verified read-only 2026-11-03. Reviewed source filename preserved; never reapply this migration."
+    },
+    {
+      "version": "20261027135437",
+      "path": "supabase/migrations/20261027124539_worldspeak_009_legacy_rpc_privilege.sql",
+      "sha256": "ad428c013dfb5b9a98707637f88025da1811e2a32d69a87436bc3529532395f0",
+      "sourceVersion": "20261027124539",
+      "note": "Hosted history verified read-only 2026-11-03. Reviewed source filename preserved; never reapply this migration."
     }
   ],
   "types": {
     "path": "packages/db/src/database.types.ts",
-    "sha256": "580168b513d325a81f74a42fb027df64e321d909d8ce14c333769c48b01be357"
+    "sha256": "dd81d139f8756a80314ed140a0e35fbf8ec8f206ff4c4372a86e4d062f575c04",
+    "generatedAt": "2026-11-03",
+    "source": "Supabase generate_typescript_types project cafkyowssdemzivhzxbb; public schema"
   },
-  "note": "Canonical filenames match the hosted apply_migration versions. Original local names retained here for provenance; public Git history was not rewritten."
+  "note": "Hosted migration history verified read-only on 2026-11-03. Migrations008/009 retain approved source filenames/checksums with explicit hosted-version mapping. No hosted history repair, broad migration push or reapplication was performed."
 }

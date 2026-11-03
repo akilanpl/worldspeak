@@ -1,15 +1,9 @@
-# Hackathon verification — refreshed 28 October 2026
+# Hackathon requirements — verified3November2026
 
-Primary sources checked:
+Public Meta/Cerebral Valley event pages confirm the November4,9PMET deadline (November5,07:30IST), IndieDeveloper track and BuildforYourWorld theme. The account owner signed into Cerebral Valley; native Brave inspection then reached the accepted-participant guide at https://cerebralvalley.ai/e/meta-ai-developer-hackathon/details and actual form at https://cerebralvalley.ai/e/meta-ai-developer-hackathon/hackathon/submit.
 
-- [Meta event](https://dev.meta.ai/events/global-hackathon)
-- [Organizer event](https://cerebralvalley.ai/e/meta-ai-developer-hackathon)
-- [Application overview and waiver](https://cerebralvalley.ai/e/meta-ai-developer-hackathon/waiver)
+The participant guide confirms a three-minute accessible demo-video link and public/open-source GitHub repository, all contributors listed, one representative team submission, and a reasonable theme/Meta-tooling fit for initial eligibility. Judging weights are Impact30%, MetaAItooling25%, TechnicalDepthandExecution20%, Demo25%—not equal quarters. Guide build-period wording is October27–November4; WorldSpeak repository history begins October27, within that range. Earlier public kickoff wording October26 is not proof of accepted final conditions.
 
-The public event sources confirm Indie Developer, Build for Your World, the October 26–November 4 build window, Meta model/coding tooling, and November 4 at 9 PM ET submission deadline (November 5 at 07:30 IST). These are scheduling facts, not proof of every final submission condition.
+The actual form includes team/member/track/theme fields, project description, public repository,3-MinuteDemoVideoURL, MetaProductsUse, WhyMetaModelsImportant and owner feedback/opinion surveys; no SaveDraft control, visible character limits or live-app URL field was observed. Marketing permission remained unchecked. No form data, legal acceptance or final Submit action was entered. Exact field mapping and remaining owner decisions: WORLDSPEAK_FINAL_SUBMISSION.md.
 
-The accessible event page still says final rules will be published before the event. The participant guide/accepted final rules were not supplied or available through the public pages. A mandatory public repository, three-minute video limit, originality specifics, AI-assistance restrictions, permitted external assets and final judging weights remain unverified against the participant guide. Treat these as project requirements from the human until the actual guide is checked. Do not label all four judging categories officially equal based on the public page's *application selection* weights.
-
-All four baseline commits are dated October 27. This demonstrates in-window repository history, not independent proof that every dependency or asset is original. The dependency lockfile, build log, explicit fixture labels and agent provenance remain public. No original-feature claim is made for third-party libraries or fonts. Phase 2 predates the later separately authorized historical Spark call. One Standard Spark generation subsequently succeeded, with an initial application-persistence failure later repaired; SAM has no real generation.
-
-Human gate: compare the accepted participant rules with the planned public source, demo, submission deadline, build log and AI-assisted-development disclosures before final submission. Do not accept a new waiver or legally binding terms on the human's behalf.
+These observed requirements supersede earlier public-page-only uncertainty. They do not prove legal acceptance, video production, final eligibility adjudication or submission. The human must approve final claims and personally handle any legal certification before Submit. Never infer final judging weights from application-selection criteria.
