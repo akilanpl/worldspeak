@@ -151,3 +151,36 @@ describe("native speech voice boundary", () => {
     expect(speak.mock.calls[0]?.[0]).toMatchObject({ text: "எனக்கு தண்ணீர் வேண்டும்.", lang: "ta-IN", voice, rate: 0.75 });
   });
 });
+
+describe("speech lifecycle fencing", () => {
+  function lifecycle() {
+    const calls: Parameters<Speaker["speakText"]>[0][] = [];
+    const gateway = new SpeechGateway({ speakText: (opts) => { calls.push(opts); }, cancel: () => {} }, () => [EN_VOICE]);
+    const states: string[] = [];
+    gateway.subscribe((state) => states.push(state));
+    const comp = waterWant(emptyComposition());
+    const say = (nonce: string) => gateway.speakApproved({ utterance: approveUtterance(comp), current: comp, voiceName: null, rate: 1, gestureNonce: nonce, nowMs: 1000 });
+    return { gateway, calls, states, say };
+  }
+  it("completes or reports an error once without retrying speech", () => {
+    const { gateway, calls, states, say } = lifecycle();
+    say("first"); expect(gateway.isSpeaking()).toBe(true);
+    calls[0]?.onEnd?.(); expect(gateway.isSpeaking()).toBe(false);
+    calls[0]?.onError?.(); expect(states).toEqual(["speaking", "ended"]);
+    say("second"); calls[1]?.onError?.();
+    expect(gateway.isSpeaking()).toBe(false);
+    expect(states).toEqual(["speaking", "ended", "speaking", "error"]);
+    expect(calls).toHaveLength(2);
+  });
+  it("ignores old terminal callbacks after replacement and Stop", () => {
+    const { gateway, calls, states, say } = lifecycle();
+    say("first"); say("second");
+    calls[0]?.onEnd?.(); calls[0]?.onError?.();
+    expect(gateway.isSpeaking()).toBe(true);
+    expect(states).toEqual(["speaking", "speaking"]);
+    gateway.stop(); calls[1]?.onError?.(); calls[1]?.onEnd?.();
+    expect(gateway.isSpeaking()).toBe(false);
+    expect(states).toEqual(["speaking", "speaking", "stopped"]);
+    expect(calls).toHaveLength(2);
+  });
+});

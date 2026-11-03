@@ -17,7 +17,7 @@ export interface VoiceInfo {
 }
 
 export interface Speaker {
-  speakText(opts: { text: string; lang: string; voiceName: string; rate: number }): void;
+  speakText(opts: { text: string; lang: string; voiceName: string; rate: number; onEnd?: () => void; onError?: () => void }): void;
   cancel(): void;
 }
 
@@ -30,7 +30,7 @@ export class VoiceUnavailableError extends Error {
 
 export class BrowserSpeaker implements Speaker {
   constructor(private synth: SpeechSynthesis) {}
-  speakText(opts: { text: string; lang: string; voiceName: string; rate: number }): void {
+  speakText(opts: { text: string; lang: string; voiceName: string; rate: number; onEnd?: () => void; onError?: () => void }): void {
     const voice = this.synth.getVoices().find((v) => v.name === opts.voiceName && v.lang.toLowerCase() === opts.lang.toLowerCase());
     // Never let the browser substitute its default voice after a voice-list race.
     if (!voice) throw new VoiceUnavailableError();
@@ -38,6 +38,8 @@ export class BrowserSpeaker implements Speaker {
     utter.lang = opts.lang;
     utter.voice = voice;
     utter.rate = opts.rate;
+    utter.onend = () => opts.onEnd?.();
+    utter.onerror = () => opts.onError?.();
     this.synth.speak(utter);
   }
   cancel(): void {
@@ -69,9 +71,37 @@ export function voiceMatches(voice: VoiceInfo, locale: Locale): boolean {
   return voice.lang.toLowerCase().startsWith(locale.toLowerCase());
 }
 
+export type SpeechState = "speaking" | "ended" | "error" | "stopped";
+
 export class SpeechGateway {
   private usedNonces = new Set<string>();
   private speaking = false;
+  private generation = 0;
+  private listener: ((state: SpeechState) => void) | null = null;
+
+  subscribe(listener: (state: SpeechState) => void): () => void {
+    this.listener = listener;
+    return () => { if (this.listener === listener) this.listener = null; };
+  }
+
+  private dispatch(opts: { text: string; lang: string; voiceName: string; rate: number }): void {
+    const generation = ++this.generation;
+    this.speaker.cancel();
+    this.speaking = true;
+    this.listener?.("speaking");
+    const finish = (state: "ended" | "error") => {
+      if (generation !== this.generation) return;
+      ++this.generation;
+      this.speaking = false;
+      this.listener?.(state);
+    };
+    try {
+      this.speaker.speakText({ ...opts, onEnd: () => finish("ended"), onError: () => finish("error") });
+    } catch (error) {
+      finish("error");
+      throw error;
+    }
+  }
 
   constructor(
     private speaker: Speaker,
@@ -115,15 +145,12 @@ export class SpeechGateway {
     }
 
     // Fresh gesture: drop anything queued, then speak exactly the preview.
-    this.speaker.cancel();
-    this.speaking = false;
     try {
-      this.speaker.speakText({ text: args.utterance.exactText, lang: voice.lang, voiceName: voice.name, rate: args.rate });
+      this.dispatch({ text: args.utterance.exactText, lang: voice.lang, voiceName: voice.name, rate: args.rate });
     } catch (error) {
       if (error instanceof VoiceUnavailableError) return { status: "no-voice", reason: error.message };
       throw error;
     }
-    this.speaking = true;
     return { status: "spoken", text: args.utterance.exactText };
   }
 
@@ -131,9 +158,8 @@ export class SpeechGateway {
   testVoice(voiceName: string, sampleText: string, lang: string, rate: number): boolean {
     const voice = this.listVoices().find((v) => v.name === voiceName);
     if (!voice) return false;
-    this.speaker.cancel();
     try {
-      this.speaker.speakText({ text: sampleText, lang, voiceName: voice.name, rate });
+      this.dispatch({ text: sampleText, lang, voiceName: voice.name, rate });
     } catch (error) {
       if (error instanceof VoiceUnavailableError) return false;
       throw error;
@@ -142,8 +168,10 @@ export class SpeechGateway {
   }
 
   stop(): void {
-    this.speaker.cancel();
+    ++this.generation;
     this.speaking = false;
+    this.speaker.cancel();
+    this.listener?.("stopped");
   }
 
   isSpeaking(): boolean {

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 
 afterEach(() => cleanup());
 import "@testing-library/jest-dom/vitest";
@@ -75,4 +75,21 @@ describe("Workspace component", () => {
     expect(fake.calls[0]?.text).toBe("My own words, kept!");
   });
 
+});
+
+
+it("announces native completion and failure without automatic respeech", () => {
+  const calls: Parameters<Speaker["speakText"]>[0][] = [];
+  const gateway = new SpeechGateway({ speakText: (opts) => { calls.push(opts); }, cancel: () => {} }, () => [{ name: "English", lang: "en-US", localService: true, isDefault: true }]);
+  render(<Workspace gatewayFactory={() => gateway} />);
+  fireEvent.click(screen.getByRole("button", { name: "Water" }));
+  fireEvent.click(screen.getByRole("button", { name: "Speak this sentence" }));
+  act(() => calls[0]?.onEnd?.());
+  expect(screen.getByText("Speech finished.")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Speak this sentence" }));
+  act(() => { calls[0]?.onError?.(); });
+  expect(screen.getByText("Speaking the exact preview.")).toBeInTheDocument();
+  act(() => calls[1]?.onError?.());
+  expect(screen.getByText("Speech could not complete. Check the voice, then press Speak again.")).toBeInTheDocument();
+  expect(calls).toHaveLength(2);
 });
