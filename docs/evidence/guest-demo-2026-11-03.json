@@ -1,0 +1,41 @@
+{
+  "status": "REVIEWED_GUEST_DEMO_CANDIDATE",
+  "captureWorkflow": "https://github.com/akilanpl/worldspeak/actions/runs/41607185098",
+  "applicationCI": "https://github.com/akilanpl/worldspeak/actions/runs/41607185096",
+  "review": "Actual storyboard inspected; previews, manual clip/intent, local pictogram and offline sentence visible. Silent recording; not audible speech acceptance.",
+  "durationSeconds": 122.72,
+  "audio": "none",
+  "observedForbiddenRequests": [],
+  "publicVideoUrl": null,
+  "publishingApprovalRequired": true,
+  "finalSubmissionPerformed": false,
+  "source": {
+    "recorderSourceSha": "41a21653a2470e1d143d4dd2c5082325f8907152",
+    "operatorVerifiedApplicationSourceSha": "7030dbfe365618e048f4a6a7f6b7b4b5f8e41668",
+    "operatorVerifiedDeploymentId": "dpl_EN1zrmXPq9inVYT4G4RUsx1chPAK",
+    "origin": "https://worldspeak-akilanpl.vercel.app",
+    "startedAt": "2026-11-03T08:58:47.356Z",
+    "pictogramFixtureSha256": "f9e67f3fb7d061be37e328c7ed09846e51f1243ec3e9d911193f3a349edba196",
+    "observedAsset": "/_next/static/immutable/chunks/0f8uai46hl2n-.js"
+  },
+  "files": {
+    "worldspeak-guest-demo.webm": {
+      "sha256": "d67728b34f1c70cd0fbef2aecf1f27bbd02e8f40d3998fbf46a139296a69aac3",
+      "bytes": 14563078
+    },
+    "worldspeak-guest-demo.mp4": {
+      "sha256": "2c4b00d3b640d731d5251d3a07beb052eb84a0cecd1a59f0d0ac4d1421281738",
+      "bytes": 2061539
+    },
+    "storyboard.png": {
+      "sha256": "0f6ee09f7b63775f1d4f27e091e0bff86fee395c83bdcc1d7a04aa4e228cbaf8",
+      "bytes": 480218
+    }
+  },
+  "limits": [
+    "No native audio, native Tamil or physical device acceptance.",
+    "Historical Spark generation and subsequent persistence repair are disclosed; no new model call or real SAM result.",
+    "Playwright routes do not intercept service-worker-owned fetches; observed scope checks and static public-only worker are separate evidence.",
+    "GitHub Actions artifacts are not a public judge-facing video URL."
+  ]
+}
