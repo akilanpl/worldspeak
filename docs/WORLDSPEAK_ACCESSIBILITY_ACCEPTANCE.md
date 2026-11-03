@@ -1,8 +1,8 @@
 # WorldSpeak accessibility acceptance
 
-Evidence date: **3 November 2026**. Verified main baseline `a5619178c89b0ff5b7516272ea850d291b2d4870`; [main CI 41598627645](https://github.com/akilanpl/worldspeak/actions/runs/41598627645) and [offline CI 41598627577](https://github.com/akilanpl/worldspeak/actions/runs/41598627577) passed. The deliberately preserved deployed application source is `7030dbfe365618e048f4a6a7f6b7b4b5f8e41668` ([PR 19 main CI 41592840401](https://github.com/akilanpl/worldspeak/actions/runs/41592840401)); newer main adds only the offline research scaffold. Canonical live origin: [https://worldspeak-akilanpl.vercel.app](https://worldspeak-akilanpl.vercel.app).
+Evidence date: **3 November 2026**. Verified deployed runtime baseline `3e4f92135023dbff006b1f6d44f6cd85a4414a3c`; [main CI 41609632027](https://github.com/akilanpl/worldspeak/actions/runs/41609632027) passed. READY deployment `dpl_mXE4dDrNSERQGC6N91N9kSmLdDz4` serves the canonical [WorldSpeak URL](https://worldspeak-akilanpl.vercel.app). Later documentation-only commits do not change this runtime baseline. The reviewed guest recording retains historical application source `7030dbfe365618e048f4a6a7f6b7b4b5f8e41668` and is not relabeled as the new deployment.
 
-Portable receipts: [production/metadata/Auth configuration](evidence/production-readiness-2026-11-03.json), [hosted read-only database reconciliation](evidence/hosted-reconciliation-2026-11-03.json). Original receipt hashes are preserved; no secret values, account identities or private messages are included.
+Portable receipts: [final deployment/smoke](evidence/final-deployment-2026-11-03.json), [production/metadata/Auth configuration](evidence/production-readiness-2026-11-03.json), [hosted read-only database reconciliation](evidence/hosted-reconciliation-2026-11-03.json). Original receipt hashes are preserved; no secret values, account identities or private messages are included.
 
 **No WCAG certification, independent native Tamil approval or physical-device acceptance is claimed.**
 
@@ -22,4 +22,4 @@ Local Chromium E2E bootstrap is blocked by Mach-port permissions; GitHub CI pass
 
 Human protocol: record deployedSHA/URL, device/OS/browser/voice/date, choose Water and negation, switch English/Tamil without speech, review exact preview, fresh Speak, hear exact words, Stop, revise and require fresh approval. Repeat at 200/400%zoom, contrast/reduced-motion, screen reader and offline/reconnect; synthetic media only. Preserve BLOCKED rows until observed.
 
-Recorded baseline browser CI evidence: **52 passed +1 conditionally skipped** in the default run; the skipped reconstructed Spark chair runs separately under mock-enabled configuration and **1 passed** there. Do not report 53 tests passed in the default run. No real provider call occurred.
+Verified runtime main CI evidence: **331 tests in 51 files**, **62 local database scenario groups**, and **53 browser tests passed +1 conditionally skipped** in the default run. The reconstructed Spark chair ran separately under mock-enabled configuration and **1 passed** there. These are synthetic/mock tests; no real provider call occurred.

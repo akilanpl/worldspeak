@@ -1,0 +1,207 @@
+{
+  "receiptGeneratedAt": "2026-11-03T09:23:36.186321+00:00",
+  "sourceSha": "3e4f92135023dbff006b1f6d44f6cd85a4414a3c",
+  "mainCI": "https://github.com/akilanpl/worldspeak/actions/runs/41609632027",
+  "canonicalUrl": "https://worldspeak-akilanpl.vercel.app",
+  "deploymentId": "dpl_mXE4dDrNSERQGC6N91N9kSmLdDz4",
+  "immutableUrl": "https://worldspeak-akilanpl-r2q8vqeyo.vercel.app",
+  "cliReadyState": "READY",
+  "productionSmoke": {
+    "ok": true,
+    "mode": "production",
+    "checks": [
+      {
+        "name": "board",
+        "status": 200,
+        "elapsedMs": 879
+      },
+      {
+        "name": "camera-shell",
+        "status": 200,
+        "elapsedMs": 517
+      },
+      {
+        "name": "video-shell",
+        "status": 200,
+        "elapsedMs": 776
+      },
+      {
+        "name": "offline-board",
+        "status": 200,
+        "elapsedMs": 336
+      },
+      {
+        "name": "offline-manifest",
+        "status": 200,
+        "elapsedMs": 307
+      },
+      {
+        "name": "service-worker",
+        "status": 200,
+        "elapsedMs": 251
+      },
+      {
+        "name": "install-manifest",
+        "status": 200,
+        "elapsedMs": 489
+      },
+      {
+        "name": "guest-private-preferences",
+        "status": 401,
+        "elapsedMs": 366
+      },
+      {
+        "name": "guest-job-status",
+        "status": 401,
+        "elapsedMs": 501
+      }
+    ]
+  },
+  "callbackRejection": {
+    "status": 307,
+    "reason": "callback_missing_code",
+    "signInGuidanceStatus": 200,
+    "staticGuidanceVerified": true,
+    "loginAttempt": false
+  },
+  "modelCalls": 0,
+  "notes": [
+    "CLI returned READY and canonical alias; live anonymous production requests independently verified.",
+    "Callback probe omitted a code; it is not a successful OAuth/session test.",
+    "Demo capture retains historical source7030dbf and is not relabeled as this deployment."
+  ],
+  "originalReceiptSha256": "6101c016a50a4bee0208174e275be9eecc2f0d8a752644a7d18d8e149323235f",
+  "scope": "Non-paid final deployment and anonymous callback rejection verification; no successful login claimed.",
+  "instrumentationInspection": "Earlier7030dbf artifact inspection is historical; final artifact inspection tracked separately.",
+  "postDeploymentInstrumentation": {
+    "observedAt": "2026-11-03T09:27:58.695Z",
+    "projectId": "prj_QPNA8LDJhQDPYt23h5DhYUPksYUi",
+    "ownerTeamVerified": true,
+    "sourceSha": "3e4f92135023dbff006b1f6d44f6cd85a4414a3c",
+    "deploymentId": "dpl_mXE4dDrNSERQGC6N91N9kSmLdDz4",
+    "canonicalAliasVerified": true,
+    "readyState": "READY",
+    "enableProductionFeedback": false,
+    "enablePreviewFeedback": false,
+    "appEnvNames": [],
+    "publicResourceChecks": [
+      {
+        "path": "/",
+        "bytes": 11579,
+        "markers": []
+      },
+      {
+        "path": "/_next/static/immutable/chunks/0f8uai46hl2n-.js",
+        "bytes": 34183,
+        "markers": []
+      },
+      {
+        "path": "/_next/static/immutable/chunks/3rvpfyt6cncso.js",
+        "bytes": 229821,
+        "markers": []
+      },
+      {
+        "path": "/_next/static/immutable/chunks/03sa7byrwtezw.js",
+        "bytes": 163031,
+        "markers": []
+      },
+      {
+        "path": "/_next/static/immutable/chunks/turbopack-1byz1flvc-bu1.js",
+        "bytes": 11255,
+        "markers": []
+      },
+      {
+        "path": "/_next/static/immutable/chunks/3u302ajbrl-v9.js",
+        "bytes": 21683,
+        "markers": []
+      },
+      {
+        "path": "/_next/static/immutable/chunks/14-30jp951da4.js",
+        "bytes": 19923,
+        "markers": []
+      },
+      {
+        "path": "/_next/static/immutable/chunks/430jkd1d4tf-q.js",
+        "bytes": 259818,
+        "markers": []
+      },
+      {
+        "path": "/_next/static/immutable/chunks/1qwurh43c3yl0.js",
+        "bytes": 125658,
+        "markers": []
+      },
+      {
+        "path": "/_next/static/immutable/chunks/0c0hxoamwjsbw.js",
+        "bytes": 112594,
+        "markers": []
+      },
+      {
+        "path": "/_next/static/immutable/chunks/1vurfi1m_p-ex.js",
+        "bytes": 5361,
+        "markers": []
+      }
+    ],
+    "limitations": "Static marker inspection is not a universal network telemetry proof. No credentials or private account information emitted.",
+    "metadataEnvironmentInventoryStatus": "NOT_EXPOSED_BY_DEPLOYMENT_METADATA",
+    "environmentAbsenceNotInferredFromEmptyMetadata": true
+  },
+  "instrumentationReceiptSha256": "c289c81e85e73c8436c9ef1f37bd9e386b36ab7c881a522abfdfd7269d9b7498",
+  "remoteBuildPreflight": {
+    "ok": true,
+    "mode": "production",
+    "errors": [],
+    "warnings": [
+      "VERCEL_PUBLIC_ROUTING_METADATA_PRESENT",
+      "ACCOUNT_DELETION_SERVER_KEY_ABSENT"
+    ],
+    "buildLogSha256": "e887645a5b9607ff45f2e618bdcd885729f60a5c6a5070a508f0b7490d05563b",
+    "command": "cd ../.. && node scripts/deployment-config.mjs --mode production && pnpm typecheck && pnpm check:schema && pnpm build"
+  },
+  "freshAnonymousProtectedPages": [
+    {
+      "path": "/history",
+      "status": 307,
+      "exactSignInRedirect": true,
+      "privateNoStore": true
+    },
+    {
+      "path": "/favorites",
+      "status": 307,
+      "exactSignInRedirect": true,
+      "privateNoStore": true
+    },
+    {
+      "path": "/settings",
+      "status": 307,
+      "exactSignInRedirect": true,
+      "privateNoStore": true
+    }
+  ],
+  "publicAuthSettings": {
+    "observedAt": "2026-11-03T09:34:03.851Z",
+    "projectRef": "cafkyowssdemzivhzxbb",
+    "publishedClientAssetSource": "3e4f92135023dbff006b1f6d44f6cd85a4414a3c",
+    "settingsHttpStatus": 200,
+    "googleProviderEnabled": true,
+    "loginAttempt": false,
+    "credentialValueRecorded": false,
+    "mediaSent": false,
+    "limitations": "Public Auth settings access does not establish a user session, callback success, inbox delivery or Google client-credential validity."
+  },
+  "publicAuthSettingsReceiptSha256": "e6fb785dd491f03a1bc976c8e5769a5c7e522a931e1feb660a884d88fd7dc966",
+  "productionProjectEnvironmentInventory": {
+    "observedAt": "2026-11-03T09:40:09.547Z",
+    "method": "Official pinned Vercel CLI env list --environment production --project exact verified ID; raw JSON consumed in memory only",
+    "projectId": "prj_QPNA8LDJhQDPYt23h5DhYUPksYUi",
+    "productionProjectVariableNames": [
+      "NEXT_PUBLIC_APP_URL",
+      "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+      "NEXT_PUBLIC_SUPABASE_URL",
+      "WORLDSPEAK_INFERENCE_API_ENABLED"
+    ],
+    "approvedNamesExactMatch": true,
+    "credentialValuesRecorded": false,
+    "limitations": "Project configuration inventory, not a dump of platform-injected process environment. Strict remote build preflight separately validates values."
+  },
+  "productionInventoryReceiptSha256": "ae911d31d13c4f63dccb561cccf585f1e4d359201ac9b0e547e76c2f18558a16"
+}
