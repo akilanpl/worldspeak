@@ -1,0 +1,20 @@
+name: openweight-offline-scaffold
+on:
+  pull_request:
+    paths: ['tooling/openweight/**', '.github/workflows/openweight-offline.yml']
+  push:
+    branches: [main]
+    paths: ['tooling/openweight/**', '.github/workflows/openweight-offline.yml']
+permissions:
+  contents: read
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 -m unittest discover -s tooling/openweight -p 'test_*.py' -v
+      - run: python3 tooling/openweight/experiment.py prepare --out "$RUNNER_TEMP/worldspeak-openweight-$GITHUB_RUN_ID"
