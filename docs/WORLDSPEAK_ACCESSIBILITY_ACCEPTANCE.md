@@ -15,10 +15,11 @@ Portable receipts: [production/metadata/Auth configuration](evidence/production-
 | Tamil |Review-pending catalog, prior Vani ta-IN enumeration; live Brave Tamil preview screenshot |Native wording/pronunciation reviewer required; screenshot/voice list is not hearing. |
 | Offline |Prior real browser cached reload with local origin stopped; production public assets 200 |Named-device airplane-mode/reconnect and offline voice tests. |
 | Camera/video/pictograms |Existing manual local flow, consent and page-memory cleanup; prior guest interaction |Physical permission deny/allow, recording, orientation, file picker and screen-reader descriptions. |
-| Auth/history |No auto-speech on replay invariant; POSTprivacy regression |Independent actual production account journey pending receipt. |
+| Auth/history |No auto-speech on replay invariant; POST privacy regression |Owner Google selection still returned to Sign In; no authenticated user-data journey passed. |
+| Guest demo capture |Reviewed 122.72-second silent candidate; [receipt](evidence/guest-demo-2026-11-03.json) |Visible previews/manual selection/offline flow only; no native audio, Tamil pronunciation or physical-device acceptance. Publication unapproved. |
 
 Local Chromium E2E bootstrap is blocked by Mach-port permissions; GitHub CI passed the exact source. Actual native Brave canonical guest observation is separate from automated CI and from physical phones. Do not convert emulation or fixture speech spies into device/audio acceptance.
 
 Human protocol: record deployedSHA/URL, device/OS/browser/voice/date, choose Water and negation, switch English/Tamil without speech, review exact preview, fresh Speak, hear exact words, Stop, revise and require fresh approval. Repeat at 200/400%zoom, contrast/reduced-motion, screen reader and offline/reconnect; synthetic media only. Preserve BLOCKED rows until observed.
 
-Exact main browser CI evidence: **52 passed +1 conditionally skipped** in the default run; the skipped reconstructed Spark chair runs separately under mock-enabled configuration and **1 passed** there. Do not report 53 tests passed in the default run. No real provider call occurred.
+Recorded baseline browser CI evidence: **52 passed +1 conditionally skipped** in the default run; the skipped reconstructed Spark chair runs separately under mock-enabled configuration and **1 passed** there. Do not report 53 tests passed in the default run. No real provider call occurred.

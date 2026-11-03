@@ -16,4 +16,6 @@ A superseding documented **GET /v1/models returned 200** and listed the relevant
 
 Existing synthetic evaluator metrics remain in `tooling/evaluation/reports/synthetic-v1/report.md`: precision/recall 75%, matched box IoU 90.48%, mask IoU 66.67%, temporal recall 85.71%/precision 100%/continuity 75%, zero ID switches; invalid 21/21, valid 7/7, communication 11/11. These describe intentionally synthetic conformance only. The separate open-weight scaffold 52 examples are tiny catalog-derived conformance data, not representative real-world training evidence.
 
+The [reviewed guest demo candidate](evidence/guest-demo-2026-11-03.json) captures the preserved `7030dbf` application, not new model inference. Its historical Spark/persistence disclosures and synthetic SAM boundary remain applicable; recording success supplies no additional provider evidence.
+
 Credit balance and provider billing attribution remain unverified. Current public SAMstill price$0.0025 is not spending authorization. Every future paid call needs current terms/balance/entitlement, exact synthetic fixture/hash/consent, scoped cap and fresh explicit approval; never reset the historical Spark tombstone.
