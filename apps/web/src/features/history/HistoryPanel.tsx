@@ -20,13 +20,13 @@ export default function HistoryPanel() {
 
   const load = useCallback(async (query: string, cur: string | null, append: boolean) => {
     setNotice(null);
-    const params = new URLSearchParams({ q: query || " ", limit: "30" });
-    if (cur) params.set("cursor", cur);
-    // Empty query lists recent saves; the API requires q, so use a space
-    // wildcard path via conversations listing instead.
-    const res = await fetch(query ? `/api/v1/history/search?${params}` : `/api/v1/history/recent?${new URLSearchParams({ limit: "30", ...(cur ? { cursor: cur } : {}) })}`, {
+    // Keep private search text in a bounded body, out of first-party request URLs.
+    const res = await fetch(query ? "/api/v1/history/search" : `/api/v1/history/recent?${new URLSearchParams({ limit: "30", ...(cur ? { cursor: cur } : {}) })}`, query ? {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ q: query, limit: 30, ...(cur ? { cursor: cur } : {}) }),
       cache: "no-store",
-    });
+    } : { cache: "no-store" });
     if (!res.ok) {
       setNotice("Could not load history.");
       return;

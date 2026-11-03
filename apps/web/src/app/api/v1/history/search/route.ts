@@ -1,5 +1,5 @@
 import { SearchQuerySchema, decodeCursor, encodeCursor, escapeLike } from "@/lib/api/validation";
-import { fail, ok, requireOwner } from "@/lib/api/route";
+import { fail, ok, readJson, requireOwner } from "@/lib/api/route";
 
 export const dynamic = "force-dynamic";
 
@@ -8,16 +8,23 @@ export const dynamic = "force-dynamic";
  * conversation join is intentionally out of scope: one table, one index).
  * NFC-normalized, LIKE metacharacters escaped, cursor pagination.
  */
-export async function GET(request: Request) {
+/** @deprecated Compatibility only. First-party clients use POST to keep text out of URLs. */
+export async function GET(request: Request) { return search(request, false); }
+
+export async function POST(request: Request) { return search(request, true); }
+
+async function search(request: Request, bodySearch: boolean) {
   const auth = await requireOwner(request);
   if (!auth.ok) return auth.res;
   const { owner, supabase } = auth.ctx;
   const url = new URL(request.url);
-  const parsed = SearchQuerySchema.safeParse({
+  let raw: unknown;
+  try { raw = bodySearch ? await readJson(request) : {
     q: url.searchParams.get("q") ?? "",
     cursor: url.searchParams.get("cursor") ?? undefined,
     limit: url.searchParams.get("limit") ?? undefined,
-  });
+  }; } catch { return fail("INVALID_INPUT", "search.invalid", 400); }
+  const parsed = SearchQuerySchema.safeParse(raw);
   if (!parsed.success) return fail("INVALID_INPUT", "search.invalid", 400);
   const like = `%${escapeLike(parsed.data.q)}%`;
   let query = supabase
