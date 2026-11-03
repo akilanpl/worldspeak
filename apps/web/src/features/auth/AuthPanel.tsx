@@ -12,7 +12,17 @@ function appUrl(path: string): string {
 }
 
 /** Shared email/Google auth panel. Google setup is a human console step. */
-export default function AuthPanel({ mode }: { mode: "sign-in" | "sign-up" }) {
+export default function AuthPanel({ mode, callbackReason }: {
+  mode: "sign-in" | "sign-up";
+  callbackReason?: "callback_missing_code" | "callback_exchange_failed" | "auth_unavailable";
+}) {
+  const callbackNotice = callbackReason === "callback_missing_code"
+    ? "Sign-in returned without a confirmation code. Start one new sign-in from this page and complete it in the same browser and tab."
+    : callbackReason === "callback_exchange_failed"
+      ? "Sign-in could not establish a session. Start one new sign-in from this page in the same browser and tab; finish it promptly and avoid overlapping sign-in attempts."
+      : callbackReason === "auth_unavailable"
+        ? "Sign-in is not configured. Contact the WorldSpeak operator."
+        : null;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
@@ -29,8 +39,8 @@ export default function AuthPanel({ mode }: { mode: "sign-in" | "sign-up" }) {
     setNotice(null);
     try {
       return await fn(createClient());
-    } catch (e) {
-      setNotice(e instanceof Error ? e.message : "Sign-in failed.");
+    } catch {
+      setNotice("Sign-in could not be completed. Please try one new sign-in in this browser.");
       return null;
     } finally {
       setBusy(false);
@@ -41,6 +51,7 @@ export default function AuthPanel({ mode }: { mode: "sign-in" | "sign-up" }) {
     <section className="panel" aria-labelledby="auth-h">
       <h2 id="auth-h">{mode === "sign-in" ? "Sign in" : "Create account"}</h2>
       <NotConfigured what="Sign-in" />
+      {callbackNotice && <p className="status" role="status">{callbackNotice}</p>}
       {configured && (
         <>
           <form
@@ -100,12 +111,13 @@ export default function AuthPanel({ mode }: { mode: "sign-in" | "sign-up" }) {
               className="btn btn-secondary"
               disabled={busy}
               onClick={() =>
-                withClient((c) =>
-                  c.auth.signInWithOAuth({
+                withClient(async (c) => {
+                  const { error } = await c.auth.signInWithOAuth({
                     provider: "google",
                     options: { redirectTo: appUrl("/auth/callback?next=/history") },
-                  }),
-                )
+                  });
+                  if (error) setNotice("Google sign-in could not start. Please try one new sign-in in this browser.");
+                })
               }
             >
               Continue with Google
