@@ -1,0 +1,9 @@
+# Open-weight experiment gate — 3 November 2026
+
+Implemented runnable zero-cost code in `tooling/openweight/experiment.py`, with six stdlib tests. It generates52 catalog-derived examples in grouped30/10/12 train/dev/test splits and SHA-256 manifest. Related object meanings/polarities and English/Tamil variants cannot cross splits. It evaluates external baseline/prompted/adapter JSONL files for exact intent, locale and negation preservation, rejecting partial/duplicate/unknown predictions and modified held-out data.
+
+Executed: Python3.9 unit tests6/6 passed; CLI prepare produced actual30/10/12split artifacts; CLI evaluate ran with three explicitly **FIXTURE** files copied from expected answers, solely to verify evaluator mechanics. Fixture identity score1.0 is tautological and is not a real-model result. Reports explicitly say model execution unverified. Initial Python3.9 `zip(strict=...)` incompatibility was corrected before the successful rerun.
+
+No checkpoint was loaded, model inferred, training started, adapter produced, GPU provisioned, paid API called or model license accepted. Catalog source is repository MIT; that does not license a model. Tamil remains review-pending. No actual real-model accuracy, latency, memory, quantization or fine-tuning improvement is reported.
+
+**BLOCKED — designated licensed checkpoint and approved local compute required.** Owner continuation: provide exact local model/checkpoint path plus model-card/license acknowledgment and available device/memory; then implement a reviewed offline-only runner against verified official library documentation, preserve actual run hashes/hardware and compare baseline/prompted/adapted outputs on the held-out split. Do not upload user messages, download gated weights or rent GPU resources under this scaffold task. A small template-derived conformance set alone is insufficient for a generalization claim.
