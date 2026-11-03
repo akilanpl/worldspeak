@@ -12,6 +12,7 @@ function credentialOrigin(password: string) {
 const publicKey = "sb_publishable_" + "synthetic".repeat(3);
 const production = () => ({ NEXT_PUBLIC_APP_URL: "https://worldspeak.example", NEXT_PUBLIC_SUPABASE_URL: WORLD_SPEAK_URL,
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: publicKey, WORLDSPEAK_INFERENCE_API_ENABLED: "false" });
+const syntheticCredential = ["synthetic", "private"].join("-");
 const routingName = "NEXT_PUBLIC_VERCEL_OBSERVABILITY_CLIENT_CONFIG";
 const routing = () => ({
   analytics: { scriptSrc: "PublicRouteId001/script.js", viewEndpoint: "PublicRouteId001/view", eventEndpoint: "PublicRouteId001/event", sessionEndpoint: "PublicRouteId001/session" },
@@ -37,9 +38,9 @@ describe("exact Vercel public routing compatibility", () => {
   it("rejects extra, missing and wrong-type fields and nested secret capabilities", () => {
     const value = routing();
     for (const raw of [
-      { ...value, apiKey: "synthetic-private" },
+      { ...value, apiKey: syntheticCredential },
       { analytics: value.analytics },
-      { ...value, analytics: { ...value.analytics, secret: "synthetic-private" } },
+      { ...value, analytics: { ...value.analytics, secret: syntheticCredential } },
       { ...value, analytics: { ...value.analytics, scriptSrc: null } },
       { ...value, analytics: [] },
     ]) expect(validate(JSON.stringify(raw)).ok).toBe(false);
@@ -64,7 +65,7 @@ describe("exact Vercel public routing compatibility", () => {
     expect(validate(JSON.stringify(value)).ok).toBe(false);
   });
   it("does not exempt other public variables or override independent security failures", () => {
-    for (const patch of [{ NEXT_PUBLIC_OTHER: "synthetic-private" }, { NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY: "synthetic-private" }, { WORLDSPEAK_INFERENCE_API_ENABLED: "true" }, { META_MODEL_API_KEY: "synthetic-private" }])
+    for (const patch of [{ NEXT_PUBLIC_OTHER: syntheticCredential }, { NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY: syntheticCredential }, { WORLDSPEAK_INFERENCE_API_ENABLED: "true" }, { META_MODEL_API_KEY: syntheticCredential }])
       expect(validate(JSON.stringify(routing()), patch).ok).toBe(false);
   });
   it("never prints injected malformed or secret-like configuration", () => {
