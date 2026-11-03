@@ -1,21 +1,22 @@
-# WorldSpeak — hackathon submission package
+# WorldSpeak — current submission package
 
-Meta-track submission and demonstration evidence for WorldSpeak. Prepared on a docs-only branch; no production code is touched here.
+Evidence date: **3 November 2026**. Start with the canonical [final submission record](../WORLDSPEAK_FINAL_SUBMISSION.md), [deployment receipt](../WORLDSPEAK_DEPLOYMENT_RECEIPT.md) and [current portal checklist](final-portal-checklist.md). These supersede the historical October deployment-blocker reports.
 
-| # | Document | Purpose |
-|---|----------|---------|
-| 1 | [project-description.md](project-description.md) | Submission-ready project description |
-| 2 | [meta-technology-evidence.md](meta-technology-evidence.md) | Meta technology integration and evidence matrix |
-| 3 | [demo-script.md](demo-script.md) | Verified three-minute script and recording plan |
-| 4 | [architecture-summary.md](architecture-summary.md) | Technical architecture summary |
-| 5 | [judging-qa.md](judging-qa.md) | Anticipated judge Q&A |
-| 6 | [limitations-and-validation.md](limitations-and-validation.md) | Known limitations and validation checklist |
-| 7 | [recommendations-for-sol.md](recommendations-for-sol.md) | Submission blockers and recommendations for Sol |
+**Live application:** https://worldspeak-akilanpl.vercel.app
 
-Cross-cutting rule: every Meta-related claim in these documents is traceable to repository evidence or a named official source. Reconstructed fixtures are always labeled as such. See [limitations-and-validation.md](limitations-and-validation.md) before quoting any document externally.
+Verified runtime source: `3e4f92135023dbff006b1f6d44f6cd85a4414a3c`; [passing runtime CI 41609632027](https://github.com/akilanpl/worldspeak/actions/runs/41609632027). Documentation-only commits do not relabel that deployment.
 
-Release checklist and paste-ready text: [final-portal-checklist.md](final-portal-checklist.md). Release acceptance evidence is recorded separately; a prepared script is not a recorded video.
+An actual **122.72-second silent, captioned guest demo candidate** was recorded and reviewed: [portable video receipt](../evidence/guest-demo-2026-11-03.json), [capture CI](https://github.com/akilanpl/worldspeak/actions/runs/41607185098). It retains historical app source `7030dbf`; it is not footage of the later runtime. It shows actual guest communication, manual video, local pictograms and browser-context offline behavior, with no real AI results. **Owner review/publication approval is pending; no public video link or final submission receipt exists.** Audio/Tamil quality and genuine authenticated acceptance remain open.
 
-Actual sprint results: [release-acceptance.md](release-acceptance.md). Deployment is blocked by platform-injected Observability configuration; no verified HTTPS demo or recorded video is claimed.
+| Document | Use and evidence boundary |
+|---|---|
+| [Final submission record](../WORLDSPEAK_FINAL_SUBMISSION.md) | Current claims, actual form fields, links and remaining owner actions |
+| [Portal checklist](final-portal-checklist.md) | Accepted-guide requirements and final submission gates |
+| [Project description](project-description.md) | Prepared narrative; quote with the current evidence boundaries |
+| [Meta evidence](../WORLDSPEAK_MODEL_VALIDATION.md) | One historical Spark success/save failure/repair; SAM synthetic-only; no invented live capabilities |
+| [Demo narration plan](demo-script.md) | Optional narration/editing plan, distinct from the actual silent capture |
+| [Architecture](architecture-summary.md) and [Q&A](judging-qa.md) | Technical explanation; verify claims against current canonical records |
+| [Historical local acceptance](release-acceptance.md) | Dated October 28 observations, not current deployment/Auth acceptance |
+| [Continuation gates](../WORLDSPEAK_CONTINUATION_BLOCKERS.md) | Approvals, resources and human/device work still required |
 
-Current master-sprint index (3 November): [submission](../WORLDSPEAK_FINAL_SUBMISSION.md), [model evidence](../WORLDSPEAK_MODEL_VALIDATION.md), [approval/resource gates](../WORLDSPEAK_CONTINUATION_BLOCKERS.md). These distinguish current work from historical acceptance receipts.
+Track: **Indie Developer**. Theme: **Build for Your World**. Keep generation disabled. Never treat synthetic masks/evaluation, a recorded browser gesture, or an owner-reported Google login as genuine model/device/session acceptance. The available production History session still returned to Sign In; its cause is unproven. No legal permission or final Submit has been accepted by the agent.

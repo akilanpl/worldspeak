@@ -1,3 +1,5 @@
+> **HISTORICAL — 28 October 2026.** The observations and hosting blocker below are preserved as a dated receipt, not current release status. The application is now live at https://worldspeak-akilanpl.vercel.app on verified runtime `3e4f92135023dbff006b1f6d44f6cd85a4414a3c` ([passing runtime CI](https://github.com/akilanpl/worldspeak/actions/runs/41609632027)). Use the [current deployment receipt](../WORLDSPEAK_DEPLOYMENT_RECEIPT.md), [final submission record](../WORLDSPEAK_FINAL_SUBMISSION.md) and [portable final evidence](../evidence/final-deployment-2026-11-03.json). The reviewed 122.72-second silent guest recording retains historical app source 7030dbf; publication approval and real authenticated-session acceptance remain pending.
+
 # Release acceptance — 28 October 2026
 
 Application source: `4e9db78eb225f086533a830b2da66df41622c1a5`.

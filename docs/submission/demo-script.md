@@ -1,58 +1,27 @@
-# Demonstration script — verified three-minute participant limit
+# Optional narration and editing plan — confirmed three-minute requirement
 
-> Total budget: 180 seconds. Every on-screen "AI result" is a labeled reconstructed mock (see evidence matrix). Narrator must speak the honesty lines verbatim. No live Meta call occurs during the demo.
+**This is a plan, not a transcript or proof of a finished narrated video.** An actual **122.72-second silent, captioned guest candidate** exists: [portable receipt](../evidence/guest-demo-2026-11-03.json), [capture CI 41607185098](https://github.com/akilanpl/worldspeak/actions/runs/41607185098). It records historical app source `7030dbf`, not the later verified `3e4f921` runtime. No voiceover has been recorded or final publication approved. Playwright footage has no audio track; it cannot prove audible speech or Tamil pronunciation.
 
-## Script
+The actual candidate shows guest English/Tamil previews and explicit Speak/Stop gestures, real local synthetic WebM decoding with manual frame/region selection, a local synthetic pictogram with human-assigned meaning, composer handoffs and browser-context offline essentials. **No real or mocked AI results, historical Spark result display, or synthetic SAM mask footage appear in that cut.** Its captions distinguish these limits. Do not describe a proposed additional shot as existing footage.
 
-### 0:00–0:20 — Problem and promise (20s)
+The signed-in [participant guide](https://cerebralvalley.ai/e/meta-ai-developer-hackathon/details) requires a three-minute demo highlighting event-built work. Below is an optional ≤180-second narration/editing plan. Use the actual cut as the visual basis and review pacing; add only genuine, clearly labeled evidence shots if separately captured.
 
-> "Nonspeaking people need exact words, not guesses. WorldSpeak turns what you look at into words you approve — Meta AI sees the object, you confirm the meaning, and it speaks only when you press Speak. Nothing here is a live AI call: I will label every reconstructed result."
+| Suggested edit window | Narration / actual or proposed visual |
+|---|---|
+| 0:00–0:15 | “WorldSpeak helps people express needs in exact English or Tamil words they approve. The person chooses meaning, reviews the preview, and deliberately presses Speak.” Actual guest board. |
+| 0:15–0:45 | “Choose Water and review the exact sentence. Changing to Tamil creates a new preview and needs a fresh Speak. Stop cancels speech. This browser recording is silent; device voices and native Tamil quality remain unverified.” Actual English/Tamil gestures and limitations captions. Do not dub narration as if it were application-generated audio. |
+| 0:45–1:15 | “This local synthetic video is decoded by the browser. A human selects a frozen frame and region, supplies meaning and approves exact words into the composer. This is not automatic AI tracking.” Actual manual-video journey. |
+| 1:15–1:40 | “Personal pictograms connect a local image with the user's own wording. The image remains in page memory; the composer receives the approved text and still needs fresh Speak.” Actual local pictogram journey. No Muse Image claim. |
+| 1:40–2:05 | “The prepared essential board continues after this browser context disconnects. That is browser offline evidence, not a phone airplane-mode or offline-audio acceptance test.” Actual offline section. |
+| 2:05–2:35 | “One real historical Muse Spark Standard call identified a synthetic chair. Its original application save failed; the JSONB defect was later repaired and regression-tested. SAM is implemented and synthetic-tested, but no real SAM generation has completed.” Current candidate has a caption disclosure, **not model-result footage**. If adding a receipt slide, capture sanitized authentic evidence separately; never invent a provider response or imply the original workflow succeeded. |
+| 2:35–2:55 | “WorldSpeak keeps context, intent, exact words and speech approval separate. Private data uses owner-scoped controls; live inference remains disabled. Our next acceptance gates include the production account session, native Tamil and physical devices.” Proposed closing card with the current live URL and public repository. No claim of successful authenticated History. |
 
-Show: guest board with 26 bilingual tiles; switch English/Tamil once.
+## Owner completion checklist
 
-### 0:20–0:50 — Essential bilingual communication (30s)
-
-> "Choose Water, review the exact English sentence, and press Speak. Stop is always available. Changing to Tamil produces a new preview and requires a fresh Speak. Tamil wording and native pronunciation are still awaiting independent review."
-
-Show the actual board, English/Tamil preview and explicit Speak/Stop. If no audible voice is verified, caption that limitation rather than dubbing fake application speech.
-
-### 0:50–1:20 — Local manual video (30s)
-
-> "This is a real local clip with manual human selection, not automatic AI tracking. I pause, choose the frame and region, enter my meaning, approve the preview and open the composer. Selecting the object never chooses my intent or speaks."
-
-Use `apps/web/e2e/fixtures/manual-region.webm`; show the manual provenance text and fresh Speak. Never capture a personal room or real user.
-
-### 1:20–1:45 — Personal pictogram (25s)
-
-> "I choose a synthetic local image and assign my exact words. The image stays in page memory. I approve those words into the composer; speech still needs my gesture."
-
-Show local creation, approval and deletion/leave cleanup. No Muse Image claim.
-
-### 1:45–2:15 — Honest Meta evidence (30s)
-
-> "One real Muse Spark Standard call identified this synthetic chair at 0.99 confidence. Its original application save failed because of JSONB double encoding; that defect is now repaired and regression-tested. This receipt is historical evidence. The mask shown next is a synthetic SAM fixture, not a live SAM result. No real SAM generation has completed."
-
-Show sanitized receipt/evidence and explicitly captioned synthetic mask. Do not enable live inference or rely on mock-auth footage without a persistent mock watermark.
-
-### 2:15–2:40 — Privacy and offline (25s)
-
-> "Private data is owner-scoped. Media needs consent and durable cleanup. Budgets, leases and one-shot permits fence inference, which is disabled in this release. The prepared essential board works offline. Evaluation is synthetic, not model accuracy."
-
-Show only a genuinely observed offline board or label the footage as a reproducible test. Preserve the historical 4,402-micro-USD ledger.
-
-### 2:40–3:00 — Close (20s)
-
-> "WorldSpeak keeps the person in control: visual context, explicit meaning, exact bilingual words, and a gesture to speak."
-
-Show the actual verified deployment URL if available and repository, track/theme. Keep missing device/native checks on the limitations card.
-
-## Recording checklist
-
-- [ ] 1920×1080 capture, system audio + voiceover mic tested; captions burned in for Tamil segments.
-- [ ] RECONSTRUCTED MOCK watermark on every fixture-driven screen; honesty lines spoken verbatim.
-- [ ] Mock-auth Chromium journey runs green locally first (`WORLDSPEAK_MOCK_AUTH_E2E=1`, filtered to `--grep "reconstructed Spark chair"`, run separately from the closed-cloud-gate guest suite per `docs/ai-workflow-validation.md` on main); fallback: stills of the same captioned screens.
-- [ ] No API keys, tokens, user data, or real Google identity visible; use synthetic fixtures only.
-- [ ] Consent/budget slides reference exact figures: 4402 micro-USD historical Spark ledger; 2,500 micro-USD proposed SAM cap.
-- [ ] Tamil segments labeled review-pending; no claim of native-speaker approval or audible quality.
-- [ ] Final cut ≤ 3:00 (aim 2:55); export 1080p MP4; keep raw project for re-cut.
-- [ ] Three-minute limit confirmed in the signed-in participant guide on3November; owner must still verify final link accessibility and any unstated encoding/upload restrictions.
+- Review the actual candidate and distinguish its historical deployed app from the current canonical URL: https://worldspeak-akilanpl.vercel.app.
+- Record narration only after reviewing this wording; verify actual English/Tamil system audio separately if including it. Tamil remains review-pending.
+- Keep manual/synthetic-media and CI-audio disclosures visible; do not add fake AI-result or authenticated-user footage.
+- Exclude account identities, credentials, personal media and private history. Preserve historical ledger evidence rather than changing it.
+- Confirm final duration ≤3:00, readable captions and any unstated portal encoding restrictions. Export/review the actual final file, not just an editing timeline.
+- Request explicit approval to publish the video. No public URL currently exists; verify accessibility signed out after authorized publication.
+- Human reviews contributor/survey/marketing permission and separately approves final Submit. No submission receipt exists yet.
