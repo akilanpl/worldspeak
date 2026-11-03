@@ -84,7 +84,6 @@
     "enableProductionFeedback": false,
     "enablePreviewFeedback": false,
     "appEnvNames": [],
-    "forbiddenAppCredentialNamesPresent": [],
     "publicResourceChecks": [
       {
         "path": "/",
@@ -142,9 +141,11 @@
         "markers": []
       }
     ],
-    "limitations": "Static marker inspection is not a universal network telemetry proof. No credentials or private account information emitted."
+    "limitations": "Static marker inspection is not a universal network telemetry proof. No credentials or private account information emitted.",
+    "metadataEnvironmentInventoryStatus": "NOT_EXPOSED_BY_DEPLOYMENT_METADATA",
+    "environmentAbsenceNotInferredFromEmptyMetadata": true
   },
-  "instrumentationReceiptSha256": "6fc752f459772674012e0880bdc82842a6e079bc19ebb132def7992ee5bb7860",
+  "instrumentationReceiptSha256": "c289c81e85e73c8436c9ef1f37bd9e386b36ab7c881a522abfdfd7269d9b7498",
   "remoteBuildPreflight": {
     "ok": true,
     "mode": "production",
@@ -187,5 +188,20 @@
     "mediaSent": false,
     "limitations": "Public Auth settings access does not establish a user session, callback success, inbox delivery or Google client-credential validity."
   },
-  "publicAuthSettingsReceiptSha256": "e6fb785dd491f03a1bc976c8e5769a5c7e522a931e1feb660a884d88fd7dc966"
+  "publicAuthSettingsReceiptSha256": "e6fb785dd491f03a1bc976c8e5769a5c7e522a931e1feb660a884d88fd7dc966",
+  "productionProjectEnvironmentInventory": {
+    "observedAt": "2026-11-03T09:40:09.547Z",
+    "method": "Official pinned Vercel CLI env list --environment production --project exact verified ID; raw JSON consumed in memory only",
+    "projectId": "prj_QPNA8LDJhQDPYt23h5DhYUPksYUi",
+    "productionProjectVariableNames": [
+      "NEXT_PUBLIC_APP_URL",
+      "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+      "NEXT_PUBLIC_SUPABASE_URL",
+      "WORLDSPEAK_INFERENCE_API_ENABLED"
+    ],
+    "approvedNamesExactMatch": true,
+    "credentialValuesRecorded": false,
+    "limitations": "Project configuration inventory, not a dump of platform-injected process environment. Strict remote build preflight separately validates values."
+  },
+  "productionInventoryReceiptSha256": "ae911d31d13c4f63dccb561cccf585f1e4d359201ac9b0e547e76c2f18558a16"
 }
