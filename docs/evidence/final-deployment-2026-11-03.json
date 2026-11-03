@@ -175,5 +175,17 @@
       "exactSignInRedirect": true,
       "privateNoStore": true
     }
-  ]
+  ],
+  "publicAuthSettings": {
+    "observedAt": "2026-11-03T09:34:03.851Z",
+    "projectRef": "cafkyowssdemzivhzxbb",
+    "publishedClientAssetSource": "3e4f92135023dbff006b1f6d44f6cd85a4414a3c",
+    "settingsHttpStatus": 200,
+    "googleProviderEnabled": true,
+    "loginAttempt": false,
+    "credentialValueRecorded": false,
+    "mediaSent": false,
+    "limitations": "Public Auth settings access does not establish a user session, callback success, inbox delivery or Google client-credential validity."
+  },
+  "publicAuthSettingsReceiptSha256": "e6fb785dd491f03a1bc976c8e5769a5c7e522a931e1feb660a884d88fd7dc966"
 }
