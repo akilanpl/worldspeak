@@ -1,0 +1,226 @@
+{
+  "observedAt": "2026-11-03T07:10:57.557372+00:00",
+  "projectRef": "cafkyowssdemzivhzxbb",
+  "canonicalUrl": "https://worldspeak-akilanpl.vercel.app",
+  "deployedSourceSha": "7030dbfe365618e048f4a6a7f6b7b4b5f8e41668",
+  "deployment": {
+    "id": "dpl_EN1zrmXPq9inVYT4G4RUsx1chPAK",
+    "readyState": "READY",
+    "target": "production",
+    "url": "worldspeak-akilanpl-k2jr29y9x.vercel.app",
+    "sourceSha": "7030dbfe365618e048f4a6a7f6b7b4b5f8e41668"
+  },
+  "productionSmoke": {
+    "ok": true,
+    "mode": "production",
+    "checks": [
+      {
+        "name": "board",
+        "status": 200,
+        "elapsedMs": 878
+      },
+      {
+        "name": "camera-shell",
+        "status": 200,
+        "elapsedMs": 622
+      },
+      {
+        "name": "video-shell",
+        "status": 200,
+        "elapsedMs": 869
+      },
+      {
+        "name": "offline-board",
+        "status": 200,
+        "elapsedMs": 474
+      },
+      {
+        "name": "offline-manifest",
+        "status": 200,
+        "elapsedMs": 295
+      },
+      {
+        "name": "service-worker",
+        "status": 200,
+        "elapsedMs": 278
+      },
+      {
+        "name": "install-manifest",
+        "status": 200,
+        "elapsedMs": 464
+      },
+      {
+        "name": "guest-private-preferences",
+        "status": 401,
+        "elapsedMs": 585
+      },
+      {
+        "name": "guest-job-status",
+        "status": 401,
+        "elapsedMs": 327
+      }
+    ]
+  },
+  "instrumentation": [
+    {
+      "origin": "https://worldspeak-akilanpl.vercel.app",
+      "scriptCount": 10,
+      "allScriptsSameOriginNext": true,
+      "htmlMarkers": {
+        "vercel.live": false,
+        "_next-live/feedback": false,
+        "vercel-scripts.com": false,
+        "/_vercel/insights": false,
+        "speed-insights": false,
+        "@vercel/toolbar": false
+      },
+      "noListedInstrumentationMarkers": true
+    },
+    {
+      "origin": "https://worldspeak-akilanpl-k2jr29y9x.vercel.app",
+      "anonymousAccess": "BLOCKED_VERCEL_LOGIN",
+      "assetInspection": "Not attempted on login page"
+    }
+  ],
+  "modelCatalog": {
+    "method": "GET",
+    "endpoint": "https://api.meta.ai/v1/models",
+    "mediaSent": false,
+    "generation": false,
+    "retry": false,
+    "httpStatus": 200,
+    "relevantCatalogIds": [
+      "sam-3.1",
+      "muse-spark-1.3-contributor",
+      "muse-voice-transcribe-1.0",
+      "muse-spark-1.3",
+      "muse-image-1.0",
+      "muse-spark-1.2-contributor",
+      "muse-spark-1.2",
+      "muse-spark-1.1"
+    ],
+    "catalogIsNotGenerationEvidence": true
+  },
+  "authConfiguration": {
+    "siteUrl": "https://worldspeak-akilanpl.vercel.app",
+    "productionCallbacks": [
+      "https://worldspeak-akilanpl.vercel.app/auth/callback?next=/history",
+      "https://worldspeak-akilanpl.vercel.app/auth/callback?next=/reset-password"
+    ],
+    "observedExactAllowlistEntries": 5,
+    "realSessionJourney": "PENDING owner completion and genuine session acceptance receipt; Google chooser reached only"
+  },
+  "originalReceiptSha256": {
+    "WorldSpeak-production-smoke.json": "aa70751eb5ea4489a72ea602a95b2c261c6e7f8aba822f021a3a2ef25643b94d",
+    "WorldSpeak-live-instrumentation-verification.json": "a222bafb311815e5bbe768e1b591e83cf2b0a7b520eb71f606c0f1ad91c457e7",
+    "WorldSpeak-models-metadata-verified.json": "95fcb01e56e7690f08fc3c60ad67471ea909dc359b48a4f3dae34dab69fabd61",
+    "WorldSpeak-production-auth-urls.txt": "f27ff77f170fb00b75d69f8d9827be9b326742a7d3b2a0d8eaea7087f0751fd5",
+    "WorldSpeak-cleanup-supervisor-2026-11-03.json": "a537f94d820197d717e8910dd2d04d77a66477edcbe9d68b5d83b91245fa4ad7",
+    "WorldSpeak-final-product-review.json": "c460d1a52ac2dd9f60ae91886a154ffd1da7d0d9f29450cd87de54dd45a347d0"
+  },
+  "limits": [
+    "Static resource marker inspection is not a complete network/telemetry audit.",
+    "Model catalog is not generation entitlement or credit balance.",
+    "No final recording/submission acceptance inferred."
+  ],
+  "cleanupSupervisorReceipt": {
+    "observedAt": "2026-11-03T08:39:52.584259+00:00",
+    "method": "read-only launchctl print gui/501/com.worldspeak.cleanup filtered fields and existing plist program path",
+    "service": "gui/501/com.worldspeak.cleanup",
+    "program": "/opt/homebrew/bin/node",
+    "entrypoint": "scripts/run-cleanup.mjs",
+    "runs": 22092,
+    "lastExitCode": 0,
+    "stateAtObservation": "not running between scheduled invocations",
+    "startIntervalSeconds": 5,
+    "configurationChanged": false,
+    "limitations": "This verifies scheduling and last process exit, not a new physical deletion or complete hosted cleanup queue query."
+  },
+  "mainCI": {
+    "sha": "a5619178c89b0ff5b7516272ea850d291b2d4870",
+    "run": 41598627645,
+    "unitTests": 321,
+    "unitFiles": 49,
+    "localDatabaseGroups": 62,
+    "browserDefaultPassed": 52,
+    "browserDefaultConditionallySkipped": 1,
+    "browserSeparateMockEnabledPassed": 1,
+    "metaCalls": 0
+  },
+  "finalProductReview": {
+    "observedAt": "2026-11-03T08:42:39.434970+00:00",
+    "productionSmoke": {
+      "ok": true,
+      "mode": "production",
+      "checks": [
+        {
+          "name": "board",
+          "status": 200,
+          "elapsedMs": 542
+        },
+        {
+          "name": "camera-shell",
+          "status": 200,
+          "elapsedMs": 62
+        },
+        {
+          "name": "video-shell",
+          "status": 200,
+          "elapsedMs": 55
+        },
+        {
+          "name": "offline-board",
+          "status": 200,
+          "elapsedMs": 50
+        },
+        {
+          "name": "offline-manifest",
+          "status": 200,
+          "elapsedMs": 77
+        },
+        {
+          "name": "service-worker",
+          "status": 200,
+          "elapsedMs": 62
+        },
+        {
+          "name": "install-manifest",
+          "status": 200,
+          "elapsedMs": 36
+        },
+        {
+          "name": "guest-private-preferences",
+          "status": 401,
+          "elapsedMs": 399
+        },
+        {
+          "name": "guest-job-status",
+          "status": 401,
+          "elapsedMs": 328
+        }
+      ]
+    },
+    "anonymousProtectedPageChecks": [
+      {
+        "path": "/history",
+        "status": 307,
+        "redirectIsSignIn": true,
+        "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+      },
+      {
+        "path": "/favorites",
+        "status": 307,
+        "redirectIsSignIn": true,
+        "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+      },
+      {
+        "path": "/settings",
+        "status": 307,
+        "redirectIsSignIn": true,
+        "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+      }
+    ],
+    "noCookiesOrAuthSent": true,
+    "noMutationsOrModelCalls": true
+  }
+}
