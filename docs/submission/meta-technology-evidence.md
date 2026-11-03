@@ -1,6 +1,6 @@
 # Meta technology integration and evidence matrix
 
-> Audit refreshed: 28 October 2026, release main `4e9db78eb225f086533a830b2da66df41622c1a5` (PRs #8–#16 merged). Auditor scope: docs-only; provider code inspected read-only as merged in main. No Meta generation calls were made for this audit. "Verified" means corroborated by repository evidence or a live official source cited below.
+> Public event recheck: 3 November 2026; model-price observations below remain dated 27 October, not freshly verified. Prior audit refreshed: 28 October 2026, release main `4e9db78eb225f086533a830b2da66df41622c1a5` (PRs #8–#16 merged). Auditor scope: docs-only; provider code inspected read-only as merged in main. No Meta generation calls were made for this audit. "Verified" means corroborated by repository evidence or a live official source cited below.
 
 ## Official sources checked (live, 27 Oct 2026)
 

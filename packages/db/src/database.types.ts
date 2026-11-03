@@ -390,6 +390,15 @@ export type Database = {
         }
         Returns: string
       }
+      submit_legacy_inference_job: {
+        Args: {
+          p_asset: string
+          p_concept?: string
+          p_key: string
+          p_operation: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

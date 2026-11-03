@@ -21,13 +21,22 @@ export interface Speaker {
   cancel(): void;
 }
 
+export class VoiceUnavailableError extends Error {
+  constructor() {
+    super("The selected voice is no longer available for this language. Choose a matching voice, then press Speak again.");
+    this.name = "VoiceUnavailableError";
+  }
+}
+
 export class BrowserSpeaker implements Speaker {
   constructor(private synth: SpeechSynthesis) {}
   speakText(opts: { text: string; lang: string; voiceName: string; rate: number }): void {
+    const voice = this.synth.getVoices().find((v) => v.name === opts.voiceName && v.lang.toLowerCase() === opts.lang.toLowerCase());
+    // Never let the browser substitute its default voice after a voice-list race.
+    if (!voice) throw new VoiceUnavailableError();
     const utter = new SpeechSynthesisUtterance(opts.text);
     utter.lang = opts.lang;
-    const voice = this.synth.getVoices().find((v) => v.name === opts.voiceName) ?? null;
-    if (voice) utter.voice = voice;
+    utter.voice = voice;
     utter.rate = opts.rate;
     this.synth.speak(utter);
   }
@@ -107,7 +116,13 @@ export class SpeechGateway {
 
     // Fresh gesture: drop anything queued, then speak exactly the preview.
     this.speaker.cancel();
-    this.speaker.speakText({ text: args.utterance.exactText, lang: voice.lang, voiceName: voice.name, rate: args.rate });
+    this.speaking = false;
+    try {
+      this.speaker.speakText({ text: args.utterance.exactText, lang: voice.lang, voiceName: voice.name, rate: args.rate });
+    } catch (error) {
+      if (error instanceof VoiceUnavailableError) return { status: "no-voice", reason: error.message };
+      throw error;
+    }
     this.speaking = true;
     return { status: "spoken", text: args.utterance.exactText };
   }
@@ -117,7 +132,12 @@ export class SpeechGateway {
     const voice = this.listVoices().find((v) => v.name === voiceName);
     if (!voice) return false;
     this.speaker.cancel();
-    this.speaker.speakText({ text: sampleText, lang, voiceName: voice.name, rate });
+    try {
+      this.speaker.speakText({ text: sampleText, lang, voiceName: voice.name, rate });
+    } catch (error) {
+      if (error instanceof VoiceUnavailableError) return false;
+      throw error;
+    }
     return true;
   }
 

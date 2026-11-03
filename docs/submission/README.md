@@ -17,3 +17,5 @@ Cross-cutting rule: every Meta-related claim in these documents is traceable to 
 Release checklist and paste-ready text: [final-portal-checklist.md](final-portal-checklist.md). Release acceptance evidence is recorded separately; a prepared script is not a recorded video.
 
 Actual sprint results: [release-acceptance.md](release-acceptance.md). Deployment is blocked by platform-injected Observability configuration; no verified HTTPS demo or recorded video is claimed.
+
+Current master-sprint index (3 November): [submission](../WORLDSPEAK_FINAL_SUBMISSION.md), [model evidence](../WORLDSPEAK_MODEL_VALIDATION.md), [approval/resource gates](../WORLDSPEAK_CONTINUATION_BLOCKERS.md). These distinguish current work from historical acceptance receipts.

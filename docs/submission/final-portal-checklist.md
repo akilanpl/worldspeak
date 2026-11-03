@@ -1,9 +1,9 @@
-# Final submission checklist — 28 October 2026
+# Final submission checklist — 3 November 2026
 
 Track: **Indie Developer**. Theme: **Build for Your World**.
 Repository: https://github.com/akilanpl/worldspeak
-Verified source release: `4e9db78eb225f086533a830b2da66df41622c1a5`.
-CI: https://github.com/akilanpl/worldspeak/actions/runs/40533861782
+Verified source release: `0ab6b457bcc61d502ec0e38f714882225ba7753a`.
+CI: https://github.com/akilanpl/worldspeak/actions/runs/40621518357
 
 ## Paste-ready short description
 
@@ -23,7 +23,7 @@ A server-only Meta integration uses authenticated, owner-scoped jobs, integer mi
 
 ## Official requirements verified versus still blocked
 
-[Meta event](https://dev.meta.ai/events/global-hackathon) and [Cerebral Valley event](https://cerebralvalley.ai/e/meta-ai-developer-hackathon) were checked on 28 October 2026. Both state submissions due **4 November 2026, 9 PM ET = 5 November, 07:30 IST**. They confirm the track/theme. Their public copy still says Official Rules will be published before the event; it does not establish final submission-form fields or video limits. Application-selection weights are not final project judging weights.
+[Meta event](https://dev.meta.ai/events/global-hackathon) and [Cerebral Valley event](https://cerebralvalley.ai/e/meta-ai-developer-hackathon) were checked on 3 November 2026. Both state submissions due **4 November 2026, 9 PM ET = 5 November, 07:30 IST**. They confirm the track/theme. Their public copy still says Official Rules will be published before the event; it does not establish final submission-form fields or video limits. Application-selection weights are not final project judging weights.
 
 The account owner must inspect the accepted participant portal and record:
 
@@ -38,3 +38,5 @@ The account owner must inspect the accepted participant portal and record:
 - [ ] Preserve the final portal confirmation ID/time after actual submission.
 
 No portal draft, final submission, legal acceptance or completed video is claimed by this file. Use `demo-script.md`, `judging-qa.md`, `meta-technology-evidence.md` and the release acceptance matrix; replace any missing live URL only after HTTPS verification.
+
+Public-source recheck on 3 November: the official waiver link renders only “Loading…” to the available reader. No accepted participant guide, authenticated submission form, video restriction or final judging weights were exposed. The owner must open the actual accepted-participant portal; do not infer its requirements from application-selection rules.
