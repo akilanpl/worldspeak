@@ -82,11 +82,13 @@ try {
   await page.getByText("எனக்கு தண்ணீர் வேண்டும்.", { exact: true }).waitFor();
   await caption("2. Tamil creates a new preview and requires fresh Speak. Tamil wording/native pronunciation remain review-pending; no silent language substitution.", 10);
   await gestureSpeakStop();
-  // The user's language preference persists across routes. Deliberately return
-  // to English before using the following English-labelled manual controls.
+  // Finish the bilingual board shot with an explicitly selected English preview.
   await page.getByRole("button", { name: "English", exact: true }).click();
   await page.getByText("I want water.", { exact: true }).waitFor();
   await go("/video");
+  // Like pictograms, this page focuses its H1 after mounting. SSR button
+  // visibility alone does not prove that its React event handlers are ready.
+  await page.waitForFunction(() => document.activeElement?.tagName === "H1" && document.activeElement?.textContent === "Clip tracking (prototype)");
   await page.getByRole("button", { name: "Use local video", exact: true }).click();
   await page.getByLabel("Upload clip", { exact: true }).setInputFiles(root + "apps/web/e2e/fixtures/manual-region.webm");
   await page.getByRole("heading", { name: "Clip preview", exact: true }).waitFor();
