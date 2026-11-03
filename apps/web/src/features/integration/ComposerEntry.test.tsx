@@ -48,6 +48,7 @@ describe("ComposerEntry", () => {
             return { status: "spoken" };
           },
           stop: () => {},
+          subscribe: () => () => {},
           testVoice: () => false,
         }) as unknown as SpeechGateway,
     );
@@ -74,6 +75,7 @@ describe("ComposerEntry", () => {
             return { status: "spoken" };
           },
           stop: () => {},
+          subscribe: () => () => {},
           testVoice: () => false,
           listVoices,
         }) as unknown as SpeechGateway,
@@ -99,7 +101,8 @@ describe("ComposerEntry", () => {
  it.each(["en", "ta"] as const)("labels a manual pictogram truthfully for %s without automatic speech", async (locale) => {
    const speak = vi.fn();
    const key = storeHandoff(snapshotToPayload({intent: {kind: "user-text", text: "My exact words", locale}, locale}, {source: "pictogram", objectLabel: "My own cup", objectCatalogId: null, provenance: "manual"}));
-   renderEntry(key, () => ({speakApproved: speak, stop: () => {}, testVoice: () => false}) as unknown as SpeechGateway);
+   renderEntry(key, () => ({speakApproved: speak, stop: () => {},
+          subscribe: () => () => {}, testVoice: () => false}) as unknown as SpeechGateway);
    const notice = await screen.findByTestId("handoff-provenance-notice");
    for (const language of ["en", "ta"]) {
      const text = notice.querySelector(`[lang="${language}"]`)?.textContent;

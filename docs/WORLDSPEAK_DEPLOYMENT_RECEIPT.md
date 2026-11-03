@@ -7,3 +7,7 @@ Bounded diagnostic builds were dispatched to the existing project, with the stri
 Current local optimized server http://127.0.0.1:3137 passes strict demo preflight and9HTTPchecks. Environment explicitly WORLDSPEAK_INFERENCE_API_ENABLED=false; live marker unset; no provider/worker/service-role credentials injected. Guest-only demo has no production Auth acceptance. No Supabase settings changed.
 
 Recovery: approve current Vercel CLI device flow; inspect exact project-only env/config and disabled analytics state; implement only demonstrably safe bounded compatibility with regression tests; run full gate and CI, deploy exact tested artifact, verify canonical HTTPS and9production routes, then request exact Auth callback changes. Rollback must use prior known-green artifact, never SQL rollback or permit resets.
+
+## Superseding compatibility resolution
+
+A final redacted path diagnostic established each platform string is a relative same-origin route:16-character ASCII public routing ID, one slash and a documented fixed script/event suffix. Official SDK makeAbsolute behavior explains the earlier canonical-prefix mismatch. The reviewed preflight now accepts ONLY the exact compact six-field schema, bounded to512bytes, with strict character/length/identity/credential checks and duplicate-key rejection.59 focused tests pass;316 full tests plus typecheck/build/lint/schema pass on the integrated candidate. No live public URL is claimed before actual deployment receipt.

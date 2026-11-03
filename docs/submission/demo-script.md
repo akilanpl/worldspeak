@@ -1,4 +1,4 @@
-# Demonstration script — 180-second target, portal limit unverified
+# Demonstration script — verified three-minute participant limit
 
 > Total budget: 180 seconds. Every on-screen "AI result" is a labeled reconstructed mock (see evidence matrix). Narrator must speak the honesty lines verbatim. No live Meta call occurs during the demo.
 
@@ -55,4 +55,4 @@ Show the actual verified deployment URL if available and repository, track/theme
 - [ ] Consent/budget slides reference exact figures: 4402 micro-USD historical Spark ledger; 2,500 micro-USD proposed SAM cap.
 - [ ] Tamil segments labeled review-pending; no claim of native-speaker approval or audible quality.
 - [ ] Final cut ≤ 3:00 (aim 2:55); export 1080p MP4; keep raw project for re-cut.
-- [ ] Human verifies participant guide's video limit/format before upload (guide still ungated).
+- [ ] Three-minute limit confirmed in the signed-in participant guide on3November; owner must still verify final link accessibility and any unstated encoding/upload restrictions.

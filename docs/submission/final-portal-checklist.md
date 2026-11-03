@@ -40,3 +40,7 @@ The account owner must inspect the accepted participant portal and record:
 No portal draft, final submission, legal acceptance or completed video is claimed by this file. Use `demo-script.md`, `judging-qa.md`, `meta-technology-evidence.md` and the release acceptance matrix; replace any missing live URL only after HTTPS verification.
 
 Public-source recheck on 3 November: the official waiver link renders only “Loading…” to the available reader. No accepted participant guide, authenticated submission form, video restriction or final judging weights were exposed. The owner must open the actual accepted-participant portal; do not infer its requirements from application-selection rules.
+
+## Superseding accepted-participant inspection, 3 November
+
+The signed-in guide at the event /details route confirms a three-minute accessible demo-video link, public/open-source repository, all contributors listed and one representative submission per team. Actual judging weights: Impact30%, MetaAItooling25%, TechnicalDepthandExecution20%, Demo25%. The actual /hackathon/submit form is accessible; no SaveDraft control or character limits were visible. Required owner-opinion surveys must not be invented. No marketing opt-in or final Submit was selected. See ../WORLDSPEAK_FINAL_SUBMISSION.md (in docs/) for observed fields and prepared truthful text.

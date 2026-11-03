@@ -25,3 +25,35 @@ The server-only Meta inference path combines authenticated owner-scoped jobs, in
 [Meta](https://dev.meta.ai/events/global-hackathon) and [Cerebral Valley](https://cerebralvalley.ai/e/meta-ai-developer-hackathon) still publish **November 4, 2026 at 9 PM ET / November 5 at 07:30 IST**. Public pages establish the track/theme and schedule, not final video limits, form fields or project-judging weights. The [linked waiver](https://cerebralvalley.ai/e/meta-ai-developer-hackathon/waiver) exposed only a loading shell to the available reader. No accepted participant guide was supplied. Do not use application-selection equal weights as the final judging rubric.
 
 Owner action: open the accepted participant portal, verify duration/format/field limits, originality/asset licensing, exact team and AI-assistance attribution, then share non-secret requirements. Personally accept any legal rules. Save a draft only if supported; preview all links signed out. Final Submit requires explicit user approval. Record real receipt ID and timestamp only after observed success.
+
+### Native Brave portal inspection (3 November)
+
+The supplied event URL was opened in the existing Brave session, beyond the public web reader. It showed a **Sign In** link, the public event schedule localized to November 5 at 07:30 GMT+5:30, and public description—not an authenticated participant/project submission form. Following the visible Sign In link reached `https://cerebralvalley.ai/auth/login`; after one reload its page content was blank to the available native inspection. No credentials, legal acceptance, project fields or Submit action were entered. The owner must sign in using the accepted participant account and leave the actual project submission form open; that form's fields/limits remain unverified. A public “Event Closed” control observed during navigation does not establish that accepted project submission is closed, since the public page also publishes the later project deadline.
+
+## Superseding authenticated portal verification — 3 November
+
+After the owner signed in, native Brave exposed the [accepted participant guide](https://cerebralvalley.ai/e/meta-ai-developer-hackathon/details) and [actual submission form](https://cerebralvalley.ai/e/meta-ai-developer-hackathon/hackathon/submit). The earlier signed-out/loading observations above are historical, not the current portal blocker.
+
+**Confirmed guide requirements:** public source repository; a three-minute demo showing event-built work; accessible repository/video links; all contributors listed; one representative submission per team; maximum four people. The guide labels building period Oct27–Nov4 and retains the Nov4 9PM Eastern deadline. Existing WorldSpeak baseline commits are Oct27; dependencies/pre-existing tools must not be represented as original work.
+
+**Actual final judging weights:** Impact **30%**, Meta AI Tooling **25%**, Technical Depth & Execution **20%**, Demo **25%**, scored 0–10 after a stage-one viability/theme/meaningful-Meta-use gate. These supersede any earlier equal-weight assumption. The guide lists simple image analyzers and medical-advice systems among disallowed examples: demonstrate WorldSpeak's explicit-intent assistive communication, deterministic bilingual speech and privacy controls, not a generic captioning tool or clinical claim.
+
+### Actual form fields observed, no values entered
+
+| Form control | Prepared response / owner action |
+|---|---|
+| Team Name; Add Team Member | WorldSpeak; owner verifies actual human contributors and agent attribution. Do not add AI tools as human accounts. |
+| Track; problem statement (visibly required) | Indie Developer; Build for Your World. |
+| Viral-track X post link | Optional competition branch; no social post is authorized or created. |
+| Project Description | Use the ready-to-use description above; include the verified live URL here if available because no separate live-demo URL field was visible. |
+| Public GitHub Repository | `https://github.com/akilanpl/worldspeak` |
+| 3-Minute Demo Video | Accessible video URL; YouTube-style placeholder visible. Recording/upload still required. No file-format, size limit or direct video upload control was exposed. |
+| Meta products used | Muse Code-assisted implementation; one real historical Muse Spark Standard scene generation; repaired persistence and reconstructed tests. SAM implemented/synthetic tested only. No Image/Voice/open-weight-training success. |
+| Why Meta models matter | Visual object proposals can connect user-approved physical context to communication; they never choose intent or authoritatively replace exact reviewed sentences. SAM's intended shape delineation remains unverified live. |
+| Partner-technology feedback | Owner supplies genuine experience; no Fireworks/Modal/Baseten usage is claimed by this audit. |
+| Model API likelihood and overall opinion (visibly required) | Owner selects their own rating; the agent must not invent personal opinions. |
+| Other surveys | Recommendation ratings for API/Muse Code; biggest obstacle; model comparison; tool-choice factors; switching difficulties; production adoption blockers. Owner reviews/selects honestly. |
+| Marketing permission checkbox | Grants Meta/Cerebral Valley rights to publish/share/promote submitted materials. Left unchecked; human legal/consent decision required. |
+| Submit | Visible final action only; no Save Draft control was visible. No text was entered, draft saved, permission accepted or final Submit clicked. |
+
+No character limits were exposed by the native accessibility view; do not invent them. No separate screenshot field or submission receipt mechanism was visible before submission. Prepare the full payload locally, have the owner review claims/surveys/consent, and obtain explicit approval before final Submit. Preserve the actual confirmation only after observed success.

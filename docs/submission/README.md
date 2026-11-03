@@ -6,7 +6,7 @@ Meta-track submission and demonstration evidence for WorldSpeak. Prepared on a d
 |---|----------|---------|
 | 1 | [project-description.md](project-description.md) | Submission-ready project description |
 | 2 | [meta-technology-evidence.md](meta-technology-evidence.md) | Meta technology integration and evidence matrix |
-| 3 | [demo-script.md](demo-script.md) | 180-second target script; official limit still pending |
+| 3 | [demo-script.md](demo-script.md) | Verified three-minute script and recording plan |
 | 4 | [architecture-summary.md](architecture-summary.md) | Technical architecture summary |
 | 5 | [judging-qa.md](judging-qa.md) | Anticipated judge Q&A |
 | 6 | [limitations-and-validation.md](limitations-and-validation.md) | Known limitations and validation checklist |
