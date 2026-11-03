@@ -1,18 +1,24 @@
-# Feature acceptance — 3 November 2026
+# WorldSpeak feature acceptance matrix
 
-|Capability / source|Result|Evidence / boundary|
+Evidence date: **3 November 2026**. Verified main baseline `a5619178c89b0ff5b7516272ea850d291b2d4870`; [main CI 41598627645](https://github.com/akilanpl/worldspeak/actions/runs/41598627645) and [offline CI 41598627577](https://github.com/akilanpl/worldspeak/actions/runs/41598627577) passed. The deliberately preserved deployed application source is `7030dbfe365618e048f4a6a7f6b7b4b5f8e41668` ([PR 19 main CI 41592840401](https://github.com/akilanpl/worldspeak/actions/runs/41592840401)); newer main adds only the offline research scaffold. Canonical live origin: [https://worldspeak-akilanpl.vercel.app](https://worldspeak-akilanpl.vercel.app).
+
+Portable receipts: [production/metadata/Auth configuration](evidence/production-readiness-2026-11-03.json), [hosted read-only database reconciliation](evidence/hosted-reconciliation-2026-11-03.json). Original receipt hashes are preserved; no secret values, account identities or private messages are included.
+
+| Capability/source | Status | Executed evidence / remaining boundary |
 |---|---|---|
-|Deterministic board / packages/communication|PASS local|279 unit tests; current optimized build; exact speech approval invariant retained|
-|Database / supabase/tests + apps/worker/tests|PASS local|62 groups; isolated scratch DB removed; no hosted destructive tests|
-|Evaluation / tooling/evaluation|PASS synthetic|8 tests; reports/local/report.json; not model accuracy|
-|HTTP shells + private guest APIs / scripts/deployment-smoke.mjs|PASS demo|9routes; guest503 unconfigured, production401 not tested|
-|Browser E2E / apps/web/e2e|BLOCKED environment|Chromium Mach-port permission; no new browser acceptance claim|
-|Hosted Auth/history / apps/web + packages/db|BLOCKED manual|Existing Google evidence only; inbox/replay/preferences/OAuth deletion gates remain|
-|Spark / packages/inference|Historical real result only|Original save failed, JSONB repaired; no fresh generation authorized|
-|SAM / providers + RasterMaskCanvas|BLOCKED approval|Synthetic validated only; real ticket/generation not authorized|
-|Local video / features/video|Implemented; prior browser evidence|Manual frozen-frame selection, not model tracking|
-|Local pictograms / features/pictograms|Implemented; prior browser evidence|Memory only; not Muse Image|
-|Image/Transcribe/automatic tracking/open-weight training|BLOCKED resources/approval|No verified runtime integration or training result|
-|Public HTTPS|BLOCKED platform configuration|Login refreshed; injected endpoint values failed safe canonical classification|
-|Tamil/native devices/screen reader|BLOCKED human|No new physical or native approval|
-|Submission/video|BLOCKED portal/human|Updated narrative; no final Submit or recorded video|
+| Deterministic bilingual board, communication engine | PASS automated + observed guest UI |321 tests/49 files; exact preview in native Brave. Native Tamil/human audio still blocked. |
+| Fresh Speak/Stop, voice and callback fencing | PASS automated |Revision/hash/locale checks and stale native-event regressions. Audible interruption needs listener. |
+| Production availability/public-private split | PASS observed HTTP |9/9 production routes; 200 public, 401 anonymous protected APIs. |
+| Supabase database/worker | PASS local; hosted read-only |62 scratchDBgroups, hosted nine-migration/privilege/accounting receipt; no paid dispatch. |
+| Production Auth configuration | PASS observed configuration |Exact Site URL/two production callbacks among 5 entries. Signed-in journey pending receipt; inbox not proven. |
+| Private history search | PASS component/API/CI |POST body keeps text out of first-party URL; owner/CSRF/16 KiB body tests. Downstream PostgREST filter logging remains a limitation. |
+| Video/pictograms | PASS implementation + prior browser observation |Manual frozen-frame regions; memory-only local images. No automatic tracking or Muse Image. |
+| Offline board | PASS prior browser/cache + production assets |Origin-stopped local reload succeeded; physical phone/reconnect still blocked. |
+| Synthetic evaluation | PASS synthetic |8 evaluator tests; fixture metrics are not real-model accuracy. |
+| Offline research scaffold | PASS non-model execution |6 Python tests; 52 catalogexamples, 30/10/12 grouped splits, three external arm evaluators. No inference/training. |
+| Spark | Historical real result only |One chair generation; original persistence failed, later repaired/reconstructed tests. |
+| SAM/Image/Voice/automatic model tracking | BLOCKED approval/integration |No fresh paid authorization or actual runtime acceptance. |
+| Accessibility/native Tamil/physical devices | BLOCKED human/resource |Viewport emulation and automation do not establish physical acceptance. |
+| Final three-minute video/submission | BLOCKED artifact/owner |Recorder work is separate; no approved finished video or final portal receipt yet. |
+
+Exact main browser CI evidence: **52 passed +1 conditionally skipped** in the default run; the skipped reconstructed Spark chair runs separately under mock-enabled configuration and **1 passed** there. Do not report 53 tests passed in the default run. No real provider call occurred.

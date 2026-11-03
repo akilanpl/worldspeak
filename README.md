@@ -1,35 +1,33 @@
-# WorldSpeak — private bilingual communication with an offline guest board
+# WorldSpeak — your context, your meaning, your voice
 
-WorldSpeak turns a user-selected communication intent into an exact English/Tamil preview and speaks only after an explicit action. The essential board works without sign-in and, after preparation, offline. Phase 2 adds Supabase email/Google code paths, private profiles/accessibility preferences, history, favorites, search, replay and deletion.
+**Live demo: [https://worldspeak-akilanpl.vercel.app](https://worldspeak-akilanpl.vercel.app)** · [current release evidence](docs/WORLDSPEAK_FINAL_MASTER_AUDIT.md) · [submission package](docs/WORLDSPEAK_FINAL_SUBMISSION.md)
 
-**Current release:** the camera/composer UI, durable Spark/SAM provider pipeline, typed JSONB persistence, bounded pixel-mask renderer and deployment checks are merged. One real Muse Spark scene generation succeeded; historical persistence failed and was subsequently repaired. Real SAM inference is still unverified. Automated model/browser demonstrations use explicitly synthetic or reconstructed data.
+WorldSpeak turns explicitly chosen communication intent into deterministic English/Tamil sentences. Review exact words, then deliberately press Speak; Stop remains available. Object selection, model output, replay and language changes never authorize speech. A prepared essential board works offline without sign-in.
 
-Migration 007 is hosted in the dedicated project; migration 008 (independent SAM-only authorization) is **local-tested and pending separate hosted approval**. Generation remains disabled. Phase 2 manual acceptance, physical devices/native Tamil, provider billing attribution, public deployment, open-weight inference/fine-tuning and final participant rules remain open. See [sprint continuation handoff](docs/handoff/SPRINT-2.md), [mask renderer](docs/pixel-mask-renderer.md), [SAM authorization](docs/sam-only-authorization-handoff.md), [deployment checks](docs/deployment-readiness.md) and [historical workflow validation](docs/ai-workflow-validation.md).
+## Verified release boundaries
 
-## Local guest slice
+Deployed application source `7030dbfe365618e048f4a6a7f6b7b4b5f8e41668` passed production nine-route HTTP smoke and native Brave guest observation. Verified main baseline `a5619178c89b0ff5b7516272ea850d291b2d4870` additionally includes offline research dataset/evaluation scaffolding; it does not change the preserved deployed app. [Main CI](https://github.com/akilanpl/worldspeak/actions/runs/41598627645), [offline CI](https://github.com/akilanpl/worldspeak/actions/runs/41598627577).
 
-Use the pinned package manager pnpm 10.18.0 and a compatible Node runtime (CI uses Node 22; original development machine used Node 25.9.0).
+Local video is manual frame/region selection; personal pictograms are human-chosen images held in page memory. One real historical Spark generation succeeded, its original persistence failed, and JSONB persistence was repaired/tested. SAM masks and model/browser fixtures remain explicitly synthetic/reconstructed. No real SAM generation, automatic model tracking, Muse Image, Voice Transcribe, open-weight inference or fine-tuning success is claimed.
+
+All nine Supabase migrations are hosted in dedicated `cafkyowssdemzivhzxbb`; [read-only lineage/types/security evidence](docs/evidence/hosted-reconciliation-2026-11-03.json) preserves SQL hashes and historical 4402 micro-USD. Inference remains disabled; tickets/budgets are not authorized by this release. Auth origin/callbacks are configured, but real account/inbox acceptance awaits its independent receipt. Native Tamil, physical phones/screen reader/audio and final demo/submission remain explicit gates.
+
+## Run locally
+
+Node 22 and pnpm 10.18.0:
 
 ```sh
 pnpm install --frozen-lockfile
 pnpm lint
 pnpm typecheck
 pnpm test
+pnpm check:schema
 pnpm build
 pnpm test:e2e
 pnpm check:secrets
-pnpm check:schema
 pnpm dev
 ```
 
-The unconfigured app reports account features unavailable and never fakes a session. Prepare offline assets once online, then navigate to `/offline/index.html` with the network disabled. Tamil wording is `review-pending`; absent Tamil voices show text rather than silently substituting English.
+Unconfigured accounts fail closed; guest mode never fakes a session. Prepare once online, then open `/offline/index.html`. Tamil remains review-pending. `pnpm test:db` is destructive and strictly local scratch-only: never aim it at hosted Supabase.
 
-## Hosted foundation
-
-Dedicated WorldSpeak project: `cafkyowssdemzivhzxbb`, Mumbai, Free plan. No credentials are published. Follow [safe setup and testing](docs/supabase-setup.md); **never point `pnpm test:db` at a hosted database**. It is a destructive local scratch harness; hosted tests are separate. Actual generated types and migration lineage are in [project evidence](docs/evidence/supabase-project.json).
-
-No public production deployment is claimed. A real Google callback/session was previously verified; remaining hosted/manual UX and email inbox delivery require acceptance. Browser speech tests use spies; they are not proof of audible output or independent language review. [Build log](docs/build-log.md), [hackathon verification](docs/rules-verification.md), [MIT license](LICENSE).
-
-## Isolated Phase 3 inference core
-
-Non-paid backend implementation is on `feat/meta-inference-core`: durable owner-scoped jobs, atomic micro-USD reservations, fenced dispatch/uncertain outcomes, consent-scoped transient media and durable cleanup, typed Standard Spark/SAM adapters. Hosted migration and paid inference are **not verified**. Phase 2 manual gaps remain open. See [integration handoff](docs/meta-inference-handoff.md) and [unapproved two-call smoke proposal](docs/meta-inference-smoke-test.md). Fixtures are not real inference; no speech is triggered by model output.
+[Acceptance matrix](docs/WORLDSPEAK_FEATURE_ACCEPTANCE_MATRIX.md) · [security/privacy](docs/WORLDSPEAK_SECURITY_AND_PRIVACY_REPORT.md) · [deployment receipt](docs/WORLDSPEAK_DEPLOYMENT_RECEIPT.md) · [accessibility](docs/WORLDSPEAK_ACCESSIBILITY_ACCEPTANCE.md) · [model evidence](docs/WORLDSPEAK_MODEL_VALIDATION.md) · [remaining gates](docs/WORLDSPEAK_CONTINUATION_BLOCKERS.md) · [MIT license](LICENSE).

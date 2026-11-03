@@ -1,26 +1,24 @@
-# Accessibility acceptance — 3 November 2026
+# WorldSpeak accessibility acceptance
 
-Baseline source: `0ab6b457bcc61d502ec0e38f714882225ba7753a`. **WCAG 2.2 AA conformance and physical accessibility are not certified.** No new device, screen-reader or human listening test was executed by this reviewer.
+Evidence date: **3 November 2026**. Verified main baseline `a5619178c89b0ff5b7516272ea850d291b2d4870`; [main CI 41598627645](https://github.com/akilanpl/worldspeak/actions/runs/41598627645) and [offline CI 41598627577](https://github.com/akilanpl/worldspeak/actions/runs/41598627577) passed. The deliberately preserved deployed application source is `7030dbfe365618e048f4a6a7f6b7b4b5f8e41668` ([PR 19 main CI 41592840401](https://github.com/akilanpl/worldspeak/actions/runs/41592840401)); newer main adds only the offline research scaffold. Canonical live origin: [https://worldspeak-akilanpl.vercel.app](https://worldspeak-akilanpl.vercel.app).
 
-| Area | Current evidence | Status / next executable check |
+Portable receipts: [production/metadata/Auth configuration](evidence/production-readiness-2026-11-03.json), [hosted read-only database reconciliation](evidence/hosted-reconciliation-2026-11-03.json). Original receipt hashes are preserved; no secret values, account identities or private messages are included.
+
+**No WCAG certification, independent native Tamil approval or physical-device acceptance is claimed.**
+
+| Check | Evidence | Remaining human boundary |
 |---|---|---|
-| Exact words / gesture | Pure communication engine binds composition ID/revision/hash; gateway rejects stale/duplicate approvals and wrong-language voices; cancel precedes a new explicit utterance. | Source/automated coverage. Human hears exact English and Tamil; change draft and verify silence until a new Speak. |
-| Stop/navigation | Gateway cancel; composer unmount/visibility cleanup calls Stop. Prior 28 October browser reported `Speech stopped.` | Real immediate audible interruption remains BLOCKED without a listener. |
-| Missing voice | `pickVoice`/`voiceMatches` reject nonmatching language and return an actionable no-voice message. | Test actual unavailable Tamil voice; final-boundary voice disappearance is now fail-closed and regression-tested (see security report), not device-accepted. |
-| Focus / labels | Skip navigation, named buttons/groups, visible focus, labels/status regions; automated axe specs inspect representative flows. | Prior 28 October browser Water→Food focus had solid outline. New local E2E cannot launch (Mach-port); no fresh screen-reader PASS. |
-| Reflow / large text | Prior browser emulation 390×844: no horizontal overflow; A++ and high contrast worked. Existing CI contains 200% text/reflow regressions. | Not real phone or OS zoom acceptance. On final HTTPS app test 200% and 400%, portrait/landscape, labels and targets without clipped controls. |
-| Offline essentials | Prior browser reload succeeded with only its local origin server stopped, including Tamil Water exact preview. | Named-phone airplane mode/reconnect and offline installed voices remain BLOCKED. Do not infer disconnected native audio from cached HTML. |
-| Tamil | Text is Unicode and marked review-pending. Prior browser listed Vani ta-IN. | Independent competent Tamil review of request/negation/clarity/politeness and pronunciation remains BLOCKED. Voice enumeration is not a hearing test. |
-| Camera/video | Local preview/manual frame-region flow exists; source includes bounded media and cleanup. | Named-device permission denial/allow, recording, orientation and frame selection remain BLOCKED. Never call manual selection automatic tracking. |
-| Personal pictograms | Named local-image fields, explicit exact meaning and approval, page-memory retention; prior browser handoff/leave cleanup observed. | Real phone file picker and screen-reader image description remain BLOCKED. |
-| Auth/history | No speech on replay is a mandatory source invariant and automated regression area. | Real signed-in search/replay/delete/preferences and session-expiration UI remain human/account gates. |
+| Exact words and fresh Speak |Pure engine and regression tests; native Brave exact preview |Listener must hear exact English/Tamil and Stop mid-utterance. |
+| Native speech lifecycle |Completion/error/Stop/voice-disappearance and stale-event tests pass |Real browser/OS error/audio recovery not inferred from spies. |
+| Keyboard/focus/labels |Prior actual Water→Food solid focus; current CI axe/keyboard coverage |Real screen reader and complete keyboard journey on deployed app. |
+| Reflow/contrast/motion |Prior 390×844 emulation/A++contrast; CI reflow checks |Named phone, OS 200%/400%zoom, orientation and assistive tech remain blocked. |
+| Tamil |Review-pending catalog, prior Vani ta-IN enumeration; live Brave Tamil preview screenshot |Native wording/pronunciation reviewer required; screenshot/voice list is not hearing. |
+| Offline |Prior real browser cached reload with local origin stopped; production public assets 200 |Named-device airplane-mode/reconnect and offline voice tests. |
+| Camera/video/pictograms |Existing manual local flow, consent and page-memory cleanup; prior guest interaction |Physical permission deny/allow, recording, orientation, file picker and screen-reader descriptions. |
+| Auth/history |No auto-speech on replay invariant; POSTprivacy regression |Independent actual production account journey pending receipt. |
 
-## Current automated evidence boundary
+Local Chromium E2E bootstrap is blocked by Mach-port permissions; GitHub CI passed the exact source. Actual native Brave canonical guest observation is separate from automated CI and from physical phones. Do not convert emulation or fixture speech spies into device/audio acceptance.
 
-Integrating engineer reported 279 unit tests and 62 local DB groups passing this turn. These are not counts of accessibility tests. Browser E2E is currently **BLOCKED before assertions by Mach-port launch failure**, not passed or a demonstrated product regression. Older green CI and the explicitly dated Oct28 browser receipts remain reproducible historical evidence (`submission/release-acceptance.md`); no Nov3 physical-device result is invented.
+Human protocol: record deployedSHA/URL, device/OS/browser/voice/date, choose Water and negation, switch English/Tamil without speech, review exact preview, fresh Speak, hear exact words, Stop, revise and require fresh approval. Repeat at 200/400%zoom, contrast/reduced-motion, screen reader and offline/reconnect; synthetic media only. Preserve BLOCKED rows until observed.
 
-## Human protocol (record PASS/FAIL/BLOCKED per step)
-
-Record final deployed SHA/URL, device model, OS/browser/version, viewport/zoom, voice name/language and date—no account identifiers or media in screenshots. In keyboard/screen-reader mode choose Water, inspect preview, choose intent and English/Tamil without automatic speech; explicitly Speak, hear exact text, Stop mid-sentence. Change intent/language and require fresh approval. Test missing Tamil voice and speech error recovery, not an English fallback. Repeat at 200/400% zoom and reduced motion/high contrast. Use only synthetic media for permission/file/video/pictogram tests. Prepare offline, disconnect/reload, compose, reconnect and verify no queued uploads or speech. Native reviewer records wording corrections separately from device behavior.
-
-Native completion/error events now update gateway and composer status with stale-callback fencing; the locally repaired lifecycle and voice-disappearance boundaries are detailed in `WORLDSPEAK_SECURITY_AND_PRIVACY_REPORT.md`. The 18 targeted speech/composer tests passed, including completion, errors, replacement and Stop races; real-device speech failure recovery remains unaccepted until actually exercised.
+Exact main browser CI evidence: **52 passed +1 conditionally skipped** in the default run; the skipped reconstructed Spark chair runs separately under mock-enabled configuration and **1 passed** there. Do not report 53 tests passed in the default run. No real provider call occurred.

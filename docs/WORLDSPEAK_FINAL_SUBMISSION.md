@@ -1,40 +1,28 @@
-# WorldSpeak final submission package — 3 November 2026
+# WorldSpeak final submission package
 
-**Status: prepared content; no final submission or receipt observed.** Baseline `0ab6b457bcc61d502ec0e38f714882225ba7753a`, [passing baseline CI](https://github.com/akilanpl/worldspeak/actions/runs/40621518357). Current deployment work must supply a separately verified URL/commit before this document claims a live product.
+Evidence date: **3 November 2026**. Verified main baseline `a5619178c89b0ff5b7516272ea850d291b2d4870`; [main CI 41598627645](https://github.com/akilanpl/worldspeak/actions/runs/41598627645) and [offline CI 41598627577](https://github.com/akilanpl/worldspeak/actions/runs/41598627577) passed. The deliberately preserved deployed application source is `7030dbfe365618e048f4a6a7f6b7b4b5f8e41668` ([PR 19 main CI 41592840401](https://github.com/akilanpl/worldspeak/actions/runs/41592840401)); newer main adds only the offline research scaffold. Canonical live origin: [https://worldspeak-akilanpl.vercel.app](https://worldspeak-akilanpl.vercel.app).
 
-Title: **WorldSpeak**. Tagline: **Your context. Your meaning. Your voice.**
-Track: **Indie Developer**. Theme: **Build for Your World**.
-Repository: https://github.com/akilanpl/worldspeak
+Portable receipts: [production/metadata/Auth configuration](evidence/production-readiness-2026-11-03.json), [hosted read-only database reconciliation](evidence/hosted-reconciliation-2026-11-03.json). Original receipt hashes are preserved; no secret values, account identities or private messages are included.
 
-## Ready-to-use description
+**Prepared, not submitted. No final portal receipt or approved finished video is claimed.**
 
-WorldSpeak helps people express personal needs through an accessible English/Tamil communication board, user-approved visual context and exact sentences. Object selection never decides what someone wants. The user chooses meaning and intent, reviews the deterministic sentence, and deliberately presses Speak; Stop remains available. A prepared essential board works offline. Local video supports manual frame/region selection, while personal pictograms associate an in-memory image with the user's own words.
+**Confirmed deadline: November 4, 2026 at 9:00 PM Eastern Time = November 5, 2026 at 07:30 AM IST.**
 
-The server-only Meta inference path combines authenticated owner-scoped jobs, integer-microUSD reservations, consent-scoped temporary media, lease fencing and one-shot authorization. One genuine historical Muse Spark Standard generation identified a synthetic chair. Its original application persistence failed; the JSONB defect was repaired and the result path validated using explicitly reconstructed fixtures. SAM provider integration and pixel-mask rendering are implemented and synthetic-tested, but real SAM generation remains unverified. Muse Code and Sol assisted implementation. Optional Muse Image, transcription, automatic video model tracking and open-weight training are not claimed. Tamil wording/native pronunciation and physical-device acceptance remain incomplete. WorldSpeak offers no diagnosis or treatment.
+Title **WorldSpeak** · tagline **Your context. Your meaning. Your voice.** · Indie Developer · Build for Your World.
 
-## Actual asset index
+Live demo: https://worldspeak-akilanpl.vercel.app · Public source: https://github.com/akilanpl/worldspeak
 
-- [Complete description](submission/project-description.md), [technical architecture](submission/architecture-summary.md).
-- [Model evidence](WORLDSPEAK_MODEL_VALIDATION.md), [privacy/limitations](submission/limitations-and-validation.md).
-- [Finished narration and shot list](submission/demo-script.md): 180-second editorial target, **not a confirmed portal limit**. No verified recording file exists in this audit. Record real board/Speak/Stop, manual video, local pictograms and offline behavior; label every reconstructed Spark/SAM fixture throughout.
-- [Judging Q&A](submission/judging-qa.md), [field-by-field portal checklist](submission/final-portal-checklist.md).
-- Prior local browser acceptance is dated 28 October in `submission/release-acceptance.md`, not a new Nov3 device test.
+WorldSpeak helps people express personal needs through accessible English/Tamil communication, user-approved visual context and deterministic exact sentences. Object selection never chooses desire. A person selects meaning and intent, reviews the preview and deliberately presses Speak; Stop remains available. The prepared essential board works offline. Local video enables manual frame/region selection; personal pictograms bind local images to human-assigned exact wording. Account data uses owner-scoped authorization and no-store responses.
 
-## Official requirements rechecked
+One real historical Muse Spark Standard call identified a synthetic chair; original JSONB persistence failed and was later repaired. Reconstructed integration tests are labeled. SAM masks remain synthetic-tested, with no real segmentation generation; no automatic video tracking, Muse Image, Voice Transcribe or completed fine-tuning claim. Meta catalog retrieval 200 is not generation or entitlement evidence. The offline experiment scaffold is runnable dataset/evaluation preparation only. Native Tamil, devices and remaining account/inbox checks remain disclosed limitations.
 
-[Meta](https://dev.meta.ai/events/global-hackathon) and [Cerebral Valley](https://cerebralvalley.ai/e/meta-ai-developer-hackathon) still publish **November 4, 2026 at 9 PM ET / November 5 at 07:30 IST**. Public pages establish the track/theme and schedule, not final video limits, form fields or project-judging weights. The [linked waiver](https://cerebralvalley.ai/e/meta-ai-developer-hackathon/waiver) exposed only a loading shell to the available reader. No accepted participant guide was supplied. Do not use application-selection equal weights as the final judging rubric.
-
-Owner action: open the accepted participant portal, verify duration/format/field limits, originality/asset licensing, exact team and AI-assistance attribution, then share non-secret requirements. Personally accept any legal rules. Save a draft only if supported; preview all links signed out. Final Submit requires explicit user approval. Record real receipt ID and timestamp only after observed success.
-
-### Native Brave portal inspection (3 November)
-
-The supplied event URL was opened in the existing Brave session, beyond the public web reader. It showed a **Sign In** link, the public event schedule localized to November 5 at 07:30 GMT+5:30, and public description—not an authenticated participant/project submission form. Following the visible Sign In link reached `https://cerebralvalley.ai/auth/login`; after one reload its page content was blank to the available native inspection. No credentials, legal acceptance, project fields or Submit action were entered. The owner must sign in using the accepted participant account and leave the actual project submission form open; that form's fields/limits remain unverified. A public “Event Closed” control observed during navigation does not establish that accepted project submission is closed, since the public page also publishes the later project deadline.
+Recorder PR 21 is separate pending artifact review. An initial 67 second capture failed; it is not an approved final three-minute video. No recording URL is invented. Final cut must be reviewed for actual frame content, provenance captions, timing/audio and no exposed account details before upload. Existing `docs/submission/demo-script.md` supplies narration/shot list; update its old portal/deployment caveats using this current report.
 
 ## Superseding authenticated portal verification — 3 November
 
-After the owner signed in, native Brave exposed the [accepted participant guide](https://cerebralvalley.ai/e/meta-ai-developer-hackathon/details) and [actual submission form](https://cerebralvalley.ai/e/meta-ai-developer-hackathon/hackathon/submit). The earlier signed-out/loading observations above are historical, not the current portal blocker.
+After the owner signed in, native Brave exposed the [accepted participant guide](https://cerebralvalley.ai/e/meta-ai-developer-hackathon/details) and [actual submission form](https://cerebralvalley.ai/e/meta-ai-developer-hackathon/hackathon/submit). The accepted guide and form are accessible; final submission still requires owner review and approval.
 
-**Confirmed guide requirements:** public source repository; a three-minute demo showing event-built work; accessible repository/video links; all contributors listed; one representative submission per team; maximum four people. The guide labels building period Oct27–Nov4 and retains the Nov4 9PM Eastern deadline. Existing WorldSpeak baseline commits are Oct27; dependencies/pre-existing tools must not be represented as original work.
+**Confirmed guide requirements:** public source repository; a three-minute demo showing event-built work; accessible repository/video links; all contributors listed; one representative submission per team; maximum four people. The guide labels building period Oct 27–Nov 4 and retains the Nov 4 9 PM Eastern deadline. Existing WorldSpeak baseline commits are Oct 27; dependencies/pre-existing tools must not be represented as original work.
 
 **Actual final judging weights:** Impact **30%**, Meta AI Tooling **25%**, Technical Depth & Execution **20%**, Demo **25%**, scored 0–10 after a stage-one viability/theme/meaningful-Meta-use gate. These supersede any earlier equal-weight assumption. The guide lists simple image analyzers and medical-advice systems among disallowed examples: demonstrate WorldSpeak's explicit-intent assistive communication, deterministic bilingual speech and privacy controls, not a generic captioning tool or clinical claim.
 
