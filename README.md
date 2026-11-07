@@ -4,6 +4,8 @@
 
 WorldSpeak turns explicitly chosen communication intent into deterministic English/Tamil sentences. Review exact words, then deliberately press Speak; Stop remains available. Object selection, model output, replay and language changes never authorize speech. A prepared essential board works offline without sign-in.
 
+[Engineering documentation](docs/README.md)
+
 ## Communication architecture
 
 WorldSpeak separates selecting meaning, rendering words and authorizing speech. A typed composition holds an intent, locale, catalog version and revision. The immutable reducer increments that revision when meaning or language changes. Deterministic templates render structured requests, polarity and object slots; exact user-entered text is preserved rather than rewritten or translated. Unknown objects and missing slots fail explicitly.
